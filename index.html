@@ -15,11 +15,25 @@
         gesture-detector
         id="scene"
     >
+
+        <!-- Asset preload -->
+        <a-assets>
+            <!-- Image asset -->
+            <img id="texture" src="UnityAssets/Assets/ObjectFiles/Default-Checker-Gray.jpg">
+            
+            <!-- GLTF model asset -->
+            <a-asset-item id="model" src="UnityAssets/Assets/ObjectFiles/RedCube.gltf"></a-asset-item>
+        </a-assets>
+
         <!-- Marker definition -->
         <a-marker preset="hiro">
             <!-- AR content (e.g., a 3D model) -->
-            <a-box position='0 0.5 0' material='color: yellow;' id='box'
-                ></a-box>
+            <a-entity
+                gltf-model="#model"
+                scale="0.05 0.05 0.05"
+                position="0 0 0"
+                material="src: #texture"
+            ></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
