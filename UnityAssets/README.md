@@ -10,3 +10,6 @@ Unity should be used to create custom models and/or scenes. Once done, it needs 
 
 ## Purpose of A-Frame
 A-Frame should be used to create the AR interface and to handle the interactions. Since A-Frame requires GLFT files, it difficult to handle the interactions with using the Unity Script. The converted GLFT files can be found in UnityAssets/Assets/ObjectFiles/
+
+## Contents of Folder
+This folder holds the GLFT files which are the file formats for transmitting 3D models with associated resources (textures, animations, etc.).
