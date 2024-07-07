@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Marker-based WebAR</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector id="scene">
+        <!-- Marker definition -->
+        <a-marker preset="hiro">
+            <a-entity id="ar-content"></a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        const sceneData = JSON.parse(localStorage.getItem('sceneData'));
+        const arContent = document.getElementById('ar-content');
+
+        sceneData.forEach(model => {
+            const entity = document.createElement('a-entity');
+            entity.setAttribute('gltf-model', model.url);
+            entity.setAttribute('scale', `${model.scale} ${model.scale} ${model.scale}`);
+            entity.setAttribute('position', `${model.position[0]} ${model.position[1]} ${model.position[2]}`);
+            entity.setAttribute('rotation', `${model.rotation[0]} ${model.rotation[1]} ${model.rotation[2]}`);
+            arContent.appendChild(entity);
+        });
+    </script>
+    
+</body>
+</html>

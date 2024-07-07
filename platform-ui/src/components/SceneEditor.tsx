@@ -4,6 +4,7 @@ import { Stats, OrbitControls, Grid } from '@react-three/drei';
 import { useDrop } from 'react-dnd';
 import Model, { ModelProps } from './Model';
 import ControlPanel from './ControlPanel';
+import SceneData from './ARScene';
 
 const SceneEditor: React.FC = () => {
   const [models, setModels] = useState<ModelProps[]>([]);
@@ -51,13 +52,19 @@ const SceneEditor: React.FC = () => {
     []
   );
 
-  const updateModelscale = useCallback((id: string, scale: number) => {
+  const updateModelScale = useCallback((id: string, scale: number) => {
     setModels((currentModels) =>
       currentModels.map((model) =>
         model.id === id ? { ...model, scale } : model
       )
     );
   }, []);
+
+  const handlePublish = () => {
+    const sceneData = JSON.stringify(models);
+    localStorage.setItem('sceneData', sceneData);
+    window.open('/aframe.html', '_blank');
+  };
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
@@ -101,9 +108,12 @@ const SceneEditor: React.FC = () => {
           updateModelRotation={(rotation) =>
             updateModelRotation(model.id, rotation)
           }
-          updateModelScale={(scale) => updateModelscale(model.id, scale)}
+          updateModelScale={(scale) => updateModelScale(model.id, scale)}
         />
       ))}
+      <button onClick={handlePublish} style={{ position: 'absolute', top: '10px', right: '10px', background: '#0677c5' }}>
+        Publish
+      </button>
     </div>
   );
 };
