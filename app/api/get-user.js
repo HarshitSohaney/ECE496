@@ -1,10 +1,10 @@
 // api/get-user.js
-const { MongoClient } = require('mongodb');
+import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI; // Store your MongoDB URI in environment variables
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
