@@ -1,0 +1,12 @@
+githubRepoOwner: HarshitSohaney
+githubRepoName: ECE496
+githubHost: github.com
+githubRemote: origin
+githubBranch: prototype
+requireChecks: true
+requireApproval: true
+mergeMethod: rebase
+mergeQueue: false
+forceFetchTags: false
+showPrTitlesInStack: false
+branchPushIndividually: false

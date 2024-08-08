@@ -1,0 +1,27 @@
+{
+  "name": "arducate",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.109.3",
+    "@react-three/fiber": "^8.16.8",
+    "autoprefixer": "^10.4.20",
+    "jotai": "^2.9.2",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "three": "^0.167.1"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.8"
+  }
+}
