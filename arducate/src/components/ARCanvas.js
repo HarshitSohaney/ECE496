@@ -1,14 +1,30 @@
 // src/components/ARCanvas.js
 import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, DragControls } from "@react-three/drei";
+import { Grid, OrbitControls, DragControls, TransformControls } from "@react-three/drei";
 import { useAtom } from "jotai";
-import { arObjectsAtom } from "../atoms";
+import { arObjectsAtom, selectedObjectAtom } from "../atoms";
 import ARObject from "./ARObject";
 
 const ARCanvas = () => {
-  const [arObjects] = useAtom(arObjectsAtom);
+  const [selectedObject] = useAtom(selectedObjectAtom);
+  const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const meshRefs = useRef([]);
+  
+  /*Grid Configuration Settings */
+  const gridConfig = {
+    args: [10.5, 10.5],
+    cellSize: 0.6,
+    cellThickness: 1,
+    cellColor: '#6f6f6f',
+    sectionSize: 3.3,
+    sectionThickness: 1.5,
+    sectionColor: '#9d4b4b',
+    fadeDistance: 25,
+    fadeStrength: 1,
+    followCamera: false,
+    infiniteGrid: true,
+  };
 
   return (
     <div className="w-full h-[60vh] border border-gray-300 my-4">
@@ -17,8 +33,7 @@ const ARCanvas = () => {
         <pointLight position={[10, 10, 10]} />
 
         {/* Grid and Axes */}
-        <gridHelper args={[10, 10]} position={[0, 0, 0]} />
-        <axesHelper args={[6]} />
+        <Grid {...gridConfig}/>
 
         {/* Render AR objects */}
         {arObjects.map((object, index) => (
@@ -29,7 +44,13 @@ const ARCanvas = () => {
           />
         ))}
 
-        <OrbitControls />
+        {/* Transform + Drag Objects */}
+        {
+          selectedObject && (
+            <TransformControls object={selectedObject} mode="translate" />
+          )
+        }
+        <OrbitControls makeDefault />
       </Canvas>
     </div>
   );
