@@ -6,6 +6,6 @@
 
 2. run npm install
 
-3. run npm run dev to start the server
+3. run npm start to start the server
 
 
