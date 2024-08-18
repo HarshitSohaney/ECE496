@@ -1,14 +1,9 @@
 // src/components/ARObject.js
-import React, { useRef } from "react";
-import { extend } from "@react-three/fiber";
+import React, { forwardRef } from "react";
 import { useAtom } from "jotai";
-import { selectedObjectAtom, arObjectsAtom } from "../atoms";
-import { DragControls } from "@react-three/drei";
+import { selectedObjectAtom } from "../atoms";
 
-extend({ DragControls });
-
-const ARObject = ({ object }) => {
-  const meshRef = useRef();
+const ARObject = forwardRef(({ object, isSelected }, ref) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
 
   const handlePointerDown = () => {
@@ -17,16 +12,16 @@ const ARObject = ({ object }) => {
 
   return (
     <mesh
-      ref={meshRef}
+      ref={ref}
       position={object.position || [0, 0, 0]}
       scale={object.scale || [1, 1, 1]}
+      rotation={object.rotation || [0, 0, 0]}
       onPointerDown={handlePointerDown}
     >
-      {/* Add any geometry you want, e.g., a box */}
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={object.color || "orange"} />
     </mesh>
   );
-};
+});
 
 export default ARObject;

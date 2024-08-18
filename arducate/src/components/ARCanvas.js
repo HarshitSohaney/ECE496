@@ -1,17 +1,36 @@
 // src/components/ARCanvas.js
 import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Grid, OrbitControls, DragControls, TransformControls } from "@react-three/drei";
+import { Grid, OrbitControls, TransformControls } from "@react-three/drei";
 import { useAtom } from "jotai";
-import { arObjectsAtom, selectedObjectAtom } from "../atoms";
+import { arObjectsAtom, selectedObjectAtom, transformModeAtom } from "../atoms";
 import ARObject from "./ARObject";
 
 const ARCanvas = () => {
-  const [selectedObject] = useAtom(selectedObjectAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
-  const meshRefs = useRef([]);
-  
-  /*Grid Configuration Settings */
+  const [transformMode] = useAtom(transformModeAtom);
+  const transformRef = useRef();
+
+  // Handle the transformation change and update state
+  const handleObjectTransform = () => {
+    if (!selectedObject || !transformRef.current) return;
+
+    const updatedObjects = arObjects.map((obj) =>
+      obj.id === selectedObject.id
+        ? {
+            ...obj,
+            position: transformRef.current.position.toArray(),
+            rotation: transformRef.current.rotation.toArray(),
+            scale: transformRef.current.scale.toArray(),
+          }
+        : obj
+    );
+
+    setARObjects(updatedObjects);
+  };
+
+  // Grid configuration
   const gridConfig = {
     args: [10.5, 10.5],
     cellSize: 0.6,
@@ -32,24 +51,28 @@ const ARCanvas = () => {
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
 
-        {/* Grid and Axes */}
-        <Grid {...gridConfig}/>
+        {/* Grid */}
+        <Grid {...gridConfig} />
 
         {/* Render AR objects */}
-        {arObjects.map((object, index) => (
+        {arObjects.map((object) => (
           <ARObject
             key={object.id}
             object={object}
-            ref={(el) => (meshRefs.current[index] = el)} // Reference to the mesh
+            isSelected={object.id === selectedObject?.id}
+            ref={transformRef}
           />
         ))}
 
-        {/* Transform + Drag Objects */}
-        {
-          selectedObject && (
-            <TransformControls object={selectedObject} mode="translate" />
-          )
-        }
+        {/* TransformControls for selected object */}
+        {selectedObject && (
+          <TransformControls
+            object={transformRef.current}
+            mode={transformMode}
+            onObjectChange={handleObjectTransform}
+          />
+        )}
+
         <OrbitControls makeDefault />
       </Canvas>
     </div>
