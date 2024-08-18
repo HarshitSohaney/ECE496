@@ -14,6 +14,7 @@ const Toolbar = () => {
       scale: [1, 1, 1],
       color: "#ffa500",
       type: "box",
+      entity: "a-box",
     };
     setARObjects((prev) => [...prev, newObject]);
   };
