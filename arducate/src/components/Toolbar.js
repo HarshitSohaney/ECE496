@@ -19,7 +19,6 @@ const Toolbar = () => {
     setARObjects((prev) => [...prev, newObject]);
   };
 
-
   const handlePreview = () => {
     const htmlContent = convertSceneToVR(arObjects);
     const blob = new Blob([htmlContent], { type: 'text/html' });
