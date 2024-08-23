@@ -27,7 +27,7 @@ const ARCanvas = () => {
   };
 
   return (
-    <div className="w-full h-[60vh] border border-gray-300 my-4">
+    <div className="w-[70vw] border border-gray-300">
       <Canvas camera={{ position: [0, 2, 5] }}>
         <ambientLight />
         <pointLight position={[10, 10, 10]} />

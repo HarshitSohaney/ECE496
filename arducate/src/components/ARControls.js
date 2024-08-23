@@ -26,10 +26,10 @@ const ARControls = () => {
     );
   };
 
-  if (!selectedObject) return <div className="mt-4">No object selected</div>;
+  if (!selectedObject) return <div className="w-[15vw] mt-2 text-center bg-secondary">No object selected</div>;
 
   return (
-    <div className="mt-4 p-4 border border-gray-300 rounded">
+    <div className="w-[15vw] p-4 bg-secondary rounded">
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
