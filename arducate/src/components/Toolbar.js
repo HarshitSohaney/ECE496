@@ -1,13 +1,14 @@
 // src/components/Toolbar.js
 import React from "react";
 import { useAtom } from "jotai";
-import { arObjectsAtom } from "../atoms";
+import { arObjectsAtom, transformModeAtom } from "../atoms";
 import { convertSceneToAR, convertSceneToVR } from "./ARPublish";
 import { Button } from "../@/components/ui/button"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "../@/components/ui/select"
 import { Move, MoveDiagonal, RotateCw } from "lucide-react";
 
 const Toolbar = () => {
+  const [, setTransformMode] = useAtom(transformModeAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
 
   const handleAddObject = () => {
@@ -91,12 +92,38 @@ const Toolbar = () => {
         className="mr-4"
       >
         Add Box
-      </Button>
-      
-      <Button variant="outline" onClick={handlePublish}>
+      </button>
+      <button
+        onClick={handlePreview}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mr-4"
+      >
+        Preview
+      </button>
+      <button
+        onClick={handlePublish}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mr-4"
+      >
         Publish
-      </Button> */}
-    </nav>
+      </button>
+      <button
+        onClick={() => setTransformMode('translate')}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mr-4"
+      >
+        Translate
+      </button>
+      <button
+        onClick={() => setTransformMode('rotate')}
+        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 mr-4"
+      >
+        Rotate
+      </button>
+      <button
+        onClick={() => setTransformMode('scale')}
+        className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-700 mr-4"
+      >
+        Scale
+      </button>
+    </div>
   );
 };
 
