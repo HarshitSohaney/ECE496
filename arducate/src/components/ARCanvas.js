@@ -1,14 +1,49 @@
 // src/components/ARCanvas.js
 import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, DragControls } from "@react-three/drei";
+import { Grid, OrbitControls, TransformControls } from "@react-three/drei";
 import { useAtom } from "jotai";
-import { arObjectsAtom } from "../atoms";
+import { arObjectsAtom, selectedObjectAtom, transformModeAtom } from "../atoms";
 import ARObject from "./ARObject";
 
 const ARCanvas = () => {
-  const [arObjects] = useAtom(arObjectsAtom);
-  const meshRefs = useRef([]);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
+  const [arObjects, setARObjects] = useAtom(arObjectsAtom);
+  const [transformMode] = useAtom(transformModeAtom);
+  const transformRef = useRef();
+
+  // Handle the transformation change and update state
+  const handleObjectTransform = () => {
+    if (!selectedObject || !transformRef.current) return;
+
+    const updatedObjects = arObjects.map((obj) =>
+      obj.id === selectedObject.id
+        ? {
+            ...obj,
+            position: transformRef.current.position.toArray(),
+            rotation: transformRef.current.rotation.toArray(),
+            scale: transformRef.current.scale.toArray(),
+          }
+        : obj
+    );
+
+    setARObjects(updatedObjects);
+  };
+
+  // Grid configuration
+  const gridConfig = {
+    args: [10.5, 10.5],
+    cellSize: 0.6,
+    cellThickness: 1,
+    cellColor: '#6f6f6f',
+    sectionSize: 3.3,
+    sectionThickness: 1.5,
+    sectionColor: '#9d4b4b',
+    fadeDistance: 25,
+    fadeStrength: 1,
+    followCamera: false,
+    infiniteGrid: true,
+  };
 
   return (
     <div className="w-full h-[60vh] border border-gray-300 my-4">
@@ -16,20 +51,29 @@ const ARCanvas = () => {
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
 
-        {/* Grid and Axes */}
-        <gridHelper args={[10, 10]} position={[0, 0, 0]} />
-        <axesHelper args={[6]} />
+        {/* Grid */}
+        <Grid {...gridConfig} />
 
         {/* Render AR objects */}
-        {arObjects.map((object, index) => (
+        {arObjects.map((object) => (
           <ARObject
             key={object.id}
             object={object}
-            ref={(el) => (meshRefs.current[index] = el)} // Reference to the mesh
+            isSelected={object.id === selectedObject?.id}
+            ref={transformRef}
           />
         ))}
 
-        <OrbitControls />
+        {/* TransformControls for selected object */}
+        {selectedObject && (
+          <TransformControls
+            object={transformRef.current}
+            mode={transformMode}
+            onObjectChange={handleObjectTransform}
+          />
+        )}
+
+        <OrbitControls makeDefault />
       </Canvas>
     </div>
   );
