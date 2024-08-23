@@ -9,6 +9,7 @@ const ARControls = () => {
 
   const handleColorChange = (e) => {
     updateObject({ color: e.target.value });
+    selectedObject.color = e.target.value;
   };
 
   const handleScaleChange = (e) => {
