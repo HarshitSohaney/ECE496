@@ -26,7 +26,15 @@ const ARControls = () => {
     );
   };
 
-  if (!selectedObject) return <div className="w-[15vw] mt-2 text-center bg-secondary">No object selected</div>;
+  if (!selectedObject) {
+    return (
+      <div className="w-[15vw] bg-secondary">
+        <div className="mt-2 text-center">
+          No Object Selected
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">

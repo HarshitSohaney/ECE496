@@ -4,6 +4,7 @@ import { useAtom } from "jotai";
 import { arObjectsAtom, addAssetAtom } from "../atoms";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "../@/components/ui/select"
 import { Button } from "../@/components/ui/button";
+import { getArAsset } from "./Assets";
 
 const AssetHandler = () => {
   const [, setARObjects] = useAtom(arObjectsAtom);
@@ -14,9 +15,10 @@ const AssetHandler = () => {
       id: Date.now(),
       position: [0, 0, 0],
       scale: [1, 1, 1],
+      rotation: [0, 0, 0],
       color: "#ffa500",
       type: value,
-      entity: "a-" + value
+      entity: getArAsset(value)
     };
     setARObjects((prev) => [...prev, newObject]);
     setSelectedValue('');
@@ -24,10 +26,9 @@ const AssetHandler = () => {
 
   return (
     <div className="w-[15vw] items-center p-2 bg-secondary">
-      <Select
-        value={selectedValue}
-        onValueChange={handleAddObject}
-        >
+      
+      {/* Add Items */}
+      <Select value={selectedValue} onValueChange={handleAddObject}>
           <SelectTrigger variant="outline">
             <SelectValue placeholder="Add Asset"/>
           </SelectTrigger>
@@ -41,12 +42,11 @@ const AssetHandler = () => {
               <SelectItem value="cone">Cone</SelectItem>
               <SelectItem value="torus">Torus</SelectItem>
               <SelectItem value="ring">Ring</SelectItem>
-              {/* <SelectItem value="line">Line</SelectItem> */}
-              {/* Plane, Box, Sphere, Circle, Cone, Cylinder, Tube, Torus, Ring, Polyhedron, Line */}
             </SelectGroup>
           </SelectContent>
         </Select>
 
+        {/* Add Action */}
         <Select>
           <SelectTrigger variant="outline" className="mt-1">
             <SelectValue placeholder="Add Action"/>
@@ -59,6 +59,7 @@ const AssetHandler = () => {
           </SelectContent>
         </Select>
 
+        {/* Add Frame */}
         <Button className="mt-1 bg-input text-black w-full">
             Add Frame
         </Button>

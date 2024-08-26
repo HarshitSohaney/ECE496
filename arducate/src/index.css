@@ -73,6 +73,13 @@
   background-color: transparent; /* Transparent background */
 }
 
+.navbar-button-container {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 1rem;
+}
+
 .icon-size {
   height: 4;
   width: 4;

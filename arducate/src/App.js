@@ -7,10 +7,14 @@ import AssetHandler from './components/AssetViewer';
 
 const App = () => {
   return (
-    <div className="flex flex-col items-center p-4">
-      <Toolbar />
-      <ARCanvas />
-      <ARControls />
+    <div className="flex flex-col items-center h-screen">
+      <Toolbar className="flex-shrink-0"/>
+      <div className="flex flex-1">
+        <AssetHandler />
+        <ARCanvas />
+        <ARControls />
+      </div>
+      
     </div>
   );
 };

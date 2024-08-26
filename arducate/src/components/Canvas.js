@@ -12,16 +12,21 @@ const ARCanvas = () => {
   const [transformMode] = useAtom(transformModeAtom);
   const transformRef = useRef();
 
+  // Function to convert radians to degrees
+  const radiansToDegrees = (radians) => {
+    return radians * (180 / Math.PI);
+  };
+
   // Handle the transformation change and update state
   const handleObjectTransform = () => {
     if (!selectedObject || !transformRef.current) return;
-
+    console.log("rotate", transformRef.current.rotation.toArray().slice(0, 3));
     const updatedObjects = arObjects.map((obj) =>
       obj.id === selectedObject.id
         ? {
             ...obj,
             position: transformRef.current.position.toArray(),
-            rotation: transformRef.current.rotation.toArray(),
+            rotation: transformRef.current.rotation.toArray().slice(0, 3).map(radiansToDegrees),
             scale: transformRef.current.scale.toArray(),
           }
         : obj
