@@ -1,30 +1,40 @@
 // src/components/ARControls.js
-import React from "react";
+import React, { useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
 
 const ARControls = () => {
-  const [selectedObject] = useAtom(selectedObjectAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
 
   const handleColorChange = (e) => {
-    updateObject({ color: e.target.value });
-    selectedObject.color = e.target.value;
+    const newColor = e.target.value;
+    updateObject({ color: newColor });
   };
 
   const handleScaleChange = (e) => {
     const scaleValue = parseFloat(e.target.value);
     updateObject({ scale: [scaleValue, scaleValue, scaleValue] });
-    selectedObject.scale = [scaleValue, scaleValue, scaleValue];
+  };
+
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    updateObject({ name: newName });
   };
 
   const updateObject = (updates) => {
     setARObjects((prev) =>
       prev.map((obj) =>
-        obj.id === selectedObject.id ? { ...obj, ...updates } : obj
+        obj.id === selectedObject?.id ? { ...obj, ...updates } : obj
       )
     );
   };
+
+  useEffect(() => {
+    if (selectedObject) {
+      document.getElementById('asset-name').value = selectedObject.name || '';
+    }
+  }, [selectedObject]);
 
   if (!selectedObject) {
     return (
@@ -34,10 +44,21 @@ const ARControls = () => {
         </div>
       </div>
     );
-  };
+  }
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">
+      {/* Other Controls */}
+      <div>
+        <label className="block mb-2 text-sm font-medium">Name:</label>
+        <input
+          id="asset-name"
+          type="text"
+          value={selectedObject.name || ""}
+          onChange={handleNameChange}
+          className="w-full p-2 border-none rounded"
+        />
+      </div>
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
@@ -59,7 +80,6 @@ const ARControls = () => {
           className="w-full"
         />
       </div>
-      {/* control for changing position, rotation, etc. */}
       <div>
         <button
           onClick={() => updateObject({ position: [0, 0, 0] })}
