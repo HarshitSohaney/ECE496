@@ -1,4 +1,3 @@
-// src/components/ARCanvas.js
 import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Grid, OrbitControls, TransformControls } from "@react-three/drei";
@@ -10,28 +9,27 @@ const ARCanvas = () => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const [transformMode] = useAtom(transformModeAtom);
-  const transformRef = useRef();
+  const transformRefs = useRef({});
 
   // Function to convert radians to degrees
-  const radiansToDegrees = (radians) => {
-    return radians * (180 / Math.PI);
-  };
+  const radiansToDegrees = (radians) => radians * (180 / Math.PI);
 
   // Handle the transformation change and update state
-  const handleObjectTransform = () => {
-    if (!selectedObject || !transformRef.current) return;
-    console.log("rotate", transformRef.current.rotation.toArray().slice(0, 3));
+  const handleObjectTransform = (id) => {
+    if (!selectedObject || !transformRefs.current[id]) return;
     const updatedObjects = arObjects.map((obj) =>
-      obj.id === selectedObject.id
+      obj.id === id
         ? {
             ...obj,
-            position: transformRef.current.position.toArray(),
-            rotation: transformRef.current.rotation.toArray().slice(0, 3).map(radiansToDegrees),
-            scale: transformRef.current.scale.toArray(),
+            position: transformRefs.current[id].position.toArray(),
+            rotation: transformRefs.current[id]
+              .rotation.toArray()
+              .slice(0, 3)
+              .map(radiansToDegrees),
+            scale: transformRefs.current[id].scale.toArray(),
           }
         : obj
     );
-
     setARObjects(updatedObjects);
   };
 
@@ -40,10 +38,10 @@ const ARCanvas = () => {
     args: [10.5, 10.5],
     cellSize: 0.6,
     cellThickness: 1,
-    cellColor: '#6f6f6f',
+    cellColor: "#6f6f6f",
     sectionSize: 3.3,
     sectionThickness: 1.5,
-    sectionColor: '#9d4b4b',
+    sectionColor: "#9d4b4b",
     fadeDistance: 25,
     fadeStrength: 1,
     followCamera: false,
@@ -65,16 +63,16 @@ const ARCanvas = () => {
             key={object.id}
             object={object}
             isSelected={object.id === selectedObject?.id}
-            ref={transformRef}
+            ref={(ref) => (transformRefs.current[object.id] = ref)}
           />
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && (
+        {selectedObject && transformRefs.current[selectedObject.id] && (
           <TransformControls
-            object={transformRef.current}
+            object={transformRefs.current[selectedObject.id]}
             mode={transformMode}
-            onObjectChange={handleObjectTransform}
+            onObjectChange={() => handleObjectTransform(selectedObject.id)}
           />
         )}
 
