@@ -26,6 +26,8 @@ const ARCanvas = () => {
         ? {
             ...obj,
             position: transformRef.current.position.toArray(),
+            // Array for rotation returns [x-position, y-position, z-position, 'xyz'].
+            // Slice as only coordinates are needed. 
             rotation: transformRef.current.rotation.toArray().slice(0, 3).map(radiansToDegrees),
             scale: transformRef.current.scale.toArray(),
           }
