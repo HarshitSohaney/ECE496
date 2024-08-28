@@ -2,6 +2,7 @@
 import React from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
+import { useEffect } from 'react';
 
 const ARControls = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
@@ -17,6 +18,10 @@ const ARControls = () => {
     updateObject({ scale: [scaleValue, scaleValue, scaleValue] });
     selectedObject.scale = [scaleValue, scaleValue, scaleValue];
   };
+  // useEffect to log arObjects whenever it changes
+  useEffect(() => {
+    console.log('Updated AR Objects:', arObjects);
+  }, [arObjects]);
 
   const updateObject = (updates) => {
     setARObjects((prev) =>
