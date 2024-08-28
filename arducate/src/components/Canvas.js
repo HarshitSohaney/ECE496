@@ -20,7 +20,6 @@ const ARCanvas = () => {
   // Handle the transformation change and update state
   const handleObjectTransform = () => {
     if (!selectedObject || !transformRef.current) return;
-    console.log("rotate", transformRef.current.rotation.toArray().slice(0, 3));
     const updatedObjects = arObjects.map((obj) =>
       obj.id === selectedObject.id
         ? {
