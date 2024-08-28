@@ -1,5 +1,4 @@
-// src/components/ARCanvas.js
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Grid, OrbitControls, TransformControls } from "@react-three/drei";
 import { useAtom } from "jotai";
@@ -18,7 +17,7 @@ const ARCanvas = () => {
   };
 
   // Handle the transformation change and update state
-  const handleObjectTransform = () => {
+  const handleObjectTransform = useCallback(() => {
     if (!selectedObject || !transformControlsRef) return;
 
     const updatedObjects = arObjects.map((obj) =>
@@ -26,15 +25,14 @@ const ARCanvas = () => {
         ? {
             ...obj,
             position: transformControlsRef.position.toArray(),
-            rotation: transformControlsRef.rotation.toArray().slice(0, 3).map(radiansToDegrees),
+            rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
             scale: transformControlsRef.scale.toArray(),
           }
         : obj
     );
 
     setARObjects(updatedObjects);
-  };
-
+  }, [arObjects, selectedObject, transformControlsRef, setARObjects]);
   // Grid configuration
   const gridConfig = {
     args: [10.5, 10.5],
@@ -49,7 +47,6 @@ const ARCanvas = () => {
     followCamera: false,
     infiniteGrid: true,
   };
-
   useEffect(() => {
     if (transformControlsRef) {
       transformControlsRef.addEventListener('change', handleObjectTransform);
@@ -79,10 +76,11 @@ const ARCanvas = () => {
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && transformControlsRef && (
+        {selectedObject && (
           <TransformControls
             object={transformControlsRef}
             mode={transformMode}
+            onChange={handleObjectTransform}
           />
         )}
 
