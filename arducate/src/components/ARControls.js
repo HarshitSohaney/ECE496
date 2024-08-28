@@ -1,4 +1,3 @@
-// src/components/ARControls.js
 import React, { useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
@@ -28,11 +27,19 @@ const ARControls = () => {
         obj.id === selectedObject?.id ? { ...obj, ...updates } : obj
       )
     );
+    // Update the selectedObject state as well
+    if (selectedObject) {
+      setSelectedObject((prev) => ({ ...prev, ...updates }));
+    }
   };
 
   useEffect(() => {
     if (selectedObject) {
-      document.getElementById('asset-name').value = selectedObject.name || '';
+      // Ensure the input value is correctly set when the selectedObject changes
+      const nameInput = document.getElementById('asset-name');
+      if (nameInput) {
+        nameInput.value = selectedObject.name || '';
+      }
     }
   }, [selectedObject]);
 
