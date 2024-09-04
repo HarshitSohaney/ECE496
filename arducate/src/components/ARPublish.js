@@ -18,7 +18,6 @@ const convertSceneToAR = (arObjects) => {
         <body style="margin: 0; overflow: hidden;">
             <a-scene embedded arjs renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector>
                 <a-marker preset="hiro">
-                    <a-entity camera position="0 0 4"></a-entity>
                     ${arObjects.map(object => {
                         return `
                         <${object.entity} position="${object.position.join(" ")}" 
