@@ -11,9 +11,27 @@ const ARControls = () => {
     updateObject({ color: newColor });
   };
 
-  const handleScaleChange = (e) => {
+  const handleScaleChange = (e, axis) => {
     const scaleValue = parseFloat(e.target.value);
-    updateObject({ scale: [scaleValue, scaleValue, scaleValue] });
+    const newScale = [...selectedObject.scale];
+    newScale[axis] = scaleValue;
+    console.log('scale', newScale)
+    updateObject({ scale: newScale });
+  };
+
+  const handlePositionChange = (e, axis) => {
+    const positionValue = parseFloat(e.target.value);
+    const newPosition = [...selectedObject.position];
+    newPosition[axis] = positionValue;
+    updateObject({ position: newPosition });
+  };
+
+  const handleRotationChange = (e, axis) => {
+    const rotationValue = parseFloat(e.target.value);
+    const newRotation = [...selectedObject.rotation];
+    newRotation[axis] = rotationValue;
+    console.log('rotation', newRotation)
+    updateObject({ rotation: newRotation });
   };
 
   const handleNameChange = (e) => {
@@ -27,7 +45,7 @@ const ARControls = () => {
         obj.id === selectedObject?.id ? { ...obj, ...updates } : obj
       )
     );
-    // Update the selectedObject state as well
+    console.log('objects', arObjects)
     if (selectedObject) {
       setSelectedObject((prev) => ({ ...prev, ...updates }));
     }
@@ -35,7 +53,6 @@ const ARControls = () => {
 
   useEffect(() => {
     if (selectedObject) {
-      // Ensure the input value is correctly set when the selectedObject changes
       const nameInput = document.getElementById('asset-name');
       if (nameInput) {
         nameInput.value = selectedObject.name || '';
@@ -55,7 +72,7 @@ const ARControls = () => {
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">
-      {/* Other Controls */}
+      {/* Name Control */}
       <div>
         <label className="block mb-2 text-sm font-medium">Name:</label>
         <input
@@ -66,6 +83,8 @@ const ARControls = () => {
           className="w-full p-2 border-none rounded"
         />
       </div>
+
+      {/* Color Control */}
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
@@ -75,18 +94,98 @@ const ARControls = () => {
           className="w-full h-8 p-0 border-none"
         />
       </div>
+
+      {/* Scale Control */}
       <div>
         <label className="block mb-2 text-sm font-medium">Scale:</label>
-        <input
-          type="range"
-          min="0.1"
-          max="2"
-          step="0.1"
-          value={selectedObject.scale[0]}
-          onChange={handleScaleChange}
-          className="w-full"
-        />
+        <div className="flex space-x-2">
+          <input
+            type="number"
+            min="0.1"
+            max="10"
+            step="0.1"
+            value={selectedObject.scale[0]}
+            onChange={(e) => handleScaleChange(e, 0)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+          <input
+            type="number"
+            min="0.1"
+            max="10"
+            step="0.1"
+            value={selectedObject.scale[1]}
+            onChange={(e) => handleScaleChange(e, 1)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+          <input
+            type="number"
+            min="0.1"
+            max="10"
+            step="0.1"
+            value={selectedObject.scale[2]}
+            onChange={(e) => handleScaleChange(e, 2)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+        </div>
       </div>
+
+      {/* Position Control */}
+      <div>
+        <label className="block mb-2 text-sm font-medium">Position:</label>
+        <div className="flex space-x-2">
+          <input
+            type="number"
+            step="0.1"
+            value={selectedObject.position[0]}
+            onChange={(e) => handlePositionChange(e, 0)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+          <input
+            type="number"
+            step="0.1"
+            value={selectedObject.position[1]}
+            onChange={(e) => handlePositionChange(e, 1)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+          <input
+            type="number"
+            step="0.1"
+            value={selectedObject.position[2]}
+            onChange={(e) => handlePositionChange(e, 2)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+        </div>
+      </div>
+
+      {/* Rotation Control */}
+      <div>
+        <label className="block mb-2 text-sm font-medium">Rotation:</label>
+        <div className="flex space-x-2">
+          <input
+            type="number"
+            step="0.1"
+            value={selectedObject.rotation[0]}
+            onChange={(e) => handleRotationChange(e, 0)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+          <input
+            type="number"
+            step="0.1"
+            value={selectedObject.rotation[1]}
+            onChange={(e) => handleRotationChange(e, 1)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+          <input
+            type="number"
+            step="0.1"
+            value={selectedObject.rotation[2]}
+            onChange={(e) => handleRotationChange(e, 2)}
+            className="w-1/3 p-2 border-none rounded"
+          />
+        </div>
+      </div>
+
+      {/* Reset Position Button */}
       <div>
         <button
           onClick={() => updateObject({ position: [0, 0, 0] })}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Grid, GizmoHelper, GizmoViewport, OrbitControls, Environment, Box, Sphere, TransformControls } from '@react-three/drei';
 import { useShapes } from './ShapeContext';
@@ -9,10 +9,29 @@ const SceneContent = () => {
   const { cameraRef, orbitControlsRef, setCameraView } = useCamera();
   const { camera } = useThree();
 
+  const transformControlsRef = useRef();
+
   useEffect(() => {
     cameraRef.current = camera;
     setCameraView([10, 12, 12], [0, 0, 0]); // Default view
   }, [camera, cameraRef, setCameraView]);
+
+  // Log rotation changes
+  useEffect(() => {
+    if (selectedObject && transformControlsRef.current) {
+      const handleChange = () => {
+        const rotation = transformControlsRef.current.object.rotation;
+        console.log("Rotation Changed:", rotation);
+      };
+
+      const transformControls = transformControlsRef.current;
+      transformControls.addEventListener('change', handleChange);
+
+      return () => {
+        transformControls.removeEventListener('change', handleChange);
+      };
+    }
+  }, [selectedObject]);
 
   const gridConfig = {
     args: [10.5, 10.5],
@@ -49,7 +68,11 @@ const SceneContent = () => {
         );
       })}
       {selectedObject && (
-        <TransformControls object={selectedObject} mode={transformMode} />
+        <TransformControls
+          ref={transformControlsRef}
+          object={selectedObject}
+          mode={transformMode}
+        />
       )}
       <OrbitControls
         ref={orbitControlsRef}

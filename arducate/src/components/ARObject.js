@@ -2,7 +2,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
-import { getAsset } from "./Assets"
+import { getAsset } from "./Assets";
 
 const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, ref) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
@@ -23,7 +23,7 @@ const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, re
       ref={meshRef}
       position={object.position || [0, 0, 0]}
       scale={object.scale || [1, 1, 1]}
-      rotation={object.rotation || [0, 0, 0]}
+      rotation={object.rotation || [0, 0, 0]} // Ensure this is in radians
       onPointerDown={handlePointerDown}
     >
       {/* Add any geometry you want, e.g., a box */}

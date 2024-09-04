@@ -22,3 +22,5 @@ export const addAssetAtom = atom('');
 
 // Atom to manage the transform mode ('translate', 'rotate' or 'scale')
 export const transformModeAtom = atom('translate');
+
+export const transformControlsRefAtom = atom(null);
