@@ -11,7 +11,7 @@ export const selectedObjectAtom = atom(null);
 
 // Atom to manage AR controls (e.g., for manipulating selected object)
 export const arControlsAtom = atom({
-  rotation: 0,
+  rotation: [0, 0, 0],
   scale: [1, 1, 1],
   position: [0, 0, 0],
   color: "#ffa500",
