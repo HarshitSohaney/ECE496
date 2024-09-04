@@ -19,10 +19,13 @@ const convertSceneToAR = (arObjects) => {
             <a-scene embedded arjs renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector>
                 <a-marker preset="hiro">
                     ${arObjects.map(object => {
-                        return `<${object.entity} position="${object.position.join(" ")}" scale="${object.scale.join(" ")}" color="${object.color}"></${object.entity}>`;
+                        return `
+                        <${object.entity} position="${object.position.join(" ")}" 
+                        scale="${object.scale.join(" ")}" rotation="${object.rotation.join(" ")}" 
+                        color="${object.color}"></${object.entity}>`;
                     }).join('')}
+                    
                 </a-marker>
-                <a-entity camera></a-entity>
             </a-scene>
         </body>
         </html>
@@ -86,7 +89,10 @@ const convertSceneToVR = (arObjects) => {
             </script>
             <a-scene>
                 ${arObjects.map(object => {
-                    return `<${object.entity} position="${object.position.join(" ")}" scale="${object.scale.join(" ")}" color="${object.color}" drag-rotate-component></${object.entity} >`;
+                    return `
+                        <${object.entity} position="${object.position.join(" ")}" 
+                        scale="${object.scale.join(" ")}" rotation="${object.rotation.join(" ")}" 
+                        color="${object.color}" drag-rotate-component></${object.entity} >`;
                 }).join('')}
                 <a-sky color="#ECECEC"></a-sky>
                 <a-camera position="0 0 4" look-controls="enabled:false"></a-camera>

@@ -16,5 +16,9 @@ export const arControlsAtom = atom({
   position: [0, 0, 0],
   color: "#ffa500",
 });
+
+// Atom to manage Add Atom Dropdown
+export const addAssetAtom = atom('');
+
 // Atom to manage the transform mode ('translate', 'rotate' or 'scale')
 export const transformModeAtom = atom('translate');

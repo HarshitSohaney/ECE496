@@ -12,16 +12,22 @@ const ARCanvas = () => {
   const [transformMode] = useAtom(transformModeAtom);
   const transformRef = useRef();
 
+  // Function to convert radians to degrees
+  const radiansToDegrees = (radians) => {
+    return radians * (180 / Math.PI);
+  };
+
   // Handle the transformation change and update state
   const handleObjectTransform = () => {
     if (!selectedObject || !transformRef.current) return;
-
     const updatedObjects = arObjects.map((obj) =>
       obj.id === selectedObject.id
         ? {
             ...obj,
             position: transformRef.current.position.toArray(),
-            rotation: transformRef.current.rotation.toArray(),
+            // Array for rotation returns [x-position, y-position, z-position, 'xyz'].
+            // Slice as only coordinates are needed. 
+            rotation: transformRef.current.rotation.toArray().slice(0, 3).map(radiansToDegrees),
             scale: transformRef.current.scale.toArray(),
           }
         : obj
@@ -46,7 +52,7 @@ const ARCanvas = () => {
   };
 
   return (
-    <div className="w-full h-[60vh] border border-gray-300 my-4">
+    <div className="w-[70vw] border border-gray-300">
       <Canvas camera={{ position: [0, 2, 5] }}>
         <ambientLight />
         <pointLight position={[10, 10, 10]} />

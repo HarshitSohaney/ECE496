@@ -2,6 +2,7 @@
 import React, { forwardRef } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
+import { getAsset } from "./Assets"
 
 const ARObject = forwardRef(({ object, isSelected }, ref) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
@@ -18,7 +19,8 @@ const ARObject = forwardRef(({ object, isSelected }, ref) => {
       rotation={object.rotation || [0, 0, 0]}
       onPointerDown={handlePointerDown}
     >
-      <boxGeometry args={[1, 1, 1]} />
+      {/* Add any geometry you want, e.g., a box */}
+      {getAsset(object.type)}
       <meshStandardMaterial color={object.color || "orange"} />
     </mesh>
   );
