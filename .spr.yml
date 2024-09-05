@@ -2,7 +2,7 @@ githubRepoOwner: HarshitSohaney
 githubRepoName: ECE496
 githubHost: github.com
 githubRemote: origin
-githubBranch: main
+githubBranch: dev
 requireChecks: true
 requireApproval: true
 mergeMethod: rebase

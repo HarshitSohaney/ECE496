@@ -1,3 +1,4 @@
 node_modules/
 # Ignore the certificate files
 *.pem
+.spr.yml
