@@ -29,6 +29,11 @@ const AssetHandler = () => {
     setCursor(node);
     setData(Object.assign({}, data));
 
+    // Set the selected object from the tree to the canvas
+    const selectedObj = arObjects.find(obj => obj.id === node.id); // Match by ID or name
+    if (selectedObj) {
+      setSelectedObject(selectedObj);
+    }
   };
 
   const handleAddObject = (value) => {
@@ -41,18 +46,18 @@ const AssetHandler = () => {
       type: value,
       entity: getArAsset(value)
     };
-    
+
     // Update AR Objects
     setARObjects((prev) => {
       const newARObjects = [...prev, newObject];
-      
+
       // Add file to Treebeard
       const assetCount = newARObjects.filter(obj => obj.type === value).length;
       const newFile = {
         id: Date.now(),
         name: `${value}${assetCount}`
       };
-      
+
       if (cursor && cursor.children) {
         cursor.children.push(newFile);
       } else {
@@ -83,7 +88,7 @@ const AssetHandler = () => {
 
   return (
     <div className="w-[15vw] items-center p-2 bg-secondary">
-      
+
       {/* Add Items */}
       <Select value={selectedValue} onValueChange={handleAddObject}>
         <SelectTrigger variant="outline">
