@@ -9,7 +9,7 @@ const ARCanvas = () => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const [transformMode] = useAtom(transformModeAtom);
-  const [transformControlsRef, setTransformControlsRef] = useState(null);
+  const [transformControlsRef, setTransformControlsRef] = useState(null); //variable that references the TransformControls
 
   // Function to convert radians to degrees
   const radiansToDegrees = (radians) => {
@@ -25,6 +25,7 @@ const ARCanvas = () => {
         ? {
             ...obj,
             position: transformControlsRef.position.toArray(),
+            // Array for rotation returns [x-position, y-position, z-position, 'xyz'].
             rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
             scale: transformControlsRef.scale.toArray(),
           }
