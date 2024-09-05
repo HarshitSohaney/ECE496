@@ -1,5 +1,4 @@
-// src/components/ARCanvas.js
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Grid, OrbitControls, TransformControls } from "@react-three/drei";
 import { useAtom } from "jotai";
@@ -10,7 +9,7 @@ const ARCanvas = () => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const [transformMode] = useAtom(transformModeAtom);
-  const transformRef = useRef();
+  const [transformControlsRef, setTransformControlsRef] = useState(null); //variable that references the TransformControls
 
   // Function to convert radians to degrees
   const radiansToDegrees = (radians) => {
@@ -18,24 +17,23 @@ const ARCanvas = () => {
   };
 
   // Handle the transformation change and update state
-  const handleObjectTransform = () => {
-    if (!selectedObject || !transformRef.current) return;
+  const handleObjectTransform = useCallback(() => {
+    if (!selectedObject || !transformControlsRef) return;
+
     const updatedObjects = arObjects.map((obj) =>
       obj.id === selectedObject.id
         ? {
             ...obj,
-            position: transformRef.current.position.toArray(),
+            position: transformControlsRef.position.toArray(),
             // Array for rotation returns [x-position, y-position, z-position, 'xyz'].
-            // Slice as only coordinates are needed. 
-            rotation: transformRef.current.rotation.toArray().slice(0, 3).map(radiansToDegrees),
-            scale: transformRef.current.scale.toArray(),
+            rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
+            scale: transformControlsRef.scale.toArray(),
           }
         : obj
     );
 
     setARObjects(updatedObjects);
-  };
-
+  }, [arObjects, selectedObject, transformControlsRef, setARObjects]);
   // Grid configuration
   const gridConfig = {
     args: [10.5, 10.5],
@@ -50,6 +48,14 @@ const ARCanvas = () => {
     followCamera: false,
     infiniteGrid: true,
   };
+  useEffect(() => {
+    if (transformControlsRef) {
+      transformControlsRef.addEventListener('change', handleObjectTransform);
+      return () => {
+        transformControlsRef.removeEventListener('change', handleObjectTransform);
+      };
+    }
+  }, [transformControlsRef, handleObjectTransform]);
 
   return (
     <div className="w-[70vw] border border-gray-300">
@@ -66,16 +72,16 @@ const ARCanvas = () => {
             key={object.id}
             object={object}
             isSelected={object.id === selectedObject?.id}
-            ref={transformRef}
+            setTransformControlsRef={setTransformControlsRef}
           />
         ))}
 
         {/* TransformControls for selected object */}
         {selectedObject && (
           <TransformControls
-            object={transformRef.current}
+            object={transformControlsRef}
             mode={transformMode}
-            onObjectChange={handleObjectTransform}
+            onChange={handleObjectTransform}
           />
         )}
 

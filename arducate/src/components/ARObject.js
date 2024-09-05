@@ -1,19 +1,26 @@
 // src/components/ARObject.js
-import React, { forwardRef } from "react";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
 import { getAsset } from "./Assets"
 
-const ARObject = forwardRef(({ object, isSelected }, ref) => {
+const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, ref) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
+  const meshRef = useRef();
+
+  // Update the transform controls ref when selected
+  useImperativeHandle(ref, () => ({
+    getTransformControlsRef: () => meshRef.current,
+  }), []);
 
   const handlePointerDown = () => {
     setSelectedObject(object);
+    setTransformControlsRef(meshRef.current);
   };
 
   return (
     <mesh
-      ref={ref}
+      ref={meshRef}
       position={object.position || [0, 0, 0]}
       scale={object.scale || [1, 1, 1]}
       rotation={object.rotation || [0, 0, 0]}
