@@ -16,7 +16,7 @@ const AssetHandler = () => {
       position: [0, 0, 0],
       scale: [1, 1, 1],
       rotation: [0, 0, 0],
-      color: "#ffa500",
+      color: "#bcb9c4",
       type: value,
       entity: getArAsset(value)
     };
