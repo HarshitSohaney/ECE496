@@ -26,6 +26,7 @@ const convertSceneToAR = (arObjects) => {
                     }).join('')}
                     
                 </a-marker>
+                <a-entity camera></a-entity>
             </a-scene>
         </body>
         </html>
