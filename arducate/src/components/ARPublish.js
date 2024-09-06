@@ -11,7 +11,7 @@ const convertSceneToAR = (arObjects) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
             <title>Marker-based WebAR</title>
-            <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+            <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
             <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
         </head>
 
