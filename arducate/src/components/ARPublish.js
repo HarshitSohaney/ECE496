@@ -47,6 +47,15 @@ const convertSceneToVR = (arObjects) => {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
             <style>
+                .status {
+                    position: fixed;
+                    padding: 15px;
+                    font: 1.2rem "Arial", sans-serif;
+                    font-size: 16px;
+                    color: black;
+                    display: none;
+                    z-index: 10;
+                }
                 .drag-cursor {
                     cursor: grabbing !important;
                 }
@@ -69,10 +78,12 @@ const convertSceneToVR = (arObjects) => {
                     this.x_cord = event.clientX;
                     this.y_cord = event.clientY;
                     document.body.classList.add('drag-cursor');
+                    document.getElementById('status').style.display = 'block';
                 },
                 OnDocumentMouseUp : function(){
                     this.ifMouseDown = false;
                     document.body.classList.remove('drag-cursor');
+                    document.getElementById('status').style.display = 'none';
                 },
                 OnDocumentMouseMove : function(event)
                 {
@@ -94,7 +105,6 @@ const convertSceneToVR = (arObjects) => {
                 }
                 });
             </script>
-            
             <a-scene>
                 ${arObjects.map(object => {
                     return `
@@ -102,9 +112,12 @@ const convertSceneToVR = (arObjects) => {
                         scale="${object.scale.join(" ")}" rotation="${object.rotation.join(" ")}" 
                         color="${object.color}" drag-rotate-component></${object.entity} >`;
                 }).join('')}
+
+                <div id="status" class="status">Rotating Model...</div>
                 <a-sky color="#ECECEC"></a-sky>
                 <a-camera position="0 0 4" look-controls="enabled:false"></a-camera>
             </a-scene>
+            
         </body>
         </html>
     `
