@@ -46,6 +46,11 @@ const convertSceneToVR = (arObjects) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+            <style>
+                .drag-cursor {
+                    cursor: grabbing !important;
+                }
+            </style>
         </head>
         <body>
             <script type="text/javascript">
@@ -63,30 +68,33 @@ const convertSceneToVR = (arObjects) => {
                     this.ifMouseDown = true;
                     this.x_cord = event.clientX;
                     this.y_cord = event.clientY;
+                    document.body.classList.add('drag-cursor');
                 },
                 OnDocumentMouseUp : function(){
                     this.ifMouseDown = false;
+                    document.body.classList.remove('drag-cursor');
                 },
                 OnDocumentMouseMove : function(event)
                 {
                     if(this.ifMouseDown)
                     {
-                    var temp_x = event.clientX-this.x_cord;
-                    var temp_y = event.clientY-this.y_cord;
-                    if(Math.abs(temp_y)<Math.abs(temp_x))
-                    {
-                        this.el.object3D.rotateY(temp_x*this.data.speed/1000);
-                    }
-                    else
-                    {
-                        this.el.object3D.rotateX(temp_y*this.data.speed/1000);
-                    }
-                    this.x_cord = event.clientX;
-                    this.y_cord = event.clientY;
+                        var temp_x = event.clientX-this.x_cord;
+                        var temp_y = event.clientY-this.y_cord;
+                        if(Math.abs(temp_y)<Math.abs(temp_x))
+                        {
+                            this.el.object3D.rotateY(temp_x*this.data.speed/1000);
+                        }
+                        else
+                        {
+                            this.el.object3D.rotateX(temp_y*this.data.speed/1000);
+                        }
+                        this.x_cord = event.clientX;
+                        this.y_cord = event.clientY;
                     }
                 }
                 });
             </script>
+            
             <a-scene>
                 ${arObjects.map(object => {
                     return `
