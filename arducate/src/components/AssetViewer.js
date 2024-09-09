@@ -1,5 +1,5 @@
 // src/components/AssetViewer.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { arObjectsAtom, addAssetAtom, selectedObjectAtom } from "../atoms";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../@/components/ui/select";
@@ -12,11 +12,41 @@ const AssetHandler = () => {
   const [selectedValue, setSelectedValue] = useAtom(addAssetAtom);
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [data, setData] = useState({
-    name: 'root',
+    name: "root",
     toggled: true,
-    children: []
+    children: [],
   });
   const [cursor, setCursor] = useState(null);
+
+  // Synchronize tree selection with the selected object in the canvas
+  useEffect(() => {
+    if (selectedObject) {
+      const matchingNode = findNodeById(data, selectedObject.id);
+      if (matchingNode) {
+        highlightNode(matchingNode);
+      }
+    }
+  }, [selectedObject]);
+
+  const findNodeById = (node, id) => {
+    if (node.id === id) return node;
+    if (node.children) {
+      for (let child of node.children) {
+        const result = findNodeById(child, id);
+        if (result) return result;
+      }
+    }
+    return null;
+  };
+
+  const highlightNode = (node) => {
+    if (cursor) {
+      cursor.active = false;
+    }
+    node.active = true;
+    setCursor(node);
+    setData({ ...data }); // Update the tree data to reflect the new active state
+  };
 
   const onToggle = (node, toggled) => {
     if (cursor) {
@@ -30,7 +60,7 @@ const AssetHandler = () => {
     setData(Object.assign({}, data));
 
     // Set the selected object from the tree to the canvas
-    const selectedObj = arObjects.find(obj => obj.id === node.id); // Match by ID or name
+    const selectedObj = arObjects.find((obj) => obj.id === node.id); // Match by ID or name
     if (selectedObj) {
       setSelectedObject(selectedObj);
     }
@@ -44,7 +74,7 @@ const AssetHandler = () => {
       rotation: [0, 0, 0],
       color: "#bcb9c4",
       type: value,
-      entity: getArAsset(value)
+      entity: getArAsset(value),
     };
 
     // Update AR Objects
@@ -52,10 +82,10 @@ const AssetHandler = () => {
       const newARObjects = [...prev, newObject];
 
       // Add file to Treebeard
-      const assetCount = newARObjects.filter(obj => obj.type === value).length;
+      const assetCount = newARObjects.filter((obj) => obj.type === value).length;
       const newFile = {
-        id: Date.now(),
-        name: `${value}${assetCount}`
+        id: newObject.id, // Use the same ID for object and file
+        name: `${value}${assetCount}`,
       };
 
       if (cursor && cursor.children) {
@@ -68,15 +98,15 @@ const AssetHandler = () => {
       return newARObjects;
     });
 
-    setSelectedValue('');
+    setSelectedValue("");
   };
 
   const handleAddFolder = () => {
     const newFolder = {
       id: Date.now(),
-      name: 'New Folder',
+      name: "New Folder",
       toggled: true,
-      children: []
+      children: [],
     };
     if (cursor && cursor.children) {
       cursor.children.push(newFolder);
@@ -88,11 +118,10 @@ const AssetHandler = () => {
 
   return (
     <div className="w-[15vw] items-center p-2 bg-secondary">
-
       {/* Add Items */}
       <Select value={selectedValue} onValueChange={handleAddObject}>
         <SelectTrigger variant="outline">
-          <SelectValue placeholder="Add Asset"/>
+          <SelectValue placeholder="Add Asset" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -111,7 +140,7 @@ const AssetHandler = () => {
       {/* Add Action */}
       <Select>
         <SelectTrigger variant="outline" className="mt-1">
-          <SelectValue placeholder="Add Action"/>
+          <SelectValue placeholder="Add Action" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -122,13 +151,13 @@ const AssetHandler = () => {
       </Select>
 
       {/* Add Frame */}
-      <Button className="mt-1 bg-input text-black w-full">
-          Add Frame
-      </Button>
+      <Button className="mt-1 bg-input text-black w-full">Add Frame</Button>
 
       {/* Treebeard Component */}
       <div className="mt-4">
-        <Button onClick={handleAddFolder} className="mb-2 w-full">Add Folder</Button>
+        <Button onClick={handleAddFolder} className="mb-2 w-full">
+          Add Folder
+        </Button>
         <Treebeard data={data} onToggle={onToggle} />
       </div>
     </div>
