@@ -1,3 +1,4 @@
+// src/components/Canvas.js
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Grid, OrbitControls, TransformControls } from "@react-three/drei";
@@ -6,15 +7,13 @@ import { arObjectsAtom, selectedObjectAtom, transformModeAtom } from "../atoms";
 import ARObject from "./ARObject";
 
 const ARCanvas = () => {
-  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
+  const [selectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const [transformMode] = useAtom(transformModeAtom);
-  const [transformControlsRef, setTransformControlsRef] = useState(null); //variable that references the TransformControls
+  const [transformControlsRef, setTransformControlsRef] = useState(null); // State to store the selected object's mesh ref
 
   // Function to convert radians to degrees
-  const radiansToDegrees = (radians) => {
-    return radians * (180 / Math.PI);
-  };
+  const radiansToDegrees = (radians) => radians * (180 / Math.PI);
 
   // Handle the transformation change and update state
   const handleObjectTransform = useCallback(() => {
@@ -25,7 +24,6 @@ const ARCanvas = () => {
         ? {
             ...obj,
             position: transformControlsRef.position.toArray(),
-            // Array for rotation returns [x-position, y-position, z-position, 'xyz'].
             rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
             scale: transformControlsRef.scale.toArray(),
           }
@@ -34,6 +32,7 @@ const ARCanvas = () => {
 
     setARObjects(updatedObjects);
   }, [arObjects, selectedObject, transformControlsRef, setARObjects]);
+
   // Grid configuration
   const gridConfig = {
     args: [10.5, 10.5],
@@ -48,6 +47,8 @@ const ARCanvas = () => {
     followCamera: false,
     infiniteGrid: true,
   };
+
+  // Attach event listener for TransformControls changes
   useEffect(() => {
     if (transformControlsRef) {
       transformControlsRef.addEventListener('change', handleObjectTransform);
@@ -72,16 +73,15 @@ const ARCanvas = () => {
             key={object.id}
             object={object}
             isSelected={object.id === selectedObject?.id}
-            setTransformControlsRef={setTransformControlsRef}
+            setTransformControlsRef={setTransformControlsRef} // Pass setter for mesh ref
           />
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && (
+        {selectedObject && transformControlsRef && (
           <TransformControls
-            object={transformControlsRef}
+            object={transformControlsRef} // Attach transform controls to the selected object's mesh
             mode={transformMode}
-            onChange={handleObjectTransform}
           />
         )}
 

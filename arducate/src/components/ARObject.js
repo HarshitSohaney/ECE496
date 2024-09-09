@@ -1,22 +1,18 @@
 // src/components/ARObject.js
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { useRef } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
-import { getAsset } from "./Assets"
+import { getAsset } from "./Assets";
 import { Edges } from "@react-three/drei";
 
-const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, ref) => {
+const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
   const meshRef = useRef();
 
-  // Update the transform controls ref when selected
-  useImperativeHandle(ref, () => ({
-    getTransformControlsRef: () => meshRef.current,
-  }), []);
-
+  // Handle selecting the object and assigning the mesh ref
   const handlePointerDown = () => {
     setSelectedObject(object);
-    setTransformControlsRef(meshRef.current);
+    setTransformControlsRef(meshRef.current); // Pass the mesh ref to the parent
   };
 
   /*
@@ -49,6 +45,6 @@ const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, re
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
       </mesh>
   );
-});
+};
 
 export default ARObject;
