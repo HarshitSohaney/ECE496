@@ -1,18 +1,25 @@
 // src/components/ARObject.js
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
-import { getAsset } from "./Assets";
+import { getAsset } from "./Assets"; // Make sure getAsset returns correct geometry
 import { Edges } from "@react-three/drei";
 
 const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
   const meshRef = useRef();
 
+  // Assign the mesh reference to the transform controls when the object is selected
+  useEffect(() => {
+    if (isSelected && meshRef.current) {
+      setTransformControlsRef(meshRef.current); // Provide the mesh ref to the parent
+    }
+  }, [isSelected, setTransformControlsRef]);
+
   // Handle selecting the object and assigning the mesh ref
   const handlePointerDown = () => {
-    setSelectedObject(object);
-    setTransformControlsRef(meshRef.current); // Pass the mesh ref to the parent
+    setSelectedObject(object); // Update selected object in state
+    setTransformControlsRef(meshRef.current); // Pass the mesh ref to the parent for transform controls
   };
 
   /*
@@ -37,9 +44,9 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
         position={object.position || [0, 0, 0]}
         scale={object.scale || [1, 1, 1]}
         rotation={object.rotation || [0, 0, 0]}
-        onPointerDown={handlePointerDown}
+        onPointerDown={handlePointerDown} // Detect object selection
       >
-        {/* Add any geometry you want, e.g., a box */}
+        {/* Render the correct geometry */}
         {getAsset(object.type)}
         <meshStandardMaterial color={object.color || "orange"}/>
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
