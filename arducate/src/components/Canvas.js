@@ -16,7 +16,7 @@ const ARCanvas = () => {
     return radians * (180 / Math.PI);
   };
 
-  // Function to convert radians to degrees
+    // Handle the transformation change and update state
   const handleObjectTransform = useCallback(() => {
     if (!selectedObject || !transformControlsRef) return;
 
@@ -30,15 +30,6 @@ const ARCanvas = () => {
       }
     });
   }, [selectedObject, transformControlsRef, dispatchARObjects]);
-
-  useEffect(() => {
-    if (transformControlsRef) {
-      transformControlsRef.addEventListener('change', handleObjectTransform);
-      return () => {
-        transformControlsRef.removeEventListener('change', handleObjectTransform);
-      };
-    }
-  }, [transformControlsRef, handleObjectTransform]);
 
   //grid configuration
   const gridConfig = {
@@ -54,6 +45,16 @@ const ARCanvas = () => {
     followCamera: false,
     infiniteGrid: true,
   };
+
+  useEffect(() => {
+    if (transformControlsRef) {
+      transformControlsRef.addEventListener('change', handleObjectTransform);
+      return () => {
+        transformControlsRef.removeEventListener('change', handleObjectTransform);
+      };
+    }
+  }, [transformControlsRef, handleObjectTransform]);
+  
   return (
     <div className="w-[70vw] border border-gray-300">
       <Canvas camera={{ position: [0, 2, 5] }}>

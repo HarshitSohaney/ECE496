@@ -71,6 +71,7 @@ const ARControls = () => {
           className="w-full"
         />
       </div>
+      {/* control for changing position, rotation, etc. */}
       <div>
         <button
           onClick={() => dispatchARObjects({ 
