@@ -14,11 +14,20 @@ export const arObjectsAtom = atom(
         break;
       case 'REMOVE_OBJECT':
         set(arObjectsAtom, get(arObjectsAtom).filter(obj => obj.id !== action.payload));
+        set(selectedObjectAtom, null);
         break;
       case 'UPDATE_OBJECT':
-        set(arObjectsAtom, get(arObjectsAtom).map(obj => 
-          obj.id === action.payload.id ? { ...obj, ...action.payload } : obj
-        ));
+        const updatedObjects = get(arObjectsAtom).map(obj => 
+          obj.id === action.payload.id 
+            ? { ...obj, ...action.payload }
+            : obj
+        );
+        set(arObjectsAtom, updatedObjects);
+        // Update selectedObjectAtom if it's the object being updated
+        const currentSelected = get(selectedObjectAtom);
+        if (currentSelected && currentSelected.id === action.payload.id) {
+          set(selectedObjectAtom, updatedObjects.find(obj => obj.id === action.payload.id));
+        }
         break;
       default:
         console.error('Unknown action type:', action.type);

@@ -8,15 +8,15 @@ const ARControls = () => {
 
   const handleColorChange = (e) => {
     if (selectedObject) {
-      console.log('before',selectedObject)
+      console.log('before', selectedObject);
       dispatchARObjects({ 
         type: 'UPDATE_OBJECT', 
         payload: { 
-          ...selectedObject,  // Spread all existing properties
-          color: e.target.value  // Only update the color
+          ...selectedObject,
+          color: e.target.value
         } 
       });
-      console.log('after',selectedObject)
+      console.log('after', selectedObject);
     }
   };
 
@@ -26,8 +26,8 @@ const ARControls = () => {
       dispatchARObjects({ 
         type: 'UPDATE_OBJECT', 
         payload: { 
-          ...selectedObject,  // Spread all existing properties
-          scale: [scaleValue, scaleValue, scaleValue]  // Update the scale
+          ...selectedObject,
+          scale: [scaleValue, scaleValue, scaleValue]
         } 
       });
     }
