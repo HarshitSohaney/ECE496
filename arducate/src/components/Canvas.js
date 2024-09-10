@@ -82,6 +82,7 @@ const ARCanvas = () => {
           <TransformControls
             object={transformControlsRef} // Attach transform controls to the selected object's mesh
             mode={transformMode}
+            onChange={handleObjectTransform}
           />
         )}
 
