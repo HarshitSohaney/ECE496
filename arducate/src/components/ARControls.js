@@ -1,3 +1,4 @@
+// src/components/ARControls.js
 import React, { useCallback } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
@@ -8,15 +9,13 @@ const ARControls = () => {
 
   const handleColorChange = (e) => {
     if (selectedObject) {
-      console.log('before', selectedObject);
-      dispatchARObjects({ 
+      dispatchARObjects({  //Actual update handled in the atom
         type: 'UPDATE_OBJECT', 
         payload: { 
           ...selectedObject,
           color: e.target.value
         } 
       });
-      console.log('after', selectedObject);
     }
   };
 
@@ -34,19 +33,10 @@ const ARControls = () => {
   };
 
   const handleDeleteAsset = useCallback(() => {
-    console.log('Delete asset clicked. Current arObjects:', arObjects);
-    console.log('Selected object to delete:', selectedObject);
-
     if (selectedObject) {
       dispatchARObjects({ type: 'REMOVE_OBJECT', payload: selectedObject.id });
-      setSelectedObject(null);
-
-      // Log the state after a short delay to allow for re-renders
-      setTimeout(() => {
-        console.log('arObjects after state update:', arObjects);
-      }, 0);
     }
-  }, [arObjects, selectedObject, dispatchARObjects, setSelectedObject]);
+  }, [selectedObject, dispatchARObjects]);
 
   if (!selectedObject) {
     return (

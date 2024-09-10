@@ -9,12 +9,14 @@ const ARCanvas = () => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, dispatchARObjects] = useAtom(arObjectsAtom);
   const [transformMode] = useAtom(transformModeAtom);
-  const [transformControlsRef, setTransformControlsRef] = useState(null);
-
+  const [transformControlsRef, setTransformControlsRef] = useState(null); //variable that references the TransformControls
+  
+  // Function to convert radians to degrees
   const radiansToDegrees = (radians) => {
     return radians * (180 / Math.PI);
   };
 
+  // Function to convert radians to degrees
   const handleObjectTransform = useCallback(() => {
     if (!selectedObject || !transformControlsRef) return;
 
@@ -38,12 +40,7 @@ const ARCanvas = () => {
     }
   }, [transformControlsRef, handleObjectTransform]);
 
-  useEffect(() => {
-    if (!selectedObject && transformControlsRef) {
-      setTransformControlsRef(null);
-    }
-  }, [selectedObject, transformControlsRef]);
-
+  //grid configuration
   const gridConfig = {
     args: [10.5, 10.5],
     cellSize: 0.6,
@@ -62,9 +59,11 @@ const ARCanvas = () => {
       <Canvas camera={{ position: [0, 2, 5] }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]}/>
-
+        
+        {/* Grid */}
         <Grid {...gridConfig} />
 
+        {/* Render AR objects */}
         {arObjects.map((object) => (
           <ARObject
             key={object.id}
@@ -73,7 +72,7 @@ const ARCanvas = () => {
             setTransformControlsRef={setTransformControlsRef}
           />
         ))}
-
+        {/* TransformControls for selected object */}
         {selectedObject && (
           <TransformControls
             object={transformControlsRef}

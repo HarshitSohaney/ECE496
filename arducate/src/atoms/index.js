@@ -1,23 +1,22 @@
 // src/atoms/index.js
 import { atom } from "jotai";
 
-// This is where we can add all the global atoms that we want to use
+//This is where we add all the atoms used across the project
 
 // Atom to manage the list of AR objects
-//export const arObjectsAtom = atom([]);
 export const arObjectsAtom = atom(
   [],
   (get, set, action) => {
     switch (action.type) {
       case 'ADD_OBJECT':
-        set(arObjectsAtom, [...get(arObjectsAtom), action.payload]);
+        set(arObjectsAtom, [...get(arObjectsAtom), action.payload]); //payload: newObject adds to end of arObjects
         break;
       case 'REMOVE_OBJECT':
-        set(arObjectsAtom, get(arObjectsAtom).filter(obj => obj.id !== action.payload));
+        set(arObjectsAtom, get(arObjectsAtom).filter(obj => obj.id !== action.payload)); //sets arObjects to one without that ID in it
         set(selectedObjectAtom, null);
         break;
       case 'UPDATE_OBJECT':
-        const updatedObjects = get(arObjectsAtom).map(obj => 
+        const updatedObjects = get(arObjectsAtom).map(obj =>  //payload: ...selectedObject, scale: [scaleValue, scaleValue, scaleValue]} 
           obj.id === action.payload.id 
             ? { ...obj, ...action.payload }
             : obj
