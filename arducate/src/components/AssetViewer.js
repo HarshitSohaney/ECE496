@@ -7,7 +7,7 @@ import { Button } from "../@/components/ui/button";
 import { getArAsset } from "./Assets";
 
 const AssetHandler = () => {
-  const [, setARObjects] = useAtom(arObjectsAtom);
+  const [, dispatchARObjects] = useAtom(arObjectsAtom);
   const [selectedValue, setSelectedValue] = useAtom(addAssetAtom);
 
   const handleAddObject = (value) => {
@@ -20,7 +20,7 @@ const AssetHandler = () => {
       type: value,
       entity: getArAsset(value)
     };
-    setARObjects((prev) => [...prev, newObject]);
+    dispatchARObjects({ type: 'ADD_OBJECT', payload: newObject });
     setSelectedValue('');
   };
 
