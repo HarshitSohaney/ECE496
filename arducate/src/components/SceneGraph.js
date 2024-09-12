@@ -1,5 +1,5 @@
 // src/components/SceneGraph.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { arObjectsAtom, selectedObjectAtom } from "../atoms";
 import { Treebeard } from "react-treebeard";
@@ -10,17 +10,7 @@ const SceneGraph = ({ data, setData }) => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [cursor, setCursor] = useState(null);
 
-  // Synchronize tree selection with the selected object in the canvas
-  useEffect(() => {
-    if (selectedObject) {
-      const matchingNode = findNodeById(data, selectedObject.id);
-      if (matchingNode) {
-        highlightNode(matchingNode);
-      }
-    }
-  }, [selectedObject, data]);
-
-  const findNodeById = (node, id) => {
+  const findNodeById = useCallback((node, id) => {
     if (node.id === id) return node;
     if (node.children) {
       for (let child of node.children) {
@@ -29,16 +19,26 @@ const SceneGraph = ({ data, setData }) => {
       }
     }
     return null;
-  };
+  },[]);
 
-  const highlightNode = (node) => {
+  const highlightNode = useCallback((node) => {
     if (cursor) {
       cursor.active = false;
     }
     node.active = true;
     setCursor(node);
     setData({ ...data });
-  };
+  },[cursor,data,setData]);
+
+  // Synchronize tree selection with the selected object in the canvas
+  useEffect(() => {
+    if (selectedObject) {
+      const matchingNode = findNodeById(data, selectedObject.id);
+      if (matchingNode) {
+        highlightNode(matchingNode);
+      }
+    }
+  }, [selectedObject, findNodeById, highlightNode, data]);
 
   const onToggle = (node, toggled) => {
     if (cursor) {
