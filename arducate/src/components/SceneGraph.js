@@ -27,7 +27,6 @@ const SceneGraph = ({ data, setData }) => {
     }
     node.active = true;
     setCursor(node);
-    setData({ ...data });
   },[cursor,data,setData]);
 
   // Synchronize tree selection with the selected object in the canvas
@@ -38,8 +37,8 @@ const SceneGraph = ({ data, setData }) => {
         highlightNode(matchingNode);
       }
     }
-  }, [selectedObject, findNodeById, highlightNode, data]);
-
+  }, [selectedObject, data]);
+  
   const onToggle = (node, toggled) => {
     if (cursor) {
       cursor.active = false;

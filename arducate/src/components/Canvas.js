@@ -31,7 +31,7 @@ const ARCanvas = () => {
     );
 
     setARObjects(updatedObjects);
-  }, [arObjects, selectedObject, transformControlsRef, setARObjects]);
+  }, [arObjects, transformControlsRef, setARObjects]);
 
   // Grid configuration
   const gridConfig = {
