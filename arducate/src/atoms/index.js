@@ -16,8 +16,8 @@ export const arObjectsAtom = atom(
         set(selectedObjectAtom, null);
         break;
       case 'UPDATE_OBJECT':
-        const updatedObjects = get(arObjectsAtom).map(obj =>  //payload: ...selectedObject, scale: [scaleValue, scaleValue, scaleValue]} 
-          obj.id === action.payload.id 
+        const updatedObjects = get(arObjectsAtom).map(obj =>  //payload: ...selectedObject, scale: [scaleValue, scaleValue, scaleValue]}
+          obj.id === action.payload.id
             ? { ...obj, ...action.payload }
             : obj
         );
@@ -41,3 +41,10 @@ export const addAssetAtom = atom('');
 
 // Atom to manage the transform mode ('translate', 'rotate' or 'scale')
 export const transformModeAtom = atom('translate');
+
+
+// Atoms to manage the animation editor UI
+export const timelineScaleAtom = atom(100);
+export const currentTimeAtom = atom(0);
+export const isPlayingAtom = atom(false);
+export const timelineWidthAtom = atom(0);
