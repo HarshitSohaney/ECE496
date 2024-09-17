@@ -1,22 +1,25 @@
 // src/components/ARObject.js
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
-import { getAsset } from "./Assets"
+import { getAsset } from "./Assets"; // Make sure getAsset returns correct geometry
 import { Edges } from "@react-three/drei";
 
-const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, ref) => {
+const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
   const meshRef = useRef();
 
-  // Update the transform controls ref when selected
-  useImperativeHandle(ref, () => ({
-    getTransformControlsRef: () => meshRef.current,
-  }), []);
+  // Assign the mesh reference to the transform controls when the object is selected
+  useEffect(() => {
+    if (isSelected && meshRef.current) {
+      setTransformControlsRef(meshRef.current); // Provide the mesh ref to the parent
+    }
+  }, [isSelected, setTransformControlsRef]);
 
+  // Handle selecting the object and assigning the mesh ref
   const handlePointerDown = () => {
-    setSelectedObject(object);
-    setTransformControlsRef(meshRef.current);
+    setSelectedObject(object); // Update selected object in state
+    setTransformControlsRef(meshRef.current); // Pass the mesh ref to the parent for transform controls
   };
 
   /*
@@ -41,14 +44,14 @@ const ARObject = forwardRef(({ object, isSelected, setTransformControlsRef }, re
         position={object.position || [0, 0, 0]}
         scale={object.scale || [1, 1, 1]}
         rotation={object.rotation || [0, 0, 0]}
-        onPointerDown={handlePointerDown}
+        onPointerDown={handlePointerDown} // Detect object selection
       >
-        {/* Add any geometry you want, e.g., a box */}
+        {/* Render the correct geometry */}
         {getAsset(object.type)}
         <meshStandardMaterial color={object.color || "orange"}/>
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
       </mesh>
   );
-});
+};
 
 export default ARObject;
