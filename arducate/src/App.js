@@ -4,6 +4,7 @@ import ARCanvas from './components/Canvas';
 import ARControls from './components/ARControls';
 import Toolbar from './components/Toolbar';
 import Sidebar from './components/Sidebar';
+import SequenceEditor from 'components/timeline/SequenceEditor';
 
 const App = () => {
   return (
@@ -14,7 +15,7 @@ const App = () => {
         <ARCanvas />
         <ARControls />
       </div>
-
+      <SequenceEditor />
     </div>
   );
 };

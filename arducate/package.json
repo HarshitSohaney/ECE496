@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-scroll-area": "^1.1.0",
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@react-three/drei": "^9.109.3",
@@ -20,6 +21,7 @@
     "postcss": "^8.4.41",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-draggable": "^4.4.6",
     "react-scripts": "5.0.1",
     "react-treebeard": "^3.2.4",
     "tailwind-merge": "^2.5.2",
