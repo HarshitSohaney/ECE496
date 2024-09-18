@@ -3,9 +3,8 @@ import React from 'react';
 import ARCanvas from './components/Canvas';
 import ARControls from './components/ARControls';
 import Toolbar from './components/Toolbar';
-import AssetHandler from './components/AssetViewer';
-import SequenceEditor from 'components/timeline/SequenceEditor';
 import Sidebar from './components/Sidebar';
+import SequenceEditor from 'components/timeline/SequenceEditor';
 
 const App = () => {
   return (

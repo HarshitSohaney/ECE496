@@ -1,42 +1,30 @@
 // src/components/ARControls.js
-import React, { useCallback } from "react";
+import React from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
 
 const ARControls = () => {
-  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
-  const [arObjects, dispatchARObjects] = useAtom(arObjectsAtom);
+  const [selectedObject] = useAtom(selectedObjectAtom);
+  const [arObjects, setARObjects] = useAtom(arObjectsAtom);
 
   const handleColorChange = (e) => {
-    if (selectedObject) {
-      dispatchARObjects({  //Actual update handled in the atom
-        type: 'UPDATE_OBJECT', 
-        payload: { 
-          ...selectedObject,
-          color: e.target.value
-        } 
-      });
-    }
+    updateObject({ color: e.target.value });
+    selectedObject.color = e.target.value;
   };
 
   const handleScaleChange = (e) => {
     const scaleValue = parseFloat(e.target.value);
-    if (selectedObject) {
-      dispatchARObjects({ 
-        type: 'UPDATE_OBJECT', 
-        payload: { 
-          ...selectedObject,
-          scale: [scaleValue, scaleValue, scaleValue]
-        } 
-      });
-    }
+    updateObject({ scale: [scaleValue, scaleValue, scaleValue] });
+    selectedObject.scale = [scaleValue, scaleValue, scaleValue];
   };
 
-  const handleDeleteAsset = useCallback(() => {
-    if (selectedObject) {
-      dispatchARObjects({ type: 'REMOVE_OBJECT', payload: selectedObject.id });
-    }
-  }, [selectedObject, dispatchARObjects]);
+  const updateObject = (updates) => {
+    setARObjects((prev) =>
+      prev.map((obj) =>
+        obj.id === selectedObject.id ? { ...obj, ...updates } : obj
+      )
+    );
+  };
 
   if (!selectedObject) {
     return (
@@ -46,7 +34,7 @@ const ARControls = () => {
         </div>
       </div>
     );
-  }
+  };
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">
@@ -74,21 +62,10 @@ const ARControls = () => {
       {/* control for changing position, rotation, etc. */}
       <div>
         <button
-          onClick={() => dispatchARObjects({ 
-            type: 'UPDATE_OBJECT', 
-            payload: { ...selectedObject, position: [0, 0, 0] } 
-          })}
+          onClick={() => updateObject({ position: [0, 0, 0] })}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
         >
           Reset Position
-        </button>
-      </div>
-      <div>
-        <button
-          onClick={handleDeleteAsset}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-        >
-          Delete Asset
         </button>
       </div>
     </div>
