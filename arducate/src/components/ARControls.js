@@ -18,6 +18,10 @@ const ARControls = () => {
     selectedObject.scale = [scaleValue, scaleValue, scaleValue];
   };
 
+  const handleLabelChange = (e) => {
+    updateObject({ name: e.target.value });
+    selectedObject.name = e.target.value;
+  };
   const updateObject = (updates) => {
     setARObjects((prev) =>
       prev.map((obj) =>
@@ -29,15 +33,22 @@ const ARControls = () => {
   if (!selectedObject) {
     return (
       <div className="w-[15vw] bg-secondary">
-        <div className="mt-2 text-center">
-          No Object Selected
-        </div>
+        <div className="mt-2 text-center">No Object Selected</div>
       </div>
     );
-  };
+  }
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Label:</label>
+        <input
+          type="text"
+          value={selectedObject.name}
+          onChange={handleLabelChange}
+          className="w-full p-2 border rounded"
+        />
+      </div>
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
