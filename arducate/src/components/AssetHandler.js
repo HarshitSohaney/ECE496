@@ -18,6 +18,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       color: "#ffa500",
       type: value,
       entity: getArAsset(value),
+      name: value + Date.now(),
     };
 
     setARObjects((prev) => {
