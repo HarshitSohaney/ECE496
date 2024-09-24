@@ -29,6 +29,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       name: `${value}-${
         arObjects.filter((obj) => obj.type === value).length + 1
       }`,
+      showLabel: true,
     };
 
     setARObjects((prev) => {

@@ -2,6 +2,7 @@
 import React from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
+import { Switch } from "../@/components/ui/switch";
 
 const ARControls = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
@@ -22,6 +23,12 @@ const ARControls = () => {
     updateObject({ name: e.target.value });
     selectedObject.name = e.target.value;
   };
+
+  const handleLabelVisibilityChange = (checked) => {
+    updateObject({ showLabel: checked });
+    selectedObject.showLabel = checked;
+  };
+
   const updateObject = (updates) => {
     setARObjects((prev) =>
       prev.map((obj) =>
@@ -40,6 +47,13 @@ const ARControls = () => {
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Show Label:</label>
+        <Switch
+          checked={selectedObject.showLabel || false}
+          onCheckedChange={handleLabelVisibilityChange}
+        />
+      </div>
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Label:</label>
         <input

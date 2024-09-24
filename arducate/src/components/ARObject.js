@@ -18,7 +18,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   }, [isSelected, setTransformControlsRef]);
 
   useEffect(() => {
-    if (meshRef.current && object) {
+    if (meshRef.current && object && object.showLabel) {
       const labelDiv = document.createElement("div");
       labelDiv.className = "label";
       labelDiv.textContent = object.name || `Object ${object.id}`;

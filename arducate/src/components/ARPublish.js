@@ -26,7 +26,7 @@ const convertSceneToAR = (arObjects) => {
                       " "
                     )}" rotation="${object.rotation.join(" ")}"
                     color="${object.color}"></${object.entity}>
-                  <a-text value="${object.name || `Object ${object.id}`}"
+                  <a-text visible=${object.showLabel} value="${object.name || `Object ${object.id}`}"
                     position="${object.position[0]} ${
                   parseFloat(-object.position[1]) +
                   parseFloat(object.scale[1]) +
@@ -71,7 +71,7 @@ const convertSceneToVR = (arObjects) => {
                     " "
                   )}" rotation="${object.rotation.join(" ")}"
                   color="${object.color}"></${object.entity}>
-                <a-text value="${object.name || `Object ${object.id}`}"
+                <a-text visible=${object.showLabel} value="${object.name || `Object ${object.id}`}"
                   position="${object.position[0]} ${
                 parseFloat(-object.position[1]) +
                 parseFloat(object.scale[1]) +
