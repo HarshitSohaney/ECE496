@@ -28,9 +28,9 @@ const convertSceneToAR = (arObjects) => {
                     color="${object.color}"></${object.entity}>
                   <a-text visible=${object.showLabel} value="${object.name || `Object ${object.id}`}"
                     position="${object.position[0]} ${
-                  parseFloat(-object.position[1]) +
-                  parseFloat(object.scale[1]) +
-                  0.5
+                  parseFloat(object.position[1]) - parseFloat(
+                    object.scale[1]
+                  ) / 2
                 } ${object.position[2]}"
                     scale="0.5 0.5 0.5"
                     align="center"
@@ -73,9 +73,9 @@ const convertSceneToVR = (arObjects) => {
                   color="${object.color}"></${object.entity}>
                 <a-text visible=${object.showLabel} value="${object.name || `Object ${object.id}`}"
                   position="${object.position[0]} ${
-                parseFloat(-object.position[1]) +
-                parseFloat(object.scale[1]) +
-                0.5
+                parseFloat(object.position[1]) - parseFloat(
+                  object.scale[1]
+                ) / 2
               } ${object.position[2]}"
                   scale="0.5 0.5 0.5"
                   align="center"
