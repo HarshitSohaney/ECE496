@@ -1,27 +1,21 @@
-import React, { useRef, useEffect } from "react";
+// src/components/SequenceEditor/SequenceEditor.js
+import React, { useRef, useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import {
-  arObjectsAtom,
-  currentTimeAtom,
-  isPlayingAtom,
-  timelineWidthAtom,
-} from "../../atoms";
+import { arObjectsAtom } from "../../atoms";
 import TimelineRow from "./TimelineRow";
 import TimeRuler from "./TimeRuler";
 import Playhead from "./Playhead";
 import TimelineToolbar from "./TimelineToolbar";
+import AnimationController from "../../controllers/AnimationController";
 
 const SequenceEditor = () => {
-  const [arObjects, setArObjects] = useAtom(arObjectsAtom);
-  const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
-  const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
-  const [timelineWidth, setTimelineWidth] = useAtom(timelineWidthAtom);
+  const [arObjects] = useAtom(arObjectsAtom);
+  const { currentTime } = AnimationController();
+  const [timelineWidth, setTimelineWidth] = useState(0);
 
   const containerRef = useRef(null);
   const objectListRef = useRef(null);
   const timelineRowsRef = useRef(null);
-  const animationFrameRef = useRef(null);
-  const lastUpdateTimeRef = useRef(0);
 
   const timeRulerStart = 0;
   const timeRulerEnd = 20;
@@ -30,78 +24,7 @@ const SequenceEditor = () => {
     if (containerRef.current) {
       setTimelineWidth(containerRef.current.offsetWidth);
     }
-  }, [setTimelineWidth]);
-
-  useEffect(() => {
-    if (isPlaying) {
-      const animate = (timestamp) => {
-        if (!lastUpdateTimeRef.current) lastUpdateTimeRef.current = timestamp;
-        const deltaTime = (timestamp - lastUpdateTimeRef.current) / 1000; // Convert to seconds
-        lastUpdateTimeRef.current = timestamp;
-
-        setCurrentTime((prevTime) => {
-          const newTime = prevTime + deltaTime;
-          return newTime > timeRulerEnd ? timeRulerStart : newTime;
-        });
-
-        animationFrameRef.current = requestAnimationFrame(animate);
-      };
-
-      animationFrameRef.current = requestAnimationFrame(animate);
-    } else {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      lastUpdateTimeRef.current = 0;
-    }
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isPlaying, setCurrentTime, timeRulerStart, timeRulerEnd]);
-
-  useEffect(() => {
-    // Interpolate object positions based on current time
-    setArObjects((prevObjects) =>
-      prevObjects.map((obj) => {
-        const activeKeyframe = obj.keyframes?.find(
-          (kf) =>
-            currentTime >= kf.start && kf.end !== null && currentTime <= kf.end
-        );
-
-        if (activeKeyframe) {
-          const progress =
-            (currentTime - activeKeyframe.start) /
-            (activeKeyframe.end - activeKeyframe.start);
-
-          // Use the updated keyframe structure here
-          const interpolatedPosition = interpolatePosition(
-            activeKeyframe.position.start,
-            activeKeyframe.position.end,
-            progress
-          );
-
-          return { ...obj, position: interpolatedPosition };
-        }
-
-        return obj;
-      })
-    );
-  }, [currentTime, setArObjects]);
-
-  const interpolatePosition = (start, end, progress) => {
-    if (!start || !end) {
-      console.error("Start or end positions are undefined");
-      return start || end || [0, 0, 0]; // Fallback to start or end position
-    }
-
-    return start.map((startValue, index) => {
-      const endValue = end[index];
-      return startValue + (endValue - startValue) * progress;
-    });
-  };
+  }, []);
 
   const handleScroll = (event) => {
     const { target } = event;

@@ -1,7 +1,10 @@
+// src/components/SequenceEditor/KeyframeBar.js
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Draggable from 'react-draggable';
+import AnimationController from '../../controllers/AnimationController';
 
-const KeyframeBar = ({ keyframes, onUpdate, scale, timeRulerStart, timeRulerEnd, timelineWidth }) => {
+const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd, timelineWidth }) => {
+  const { updateKeyframe } = AnimationController();
   const [isResizing, setIsResizing] = useState(null);
   const [activeKeyframe, setActiveKeyframe] = useState(null);
   const barRef = useRef(null);
@@ -9,27 +12,28 @@ const KeyframeBar = ({ keyframes, onUpdate, scale, timeRulerStart, timeRulerEnd,
   const timeToPixels = useCallback((time) => (time - timeRulerStart) * scale, [timeRulerStart, scale]);
   const pixelsToTime = useCallback((pixels) => (pixels / scale) + timeRulerStart, [timeRulerStart, scale]);
 
-  const handleResize = useCallback((e) => {
-    if (!isResizing || !activeKeyframe || !barRef.current) return;
+  const handleResize = useCallback(
+    (e) => {
+      if (!isResizing || !activeKeyframe || !barRef.current) return;
 
-    const parentRect = barRef.current.parentNode.getBoundingClientRect();
-    const mouseX = e.clientX - parentRect.left;
+      const parentRect = barRef.current.parentNode.getBoundingClientRect();
+      const mouseX = e.clientX - parentRect.left;
 
-    const updatedKeyframes = keyframes.map(kf => {
-      if (kf === activeKeyframe) {
-        if (isResizing === 'left') {
-          const newStart = Math.max(timeRulerStart, Math.min(kf.end - 0.1, pixelsToTime(mouseX)));
-          return { ...kf, start: newStart };
-        } else if (isResizing === 'right') {
-          const newEnd = Math.max(kf.start + 0.1, Math.min(timeRulerEnd, pixelsToTime(mouseX)));
-          return { ...kf, end: newEnd };
-        }
+      const newTime = pixelsToTime(mouseX);
+      let updatedKeyframeData = {};
+
+      if (isResizing === 'left') {
+        const newStart = Math.max(timeRulerStart, Math.min(activeKeyframe.end - 0.1, newTime));
+        updatedKeyframeData = { start: newStart };
+      } else if (isResizing === 'right') {
+        const newEnd = Math.max(activeKeyframe.start + 0.1, Math.min(timeRulerEnd, newTime));
+        updatedKeyframeData = { end: newEnd };
       }
-      return kf;
-    });
 
-    onUpdate(updatedKeyframes);
-  }, [isResizing, activeKeyframe, keyframes, pixelsToTime, onUpdate, timeRulerStart, timeRulerEnd]);
+      updateKeyframe(objectId, activeKeyframe.id, updatedKeyframeData);
+    },
+    [isResizing, activeKeyframe, pixelsToTime, updateKeyframe, objectId, timeRulerStart, timeRulerEnd]
+  );
 
   const handleMouseDown = useCallback((e, keyframe, side) => {
     e.stopPropagation();
@@ -54,19 +58,23 @@ const KeyframeBar = ({ keyframes, onUpdate, scale, timeRulerStart, timeRulerEnd,
     };
   }, [isResizing, handleResize, handleMouseUp]);
 
-  const handleDragStop = useCallback((keyframe, data) => {
-    if (!isResizing) {
-      const newStartTime = pixelsToTime(data.x);
-      const duration = keyframe.end ? keyframe.end - keyframe.start : 0;
-      const newEndTime = keyframe.end ? newStartTime + duration : null;
+  const handleDragStop = useCallback(
+    (keyframe, data) => {
+      if (!isResizing) {
+        const newStartTime = pixelsToTime(data.x);
+        const duration = keyframe.end ? keyframe.end - keyframe.start : 0;
+        const newEndTime = keyframe.end ? newStartTime + duration : null;
 
-      const updatedKeyframes = keyframes.map(kf =>
-        kf === keyframe ? { ...kf, start: newStartTime, end: newEndTime } : kf
-      );
+        const updatedKeyframeData = { start: newStartTime };
+        if (newEndTime !== null) {
+          updatedKeyframeData.end = newEndTime;
+        }
 
-      onUpdate(updatedKeyframes);
-    }
-  }, [isResizing, pixelsToTime, keyframes, onUpdate]);
+        updateKeyframe(objectId, keyframe.id, updatedKeyframeData);
+      }
+    },
+    [isResizing, pixelsToTime, updateKeyframe, objectId]
+  );
 
   return (
     <div
@@ -77,14 +85,14 @@ const KeyframeBar = ({ keyframes, onUpdate, scale, timeRulerStart, timeRulerEnd,
         width: '100%',
       }}
     >
-      {keyframes.map((keyframe, index) => {
+      {keyframes.map((keyframe) => {
         const startX = timeToPixels(keyframe.start);
         const endX = keyframe.end ? timeToPixels(keyframe.end) : startX;
-        const width = Math.max(endX - startX, 10); // Minimum width of 10px
+        const width = Math.max(endX - startX, 10);
 
         return (
           <Draggable
-            key={index}
+            key={keyframe.id}
             axis="x"
             bounds={{ left: 0, right: timelineWidth - width }}
             position={{ x: startX, y: 0 }}
