@@ -31,7 +31,7 @@ const ARCanvas = () => {
     );
 
     setARObjects(updatedObjects);
-  }, [arObjects, transformControlsRef, setARObjects]);
+  }, [arObjects, transformControlsRef, setARObjects, selectedObject]);
 
   // Grid configuration
   const gridConfig = {
@@ -62,7 +62,7 @@ const ARCanvas = () => {
     <div className="w-[70vw] border border-gray-300">
       <Canvas camera={{ position: [0, 2, 5] }}>
         <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]}/>
+        <directionalLight position={[5, 5, 5]} />
 
         {/* Grid */}
         <Grid {...gridConfig} />

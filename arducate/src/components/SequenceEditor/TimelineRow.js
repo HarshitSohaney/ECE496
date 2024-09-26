@@ -10,11 +10,11 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
 
   const object = arObjects.find(obj => obj.id === objectId);
 
-  const handleUpdate = (updatedRange) => {
+  const handleUpdate = (updatedKeyframes) => {
     setArObjects(prevObjects =>
       prevObjects.map(obj =>
         obj.id === objectId
-          ? { ...obj, startTime: updatedRange.start, endTime: updatedRange.end }
+          ? { ...obj, keyframes: updatedKeyframes }
           : obj
       )
     );
@@ -24,8 +24,7 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
     <div className="flex items-center h-8 relative border-b border-gray-700">
       <div className="flex-grow relative h-full flex items-center">
         <KeyframeBar
-          start={object.startTime || 0}
-          end={object.endTime || 5}
+          keyframes={object.keyframes || []}
           scale={scale}
           onUpdate={handleUpdate}
           timeRulerStart={timeRulerStart}
