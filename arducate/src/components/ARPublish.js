@@ -1,8 +1,8 @@
 // src/components/ARView.js
 const convertSceneToAR = (arObjects) => {
-    /**
-     * Converts the list of arObjects to the HTML format to be published in AR.
-     */
+  /**
+   * Converts the list of arObjects to the HTML format to be published in AR.
+   */
   return `
       <!DOCTYPE html>
       <html lang="en">
@@ -26,12 +26,14 @@ const convertSceneToAR = (arObjects) => {
                       " "
                     )}" rotation="${object.rotation.join(" ")}"
                     color="${object.color}"></${object.entity}>
-                  <a-text visible=${object.showLabel} value="${object.name || `Object ${object.id}`}"
+                  <a-text visible=${object.showLabel} value="${
+                  object.name || `Object ${object.id}`
+                }"
                     position="${object.position[0]} ${
-                  parseFloat(object.position[1]) - parseFloat(
-                    object.scale[1]
-                  ) / 2
+                  parseFloat(object.position[1]) -
+                  parseFloat(object.scale[1]) / 1.5
                 } ${object.position[2]}"
+                    render-order="1"
                     scale="0.5 0.5 0.5"
                     align="center"
                     color="#000000"
@@ -71,12 +73,12 @@ const convertSceneToVR = (arObjects) => {
                     " "
                   )}" rotation="${object.rotation.join(" ")}"
                   color="${object.color}"></${object.entity}>
-                <a-text visible=${object.showLabel} value="${object.name || `Object ${object.id}`}"
+                <a-text visible=${object.showLabel} 
+                        value="${object.name || `Object ${object.id}`}"
                   position="${object.position[0]} ${
-                parseFloat(object.position[1]) - parseFloat(
-                  object.scale[1]
-                ) / 2
+                parseFloat(object.position[1]) - parseFloat(object.scale[1]) / 1.5
               } ${object.position[2]}"
+                  render-order="1"
                   scale="0.5 0.5 0.5"
                   align="center"
                   color="#000000"
