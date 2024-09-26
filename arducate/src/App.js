@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.js.
 import React from 'react';
 import ARCanvas from './components/Canvas';
 import ARControls from './components/ARControls';
