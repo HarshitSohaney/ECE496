@@ -35,7 +35,10 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   */
   function getDarkerColor(color) {
     return color.replace(/^#(..)(..)(..)$/, (_, r, g, b) => {
-      const darken = (c) => Math.max(0, parseInt(c, 16) - 20).toString(16).padStart(2, '0');
+      const darken = (c) =>
+        Math.max(0, parseInt(c, 16) - 20)
+          .toString(16)
+          .padStart(2, "0");
 
       // Return as hex string "#RRGGBB"
       return `#${darken(r)}${darken(g)}${darken(b)}`;
@@ -57,19 +60,19 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   });
 
   return (
-      <mesh
-        ref={meshRef}
-        position={object.position || [0, 0, 0]}
-        scale={object.scale || [1, 1, 1]}
-        rotation={object.rotation || [0, 0, 0]}
-        onPointerDown={handlePointerDown} // Detect object selection
-      >
-        {/* Render the correct geometry */}
-        {getAsset(object.type)}
-        <meshStandardMaterial color={object.color || "orange"}/>
-        <Edges lineWidth={2} color={getDarkerColor(object.color)} />
-      </mesh>
- );
+    <mesh
+      ref={meshRef}
+      position={object.position || [0, 0, 0]}
+      scale={object.scale || [1, 1, 1]}
+      rotation={object.rotation || [0, 0, 0]}
+      onPointerDown={handlePointerDown} // Detect object selection
+    >
+      {/* Render the correct geometry */}
+      {getAsset(object.type)}
+      <meshStandardMaterial color={object.color || "orange"} />
+      <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+    </mesh>
+  );
 };
 
 export default ARObject;
