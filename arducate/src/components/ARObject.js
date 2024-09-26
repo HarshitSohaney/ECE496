@@ -28,9 +28,8 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       labelDiv.style.borderRadius = "3px";
       labelDiv.style.fontSize = "10px";
       labelDiv.style.pointerEvents = "none";
-
       const label = new CSS2DObject(labelDiv);
-      label.position.set(0, -object.scale[1] + 1, 0); // Position above the object
+      label.position.set(0, object.position[1]/object.scale[1], 0);
       meshRef.current.add(label);
       labelRef.current = label;
 
