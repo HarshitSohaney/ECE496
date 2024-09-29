@@ -9,7 +9,7 @@ import { Move, MoveDiagonal, RotateCw } from "lucide-react";
 
 const Toolbar = () => {
   const [, setTransformMode] = useAtom(transformModeAtom);
-  const [arObjects, setARObjects] = useAtom(arObjectsAtom);
+  const [arObjects,] = useAtom(arObjectsAtom);
 
   const handlePreview = () => {
     const htmlContent = convertSceneToVR(arObjects);

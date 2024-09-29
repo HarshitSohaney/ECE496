@@ -33,6 +33,7 @@ const ARCanvas = () => {
     setARObjects(updatedObjects);
   }, [arObjects, transformControlsRef, setARObjects, selectedObject]);
 
+  
   // Grid configuration
   const gridConfig = {
     args: [10.5, 10.5],

@@ -21,19 +21,21 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       keyframes: [], // Initialize keyframes
     };
 
-    setARObjects((prev) => {
-      const newARObjects = [...prev, newObject];
-      const assetCount = newARObjects.filter((obj) => obj.type === value).length;
-      const newFile = { id: newObject.id, name: `${value}${assetCount}` };
-
-      if (cursor && cursor.children) {
-        cursor.children.push(newFile);
-      } else {
-        data.children.push(newFile);
-      }
-      setData(Object.assign({}, data));
-      return newARObjects;
+    setARObjects({
+      type: 'ADD_OBJECT',
+      payload: newObject
     });
+  
+    // Update the file structure
+    const assetCount = data.children.filter((obj) => obj.type === value).length + 1;
+    const newFile = { id: newObject.id, name: `${value}${assetCount}` };
+  
+    if (cursor && cursor.children) {
+      cursor.children.push(newFile);
+    } else {
+      data.children.push(newFile);
+    }
+    setData({...data});
 
     setSelectedValue("");
   };
