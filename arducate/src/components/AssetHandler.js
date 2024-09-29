@@ -29,6 +29,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       name: `${value}-${
         arObjects.filter((obj) => obj.type === value).length + 1
       }`,
+      text: 'Add Text'
     };
 
     setARObjects((prev) => {
@@ -85,6 +86,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
             <SelectItem value="cone">Cone</SelectItem>
             <SelectItem value="torus">Torus</SelectItem>
             <SelectItem value="ring">Ring</SelectItem>
+            <SelectItem value="text">Text</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

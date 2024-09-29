@@ -22,6 +22,12 @@ const ARControls = () => {
     updateObject({ name: e.target.value });
     selectedObject.name = e.target.value;
   };
+
+  const handleTextChange = (e) => {
+    updateObject({ text: e.target.value });
+    selectedObject.text = e.target.value;
+  };
+
   const updateObject = (updates) => {
     setARObjects((prev) =>
       prev.map((obj) =>
@@ -49,6 +55,17 @@ const ARControls = () => {
           className="w-full p-2 border rounded"
         />
       </div>
+      {selectedObject.type == 'text' && 
+        <div className="mb-4">
+          <label className="block mb-2 text-sm font-medium">Text Input:</label>
+          <input
+            type="text"
+            value={selectedObject.text}
+            onChange={handleTextChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+      }
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
