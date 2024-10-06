@@ -86,7 +86,7 @@ const ARControls = () => {
         />
       </div>
 
-      <div className="mb-4">
+  <div className="mb-4">
   <label className="block mb-2 text-sm font-medium">Scale:</label>
 
   {/* Uniform Scale Control */}
@@ -141,7 +141,6 @@ const ARControls = () => {
             <label className="mt-2 text-sm font-medium">Z</label>
           </div>
         </div>
-      </div>
 
       {/* Position Controls */}
       <div className="mb-4">
@@ -187,6 +186,7 @@ const ARControls = () => {
           </div>
         </div>
       </div>
+    </div>
 
       {/* control for changing position, rotation, etc. */}
       <div>
