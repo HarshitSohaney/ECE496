@@ -19,19 +19,16 @@ const ARCanvas = () => {
   const handleObjectTransform = useCallback(() => {
     if (!selectedObject || !transformControlsRef) return;
 
-    const updatedObjects = arObjects.map((obj) =>
-      obj.id === selectedObject.id
-        ? {
-            ...obj,
-            position: transformControlsRef.position.toArray(),
-            rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
-            scale: transformControlsRef.scale.toArray(),
-          }
-        : obj
-    );
-
-    setARObjects(updatedObjects);
-  }, [arObjects, transformControlsRef, setARObjects, selectedObject]);
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        ...selectedObject,
+        position: transformControlsRef.position.toArray(),
+        rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
+        scale: transformControlsRef.scale.toArray(),
+      }
+    });
+  }, [transformControlsRef, setARObjects]);
 
   
   // Grid configuration
