@@ -22,7 +22,7 @@ const ARCanvas = () => {
     setARObjects({
       type: 'UPDATE_OBJECT',
       payload: {
-        ...selectedObject,
+        id: selectedObject.id,
         position: transformControlsRef.position.toArray(),
         rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
         scale: transformControlsRef.scale.toArray(),
