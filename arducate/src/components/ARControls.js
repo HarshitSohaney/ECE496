@@ -19,15 +19,26 @@ const ARControls = () => {
     }
   };
 
-  const handleScaleChange = (e) => {
-    const scaleValue = parseFloat(e.target.value);
+  const handleScaleChange = (axis, scaleValue) => {
     if (selectedObject) {
-      setARObjects({ 
-        type: 'UPDATE_OBJECT', 
-        payload: { 
+      const newScale = [...selectedObject.scale];
+  
+      // If axis is -1, scale all axes uniformly
+      if (axis === -1) {
+        newScale[0] = parseFloat(scaleValue);
+        newScale[1] = parseFloat(scaleValue);
+        newScale[2] = parseFloat(scaleValue);
+      } else {
+        // Scale individual axis (0 = X, 1 = Y, 2 = Z)
+        newScale[axis] = parseFloat(scaleValue);
+      }
+  
+      setARObjects({
+        type: 'UPDATE_OBJECT',
+        payload: {
           ...selectedObject,
-          scale: [scaleValue, scaleValue, scaleValue]
-        } 
+          scale: newScale,
+        },
       });
     }
   };
@@ -74,17 +85,62 @@ const ARControls = () => {
           className="w-full h-8 p-0 border-none"
         />
       </div>
-      <div>
-        <label className="block mb-2 text-sm font-medium">Scale:</label>
-        <input
-          type="range"
-          min="0.1"
-          max="2"
-          step="0.1"
-          value={selectedObject.scale[0]}
-          onChange={handleScaleChange}
-          className="w-full"
-        />
+
+      <div className="mb-4">
+  <label className="block mb-2 text-sm font-medium">Scale:</label>
+
+  {/* Uniform Scale Control */}
+  <input
+    type="range"
+    min="0.1"
+    max="15"
+    step="0.1"
+    value={selectedObject.scale[0]} // Assuming uniform scale applies same value to all axes
+    onChange={(e) => handleScaleChange(-1, e.target.value)}
+    className="w-full"
+  />
+
+        {/* Individual Axis Scale Controls */}
+        <div className="flex space-x-4 mt-4">
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="0.1"
+              max="15"
+              step="0.1"
+              value={selectedObject.scale[0]}
+              onChange={(e) => handleScaleChange(0, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">X</label>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="0.1"
+              max="15"
+              step="0.1"
+              value={selectedObject.scale[1]}
+              onChange={(e) => handleScaleChange(1, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">Y</label>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="0.1"
+              max="15"
+              step="0.1"
+              value={selectedObject.scale[2]}
+              onChange={(e) => handleScaleChange(2, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">Z</label>
+          </div>
+        </div>
       </div>
 
       {/* Position Controls */}
