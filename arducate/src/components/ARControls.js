@@ -31,6 +31,21 @@ const ARControls = () => {
       });
     }
   };
+
+  const handlePositionChange = (axis, value) => {
+    if (selectedObject) {    
+      const newPos = [...selectedObject.position];
+      newPos[axis] = parseFloat(value);
+      setARObjects({ 
+        type: 'UPDATE_OBJECT', 
+        payload: { 
+          ...selectedObject,
+          position: newPos
+        } 
+      });
+    }
+  };
+
   const handleDeleteAsset = useCallback(() => {
     if (selectedObject) {
       setARObjects({ type: 'REMOVE_OBJECT', payload: selectedObject.id });
@@ -71,6 +86,52 @@ const ARControls = () => {
           className="w-full"
         />
       </div>
+
+      {/* Position Controls */}
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Position:</label>
+        <div className="flex space-x-4">
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="-10"
+              max="10"
+              step="0.1"
+              value={selectedObject.position[0]}
+              onChange={(e) => handlePositionChange(0, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">X</label>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="-10"
+              max="10"
+              step="0.1"
+              value={selectedObject.position[1]}
+              onChange={(e) => handlePositionChange(1, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">Y</label>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="-10"
+              max="10"
+              step="0.1"
+              value={selectedObject.position[2]}
+              onChange={(e) => handlePositionChange(2, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">Z</label>
+          </div>
+        </div>
+      </div>
+
       {/* control for changing position, rotation, etc. */}
       <div>
         <button
