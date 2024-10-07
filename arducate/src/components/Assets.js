@@ -21,7 +21,7 @@ const Assets = new Map([
   ['cone', <ConeGeometry />],
   ['torus', <TorusGeometry />],
   ['ring', <RingGeometry />],
-  ['line', <Line points={[[0, 0, 0], [0, 1, 0]]} lineWidth={2} color="black"/>]
+  ['line', <Line points={[[0, 0, 0], [0, 2, 0]]} lineWidth={2} color="black"/>]
 ]);
 
 export const getAsset = (itemSelected) => {
