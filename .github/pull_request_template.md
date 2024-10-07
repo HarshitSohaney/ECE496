@@ -25,5 +25,21 @@ Add screenshots to demonstrate the changes that were made.
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] Any dependent changes have been merged and published in downstream modules
 
+### Unit Tests
+**Transform Controls:**
+- [ ] Whatever is selected in the canvas is selected in left, right sidebars 
+- [ ] Whatever is selected in left sidebar is selected in middle, right sidebars
+**Change the color, size, position, rotation of one shape**
+- [ ] Ensure its persistent after clicking and modifying another shape
+- [ ] Ensure its persistent in the Preview Environment
+- [ ] Try the buttons & sliders – Make sure it performs as expected
+
+**Preview Environment:**
+- [ ] Can move around in the environment as expected (see all sides and all shapes)
+- [ ] All the graphics & functionality that appears in editor is in preview (i.e. animation, shapes, color, scale, position…)
+
+**Publish Environment:**
+- [ ] Quick scan that graphics & functionality appears same as in preview
+
 ### Additional Context
 Add any other context or screenshots about the pull request here
