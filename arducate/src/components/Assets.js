@@ -37,7 +37,7 @@ const Assets = new Map([
 export const getAsset = (itemSelected, props) => {
     const asset = Assets.get(itemSelected);
     // Only pass props if the asset type is 'text'
-    return itemSelected === 'text' ? asset(props) : asset; // Call without props for non-text assets
+    return itemSelected === 'text' ? asset(props) : asset;
 };
 
 const AssetsAR = new Map([

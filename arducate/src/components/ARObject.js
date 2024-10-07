@@ -65,7 +65,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       return `#${darken(r)}${darken(g)}${darken(b)}`;
     });
   }
-  
+  console.log("Rendering object:", object);
   return (
     <mesh
       ref={meshRef}

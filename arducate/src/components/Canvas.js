@@ -69,7 +69,8 @@ const ARCanvas = () => {
           }
         : obj
     );
-
+    
+    console.log("Transform Handles: ", updatedObjects)
     setARObjects(updatedObjects);
   }, [arObjects, transformControlsRef, setARObjects]);
 
