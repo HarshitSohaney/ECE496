@@ -49,7 +49,9 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
         {/* Render the correct geometry */}
         {getAsset(object.type)}
         <meshStandardMaterial color={object.color || "orange"}/>
+        {object.type !== "line" && (
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+      )}
       </mesh>
   );
 };

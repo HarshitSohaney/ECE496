@@ -1,4 +1,5 @@
 // src/components/Assets.js
+import { Line } from "@react-three/drei";
 
 // Define your geometry components if not already done
 const BoxGeometry = () => <boxGeometry args={[1, 1, 1]} />;
@@ -20,6 +21,7 @@ const Assets = new Map([
   ['cone', <ConeGeometry />],
   ['torus', <TorusGeometry />],
   ['ring', <RingGeometry />],
+  ['line', <Line points={[[0, 0, 0], [0, 1, 0]]} lineWidth={2} color="black"/>]
 ]);
 
 export const getAsset = (itemSelected) => {
@@ -35,6 +37,7 @@ const AssetsAR = new Map([
     ['cone', 'a-cone'],
     ['torus', 'a-torus'],
     ['ring', 'a-ring'],
+    ['line', 'a-element']
 ]);
 
 export const getArAsset = (item) => {
