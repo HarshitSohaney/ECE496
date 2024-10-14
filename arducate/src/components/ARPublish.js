@@ -1,8 +1,24 @@
-// src/components/ARView.js
+const generateAnimations = (keyframes) => {
+  if (!keyframes || keyframes.length === 0) return "";
+  console.log(keyframes);
+  const animations = keyframes
+    .map((kf, index) => {
+      if (!kf.position.start || !kf.position.end) {
+        console.warn(`Keyframe ${kf.id} is missing position start/end`);
+      }
+      const duration = kf.end !== null ? (kf.end - kf.start) * 1000 : 0;
+      const from = kf.position.start.join(" ");
+      const to = kf.position.end ? kf.position.end.join(" ") : from; // Use `from` as `to` if no end
+
+      return `animation__${index}="property: position; from: ${from}; to: ${to}; dur: ${duration}; startEvents: startAnimation${index}; pauseEvents: pauseAnimation${index};"`;
+    })
+    .filter(Boolean)
+    .join(" ");
+
+  return animations;
+};
+
 const convertSceneToAR = (arObjects) => {
-  /**
-   * Converts the list of arObjects to the HTML format to be published in AR.
-   */
   return `
       <!DOCTYPE html>
       <html lang="en">
