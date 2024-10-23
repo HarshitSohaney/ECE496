@@ -79,7 +79,7 @@ const ARCanvas = () => {
     );
 
     setARObjects(updatedObjects);
-  }, [arObjects, transformControlsRef, setARObjects]);
+  }, [arObjects, transformControlsRef, setARObjects, selectedObject]);
 
   // Grid configuration
   const gridConfig = {
@@ -113,7 +113,7 @@ const ARCanvas = () => {
 
         {/* Lights */}
         <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]}/>
+        <directionalLight position={[5, 5, 5]} />
 
         {/* Grid */}
         <Grid {...gridConfig} />

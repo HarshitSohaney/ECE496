@@ -75,6 +75,7 @@ const AssetHandler = () => {
       color: "#bcb9c4",
       type: value,
       entity: getArAsset(value),
+      keyframes: [], // Initialize keyframes
     };
 
     // Update AR Objects
@@ -165,4 +166,3 @@ const AssetHandler = () => {
 };
 
 export default AssetHandler;
-

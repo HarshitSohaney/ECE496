@@ -26,6 +26,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       color: "#ffa500",
       type: value,
       entity: getArAsset(value),
+      keyframes: [], // Initialize keyframes
       name: `${value}-${
         arObjects.filter((obj) => obj.type === value).length + 1
       }`,
