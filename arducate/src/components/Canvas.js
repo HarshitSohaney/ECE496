@@ -7,6 +7,7 @@ import { arObjectsAtom, selectedObjectAtom, transformModeAtom } from "../atoms";
 import ARObject from "./ARObject";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { useThree, useFrame } from "@react-three/fiber";
+import * as THREE from 'three';
 
 // This function sets up and manages the CSS2DRenderer for rendering 2D labels in a 3D scene
 function CSS2DRendererSetup() {
@@ -67,12 +68,16 @@ const ARCanvas = () => {
   const handleObjectTransform = useCallback(() => {
     if (!selectedObject || !transformControlsRef) return;
 
+    // Create a new Euler from the TransformControls' quaternion
+    const euler = new THREE.Euler().setFromQuaternion(transformControlsRef.quaternion);
+    const transformedRotation = euler.toArray().map(radiansToDegrees);
+    
     setARObjects({
       type: 'UPDATE_OBJECT',
       payload: {
         id: selectedObject.id,
         position: transformControlsRef.position.toArray(),
-        rotation: transformControlsRef.rotation.toArray().map(radiansToDegrees),
+        rotation: transformedRotation,
         scale: transformControlsRef.scale.toArray(),
       }
     });
