@@ -92,9 +92,11 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       onPointerDown={handlePointerDown}
     >
       {/* Render the correct geometry */}
-      {getAsset(object.type)}
+      {getAsset(object.type, { text: object.text })}
       <meshStandardMaterial color={object.color || "orange"} />
-      <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+      {object.type !== "text" && (
+        <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+      )}
     </mesh>
   );
 };
