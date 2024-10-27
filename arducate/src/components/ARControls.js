@@ -2,6 +2,7 @@
 import React, { useCallback } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
+import { Switch } from "../@/components/ui/switch";
 
 const ARControls = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
@@ -63,19 +64,52 @@ const ARControls = () => {
     }
   }, [selectedObject, setARObjects]);
 
+  const handleLabelChange = (e) => {
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        name: e.target.value
+      }
+    });
+  };
+  
+  const handleLabelVisibilityChange = (checked) => {
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        showLabel: checked
+      }
+    });
+  };
 
   if (!selectedObject) {
     return (
       <div className="w-[15vw] bg-secondary">
-        <div className="mt-2 text-center">
-          No Object Selected
-        </div>
+        <div className="mt-2 text-center">No Object Selected</div>
       </div>
     );
-  };
+  }
 
   return (
     <div className="w-[15vw] p-4 bg-secondary rounded">
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Show Label:</label>
+        <Switch
+          checked={selectedObject.showLabel || false}
+          onCheckedChange={handleLabelVisibilityChange}
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Label:</label>
+        <input
+          type="text"
+          value={selectedObject.name}
+          onChange={handleLabelChange}
+          className="w-full p-2 border rounded"
+        />
+      </div>
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
