@@ -39,21 +39,23 @@ const ARControls = () => {
   }, [selectedObject, setARObjects]);
 
   const handleLabelChange = (e) => {
-    updateObject({ name: e.target.value });
-    selectedObject.name = e.target.value;
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        name: e.target.value
+      }
+    });
   };
-
+  
   const handleLabelVisibilityChange = (checked) => {
-    updateObject({ showLabel: checked });
-    selectedObject.showLabel = checked;
-  };
-
-  const updateObject = (updates) => {
-    setARObjects((prev) =>
-      prev.map((obj) =>
-        obj.id === selectedObject.id ? { ...obj, ...updates } : obj
-      )
-    );
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        showLabel: checked
+      }
+    });
   };
 
   if (!selectedObject) {

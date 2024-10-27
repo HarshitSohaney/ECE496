@@ -33,6 +33,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       showLabel: true,
     };
 
+    // Instead of directly manipulating the state with setARObjects
     setARObjects({
       type: 'ADD_OBJECT',
       payload: newObject
