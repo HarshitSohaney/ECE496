@@ -1,40 +1,61 @@
 // src/components/ARControls.js
-import React from "react";
+import React, { useCallback } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
 import { Switch } from "../@/components/ui/switch";
 
 const ARControls = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
-  const [arObjects, setARObjects] = useAtom(arObjectsAtom);
+  const [, setARObjects] = useAtom(arObjectsAtom);
 
   const handleColorChange = (e) => {
-    updateObject({ color: e.target.value });
-    selectedObject.color = e.target.value;
+    if (selectedObject) {
+      setARObjects({  //Actual update handled in the atom
+        type: 'UPDATE_OBJECT', 
+        payload: { 
+          ...selectedObject,
+          color: e.target.value
+        } 
+      });
+    }
   };
 
   const handleScaleChange = (e) => {
     const scaleValue = parseFloat(e.target.value);
-    updateObject({ scale: [scaleValue, scaleValue, scaleValue] });
-    selectedObject.scale = [scaleValue, scaleValue, scaleValue];
+    if (selectedObject) {
+      setARObjects({ 
+        type: 'UPDATE_OBJECT', 
+        payload: { 
+          ...selectedObject,
+          scale: [scaleValue, scaleValue, scaleValue]
+        } 
+      });
+    }
   };
+  const handleDeleteAsset = useCallback(() => {
+    if (selectedObject) {
+      setARObjects({ type: 'REMOVE_OBJECT', payload: selectedObject.id });
+    }
+  }, [selectedObject, setARObjects]);
 
   const handleLabelChange = (e) => {
-    updateObject({ name: e.target.value });
-    selectedObject.name = e.target.value;
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        name: e.target.value
+      }
+    });
   };
-
+  
   const handleLabelVisibilityChange = (checked) => {
-    updateObject({ showLabel: checked });
-    selectedObject.showLabel = checked;
-  };
-
-  const updateObject = (updates) => {
-    setARObjects((prev) =>
-      prev.map((obj) =>
-        obj.id === selectedObject.id ? { ...obj, ...updates } : obj
-      )
-    );
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        showLabel: checked
+      }
+    });
   };
 
   if (!selectedObject) {
@@ -87,10 +108,20 @@ const ARControls = () => {
       {/* control for changing position, rotation, etc. */}
       <div>
         <button
-          onClick={() => updateObject({ position: [0, 0, 0] })}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          onClick={() => setARObjects({ 
+            type: 'UPDATE_OBJECT', 
+            payload: { ...selectedObject, position: [0, 0, 0] } 
+          })}          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
         >
           Reset Position
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={handleDeleteAsset}
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+        >
+          Delete Asset
         </button>
       </div>
     </div>

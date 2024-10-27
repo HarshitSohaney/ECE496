@@ -1,6 +1,6 @@
 // src/controllers/AnimationController.js
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import {
   arObjectsAtom,
   currentTimeAtom,
@@ -45,63 +45,65 @@ const AnimationController = () => {
     setCurrentTime(0);
   };
 
-  const addKeyframe = (objectId) => {
-    setArObjects((prevObjects) =>
-      prevObjects.map((obj) => {
-        if (obj.id === objectId) {
-          const existingKeyframes = obj.keyframes || [];
-          const lastKeyframe = existingKeyframes[existingKeyframes.length - 1];
+  const addKeyframe = useCallback((objectId) => {
+    const targetObject = arObjects.find(obj => obj.id === objectId);
+    if (!targetObject) return;
 
-          let newKeyframe;
-          if (!lastKeyframe || lastKeyframe.end !== null) {
-            newKeyframe = {
-              id: existingKeyframes.length + 1,
-              start: currentTime,
-              end: null,
-              position: {
-                start: [...(obj.position || [0, 0, 0])],
-                end: null,
-              },
-            };
-          } else {
-            newKeyframe = {
-              ...lastKeyframe,
-              end: currentTime,
-              position: {
-                ...lastKeyframe.position,
-                end: [...(obj.position || [0, 0, 0])],
-              },
-            };
-          }
+    const existingKeyframes = targetObject.keyframes || [];
+    const lastKeyframe = existingKeyframes[existingKeyframes.length - 1];
 
-          const updatedKeyframes = [
-            ...existingKeyframes.filter((k) => k.id !== newKeyframe.id),
-            newKeyframe,
-          ];
+    let newKeyframe;
+    if (!lastKeyframe || lastKeyframe.end !== null) {
+      newKeyframe = {
+        id: existingKeyframes.length + 1,
+        start: currentTime,
+        end: null,
+        position: {
+          start: [...(targetObject.position || [0, 0, 0])],
+          end: null,
+        },
+      };
+    } else {
+      newKeyframe = {
+        ...lastKeyframe,
+        end: currentTime,
+        position: {
+          ...lastKeyframe.position,
+          end: [...(targetObject.position || [0, 0, 0])],
+        },
+      };
+    }
 
-          return {
-            ...obj,
-            keyframes: updatedKeyframes,
-          };
-        }
-        return obj;
-      })
+    const updatedKeyframes = [
+      ...existingKeyframes.filter((k) => k.id !== newKeyframe.id),
+      newKeyframe,
+    ];
+
+    setArObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: objectId,
+        keyframes: updatedKeyframes,
+      },
+    });
+  }, [arObjects, currentTime, setArObjects]);
+
+  const updateKeyframe = useCallback((objectId, keyframeId, updatedKeyframeData) => {
+    const targetObject = arObjects.find(obj => obj.id === objectId);
+    if (!targetObject) return;
+  
+    const updatedKeyframes = targetObject.keyframes.map(kf =>
+      kf.id === keyframeId ? { ...kf, ...updatedKeyframeData } : kf
     );
-  };
-
-  const updateKeyframe = (objectId, keyframeId, updatedKeyframeData) => {
-    setArObjects((prevObjects) =>
-      prevObjects.map((obj) => {
-        if (obj.id === objectId) {
-          const updatedKeyframes = obj.keyframes.map((kf) =>
-            kf.id === keyframeId ? { ...kf, ...updatedKeyframeData } : kf
-          );
-          return { ...obj, keyframes: updatedKeyframes };
-        }
-        return obj;
-      })
-    );
-  };
+  
+    setArObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: objectId,
+        keyframes: updatedKeyframes,
+      },
+    });
+  }, [arObjects, setArObjects]);
 
   const interpolatePosition = (start, end, progress) => {
     if (!start || !end) {

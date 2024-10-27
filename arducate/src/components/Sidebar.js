@@ -4,13 +4,11 @@ import SceneGraph from "./SceneGraph";
 import AssetHandler from "./AssetHandler";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../@/components/ui/select";
 import { Button } from "../@/components/ui/button";
+import { useAtom } from "jotai";
+import { treeDataAtom } from "../atoms";
 
 const Sidebar = () => {
-  const [data, setData] = useState({
-    name: "root",
-    toggled: true,
-    children: [],
-  });
+  const [data, setData] = useAtom(treeDataAtom)
   const [cursor, setCursor] = useState(null);
 
   const handleActionChange = (value) => {
