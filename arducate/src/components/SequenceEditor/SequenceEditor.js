@@ -1,20 +1,22 @@
-import React, { useRef, useEffect } from "react";
+// src/components/SequenceEditor/SequenceEditor.js
+import React, { useRef, useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import { arObjectsAtom, currentTimeAtom, isPlayingAtom, timelineWidthAtom } from "../../atoms";
+import { arObjectsAtom } from "../../atoms";
 import TimelineRow from "./TimelineRow";
 import TimeRuler from "./TimeRuler";
 import Playhead from "./Playhead";
 import TimelineToolbar from "./TimelineToolbar";
+import AnimationController from "../../controllers/AnimationController";
 
 const SequenceEditor = () => {
   const [arObjects] = useAtom(arObjectsAtom);
-  const [currentTime] = useAtom(currentTimeAtom);
-  const [isPlaying] = useAtom(isPlayingAtom);
-  const [timelineWidth, setTimelineWidth] = useAtom(timelineWidthAtom);
+  const { currentTime } = AnimationController();
+  const [timelineWidth, setTimelineWidth] = useState(0);
 
   const containerRef = useRef(null);
   const objectListRef = useRef(null);
   const timelineRowsRef = useRef(null);
+
   const timeRulerStart = 0;
   const timeRulerEnd = 20;
 
@@ -22,7 +24,7 @@ const SequenceEditor = () => {
     if (containerRef.current) {
       setTimelineWidth(containerRef.current.offsetWidth);
     }
-  }, [setTimelineWidth]);
+  }, []);
 
   const handleScroll = (event) => {
     const { target } = event;
@@ -40,8 +42,9 @@ const SequenceEditor = () => {
           <div
             className="h-10 bg-gray-800 flex items-center justify-center relative"
             style={{
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-              zIndex: 10
+              boxShadow:
+                "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              zIndex: 10,
             }}
           >
             <TimelineToolbar totalTime={timeRulerEnd} />
@@ -69,21 +72,15 @@ const SequenceEditor = () => {
             className="relative flex items-center"
             style={{
               height: "40px",
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-              zIndex: 5
+              boxShadow:
+                "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              zIndex: 5,
             }}
           >
-            <TimeRuler
-              start={timeRulerStart}
-              end={timeRulerEnd}
-              height={40}
-            />
+            <TimeRuler start={timeRulerStart} end={timeRulerEnd} height={40} />
           </div>
 
-          <Playhead
-            currentTime={currentTime}
-            containerWidth={timelineWidth}
-          />
+          <Playhead currentTime={currentTime} containerWidth={timelineWidth} />
 
           <div
             className="relative overflow-y-auto"

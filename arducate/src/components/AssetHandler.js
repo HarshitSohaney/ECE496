@@ -1,13 +1,21 @@
 // src/components/AssetHandler.js
-import React from "react";
+import React, { useEffect } from "react";
 import { useAtom } from "jotai";
-import { arObjectsAtom, addAssetAtom } from "../atoms";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../@/components/ui/select";
+import { arObjectsAtom, addAssetAtom, selectedObjectAtom } from "../atoms";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../@/components/ui/select";
 import { getArAsset } from "./Assets";
 
 const AssetHandler = ({ data, setData, cursor, setCursor }) => {
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const [selectedValue, setSelectedValue] = useAtom(addAssetAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
 
   const handleAddObject = (value) => {
     const newObject = {
@@ -18,24 +26,54 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       color: "#ffa500",
       type: value,
       entity: getArAsset(value),
+      keyframes: [], // Initialize keyframes
+      name: `${value}-${
+        arObjects.filter((obj) => obj.type === value).length + 1
+      }`,
+      showLabel: true,
     };
 
-    setARObjects((prev) => {
-      const newARObjects = [...prev, newObject];
-      const assetCount = newARObjects.filter((obj) => obj.type === value).length;
-      const newFile = { id: newObject.id, name: `${value}${assetCount}` };
-
-      if (cursor && cursor.children) {
-        cursor.children.push(newFile);
-      } else {
-        data.children.push(newFile);
-      }
-      setData(Object.assign({}, data));
-      return newARObjects;
+    // Instead of directly manipulating the state with setARObjects
+    setARObjects({
+      type: 'ADD_OBJECT',
+      payload: newObject
     });
+  
+    // Update the file structure
+    const assetCount = data.children.filter((obj) => obj.type === value).length + 1;
+    const newFile = { id: newObject.id, name: `${value}${assetCount}` };
+  
+    if (cursor && cursor.children) {
+      cursor.children.push(newFile);
+    } else {
+      data.children.push(newFile);
+    }
+    setData({...data});
 
     setSelectedValue("");
   };
+
+  const findNodeById = (node, id) => {
+    if (node.id === id) return node;
+    if (node.children) {
+      for (let child of node.children) {
+        const result = findNodeById(child, id);
+        if (result) return result;
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    // find selected object and update its name
+    if (selectedObject) {
+      const matchingNode = findNodeById(data, selectedObject.id);
+      if (matchingNode) {
+        matchingNode.name = selectedObject.name;
+        setData(Object.assign({}, data));
+      }
+    }
+  }, [arObjects, selectedObject]);
 
   return (
     <div>
