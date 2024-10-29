@@ -1,7 +1,7 @@
 // src/components/ARView.js
 const convertSceneToAR = (arObjects) => {
   /**
-   * Converts the list of arObjects to the HTML format to be published in AR.
+   * Converts the list of visible arObjects to the HTML format to be published in AR.
    */
   return `
       <!DOCTYPE html>
@@ -18,20 +18,17 @@ const convertSceneToAR = (arObjects) => {
         <a-scene embedded arjs renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector>
           <a-marker preset="hiro">
             ${arObjects
+              .filter(object => object.visible !== false) // Only include visible objects
               .map((object) => {
                 return `
                 <a-entity>
                   <${object.entity} position="${object.position.join(" ")}"
-                    scale="${object.scale.join(
-                      " "
-                    )}" rotation="${object.rotation.join(" ")}"
+                    scale="${object.scale.join(" ")}"
+                    rotation="${object.rotation.join(" ")}"
                     color="${object.color}"></${object.entity}>
-                  <a-text visible=${object.showLabel} value="${
-                  object.name || `Object ${object.id}`
-                }"
-                    position="${object.position[0]} ${-object.scale[1]} ${
-                  object.position[2]
-                }"
+                  <a-text visible=${object.showLabel} 
+                    value="${object.name || `Object ${object.id}`}"
+                    position="${object.position[0]} ${-object.scale[1]} ${object.position[2]}"
                     render-order="1"
                     scale="0.5 0.5 0.5"
                     align="center"
@@ -64,20 +61,18 @@ const convertSceneToVR = (arObjects) => {
       <body>
         <a-scene>
           ${arObjects
+            .filter(object => object.visible !== false) // Only include visible objects
             .map((object) => {
               return `
               <a-entity>
                 <${object.entity} position="${object.position.join(" ")}"
-                  scale="${object.scale.join(
-                    " "
-                  )}" rotation="${object.rotation.join(" ")}"
+                  scale="${object.scale.join(" ")}"
+                  rotation="${object.rotation.join(" ")}"
                   color="${object.color}"></${object.entity}
                   text=${object.name}>
                 <a-text visible=${object.showLabel} 
                         value="${object.name || `Object ${object.id}`}"
-                  position="${object.position[0]} ${-object.scale[1]} ${
-                object.position[2]
-              }"
+                  position="${object.position[0]} ${-object.scale[1]} ${object.position[2]}"
                   render-order="2"
                   scale="0.5 0.5 0.5"
                   align="center"

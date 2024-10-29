@@ -93,6 +93,18 @@ const ARControls = () => {
     }
   };
 
+  const handleVisibilityChange = (checked) => {
+    if (selectedObject) {
+      setARObjects({
+        type: 'UPDATE_OBJECT',
+        payload: {
+          ...selectedObject,
+          visible: checked
+        }
+      });
+    }
+  };
+
   if (!selectedObject) {
     return (
       <div className="w-[15vw] bg-secondary">
@@ -125,6 +137,14 @@ const ARControls = () => {
 
   return (
     <div className="w-[15vw] p-2 bg-secondary rounded">
+      <div className="mb-3 flex items-center justify-between">
+        <label className="text-xs font-medium">Visible:</label>
+        <Switch
+          checked={selectedObject.visible !== false}
+          onCheckedChange={handleVisibilityChange}
+          className="scale-75"
+        />
+      </div>
       <div className="mb-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex-1">

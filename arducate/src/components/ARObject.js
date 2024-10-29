@@ -47,17 +47,10 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   }, [object]);
 
   const handlePointerDown = () => {
-    setSelectedObject(object); // Update selected object in state
-    setTransformControlsRef(meshRef.current); // Pass the mesh ref to the parent for transform controls
+    setSelectedObject(object);
+    setTransformControlsRef(meshRef.current);
   };
 
-  /*
-    This code creates darker edges for the object, based on the object color:
-      1. It takes the object's color and converts it to a darker shade
-      2. The color is first converted from hex to RGB
-      3. Each RGB component is darkened by subtracting 20 (clamped to 0)
-      4. The darkened RGB is then converted back to hex
-  */
   function getDarkerColor(color) {
     return color.replace(/^#(..)(..)(..)$/, (_, r, g, b) => {
       const darken = (c) =>
@@ -65,7 +58,6 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
           .toString(16)
           .padStart(2, "0");
 
-      // Return as hex string "#RRGGBB"
       return `#${darken(r)}${darken(g)}${darken(b)}`;
     });
   }
@@ -84,6 +76,11 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     }
   });
 
+  // If the object is not visible, return null but only after all hooks have been called
+  if (object.visible === false) {
+    return null;
+  }
+
   return (
     <mesh
       ref={meshRef}
@@ -92,7 +89,6 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       rotation={object.rotation.slice(0, 3).map(deg => THREE.MathUtils.degToRad(deg))}
       onPointerDown={handlePointerDown}
     >
-      {/* Render the correct geometry */}
       {getAsset(object.type)}
       <meshStandardMaterial color={object.color || "orange"} />
       <Edges lineWidth={2} color={getDarkerColor(object.color)} />
