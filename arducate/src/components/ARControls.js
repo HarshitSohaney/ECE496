@@ -1,4 +1,3 @@
-// src/components/ARControls.js
 import React, { useCallback } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
@@ -10,7 +9,7 @@ const ARControls = () => {
 
   const handleColorChange = (e) => {
     if (selectedObject) {
-      setARObjects({  //Actual update handled in the atom
+      setARObjects({
         type: 'UPDATE_OBJECT', 
         payload: { 
           ...selectedObject,
@@ -23,16 +22,7 @@ const ARControls = () => {
   const handleScaleChange = (axis, scaleValue) => {
     if (selectedObject) {
       const newScale = [...selectedObject.scale];
-  
-      // If axis is -1, scale all axes uniformly
-      if (axis === -1) {
-        newScale[0] = parseFloat(scaleValue);
-        newScale[1] = parseFloat(scaleValue);
-        newScale[2] = parseFloat(scaleValue);
-      } else {
-        // Scale individual axis (0 = X, 1 = Y, 2 = Z)
-        newScale[axis] = parseFloat(scaleValue);
-      }
+      newScale[axis] = parseFloat(scaleValue);
   
       setARObjects({
         type: 'UPDATE_OBJECT',
@@ -83,9 +73,9 @@ const ARControls = () => {
       }
     });
   };
+
   const handleRotationChange = (axis, value) => {
     if (selectedObject) {
-      // Ensure rotation is a 3-value array
       const currentRotation = Array.isArray(selectedObject.rotation) 
         ? selectedObject.rotation.slice(0, 3) 
         : [0, 0, 0];
@@ -93,8 +83,6 @@ const ARControls = () => {
       const newRotation = [...currentRotation];
       newRotation[axis] = parseFloat(value);
       
-      console.log('Manual rotation update:', newRotation);
-  
       setARObjects({
         type: 'UPDATE_OBJECT',
         payload: {
@@ -108,202 +96,110 @@ const ARControls = () => {
   if (!selectedObject) {
     return (
       <div className="w-[15vw] bg-secondary">
-        <div className="mt-2 text-center">No Object Selected</div>
+        <div className="mt-1 text-center text-sm">No Object Selected</div>
       </div>
     );
   }
 
+  const InputGroup = ({ label, values, onChange, min, max, step }) => (
+    <div className="mb-3">
+      <label className="block text-xs font-medium mb-1">{label}:</label>
+      <div className="flex justify-between">
+        {[0, 1, 2].map((axis) => (
+          <div key={axis} className="flex flex-col items-center w-[28%]">
+            <input
+              type="number"
+              min={min}
+              max={max}
+              step={step}
+              value={values[axis]}
+              onChange={(e) => onChange(axis, e.target.value)}
+              className="w-full text-center text-sm p-1 h-7"
+            />
+            <label className="mt-1 text-xs font-medium">{['X', 'Y', 'Z'][axis]}</label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-[15vw] p-4 bg-secondary rounded">
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">Show Label:</label>
-        <Switch
-          checked={selectedObject.showLabel || false}
-          onCheckedChange={handleLabelVisibilityChange}
-        />
+    <div className="w-[15vw] p-2 bg-secondary rounded">
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1">
+            <label className="text-xs font-medium">Label:</label>
+            <input
+              type="text"
+              value={selectedObject.name}
+              onChange={handleLabelChange}
+              className="w-full p-1 border rounded text-sm"
+            />
+          </div>
+          <div className="flex flex-col items-center">
+            <label className="text-xs font-medium">Show</label>
+            <Switch
+              checked={selectedObject.showLabel || false}
+              onCheckedChange={handleLabelVisibilityChange}
+              className="scale-75"
+            />
+          </div>
+        </div>
       </div>
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">Label:</label>
-        <input
-          type="text"
-          value={selectedObject.name}
-          onChange={handleLabelChange}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">Color:</label>
+
+      <div className="mb-3">
+        <label className="block text-xs font-medium">Color:</label>
         <input
           type="color"
           value={selectedObject.color || "#ffa500"}
           onChange={handleColorChange}
-          className="w-full h-8 p-0 border-none"
+          className="w-full h-6 p-0 border-none"
         />
       </div>
 
-  <div className="mb-4">
-  <label className="block mb-2 text-sm font-medium">Scale:</label>
+      <InputGroup
+        label="Scale"
+        values={selectedObject.scale}
+        onChange={handleScaleChange}
+        min="0.1"
+        max="15"
+        step="0.1"
+      />
 
-  {/* Uniform Scale Control */}
-  <input
-    type="range"
-    min="0.1"
-    max="15"
-    step="0.1"
-    value={selectedObject.scale[0]} // Assuming uniform scale applies same value to all axes
-    onChange={(e) => handleScaleChange(-1, e.target.value)}
-    className="w-full"
-  />
+      <InputGroup
+        label="Position"
+        values={selectedObject.position}
+        onChange={handlePositionChange}
+        min="-10"
+        max="10"
+        step="0.1"
+      />
 
-        {/* Individual Axis Scale Controls */}
-        <div className="flex space-x-4 mt-4">
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="0.1"
-              max="15"
-              step="0.1"
-              value={selectedObject.scale[0]}
-              onChange={(e) => handleScaleChange(0, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">X</label>
-          </div>
+      <InputGroup
+        label="Rotation"
+        values={selectedObject.rotation || [0, 0, 0]}
+        onChange={handleRotationChange}
+        min="-180"
+        max="180"
+        step="1"
+      />
 
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="0.1"
-              max="15"
-              step="0.1"
-              value={selectedObject.scale[1]}
-              onChange={(e) => handleScaleChange(1, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">Y</label>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="0.1"
-              max="15"
-              step="0.1"
-              value={selectedObject.scale[2]}
-              onChange={(e) => handleScaleChange(2, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">Z</label>
-          </div>
-        </div>
-
-      {/* Position Controls */}
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">Position:</label>
-        <div className="flex space-x-4">
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="-10"
-              max="10"
-              step="0.1"
-              value={selectedObject.position[0]}
-              onChange={(e) => handlePositionChange(0, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">X</label>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="-10"
-              max="10"
-              step="0.1"
-              value={selectedObject.position[1]}
-              onChange={(e) => handlePositionChange(1, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">Y</label>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="-10"
-              max="10"
-              step="0.1"
-              value={selectedObject.position[2]}
-              onChange={(e) => handlePositionChange(2, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">Z</label>
-          </div>
-        </div>
-      </div>
-    </div>
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium">Rotation (degrees):</label>
-        <div className="flex space-x-4">
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="-180"
-              max="180"
-              step="1"
-              value={selectedObject.rotation ? selectedObject.rotation[0] : 0}
-              onChange={(e) => handleRotationChange(0, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">X</label>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="-180"
-              max="180"
-              step="1"
-              value={selectedObject.rotation ? selectedObject.rotation[1] : 0}
-              onChange={(e) => handleRotationChange(1, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">Y</label>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <input
-              type="number"
-              min="-180"
-              max="180"
-              step="1"
-              value={selectedObject.rotation ? selectedObject.rotation[2] : 0}
-              onChange={(e) => handleRotationChange(2, e.target.value)}
-              className="w-full text-center"
-            />
-            <label className="mt-2 text-sm font-medium">Z</label>
-          </div>
-        </div>
-      </div>
-      {/* control for changing position, rotation, etc. */}
-      <div>
-        <button
-          onClick={() => setARObjects({ 
-            type: 'UPDATE_OBJECT', 
-            payload: { ...selectedObject, position: [0, 0, 0] } 
-          })}          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        >
-          Reset Position
-        </button>
-      </div>
-      <div>
-        <button
-          onClick={handleDeleteAsset}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-        >
-          Delete Asset
-        </button>
-      </div>
+      <button
+        onClick={() => setARObjects({ 
+          type: 'UPDATE_OBJECT', 
+          payload: { ...selectedObject, position: [0, 0, 0] } 
+        })}
+        className="w-full px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-700 mb-2"
+      >
+        Reset Position
+      </button>
+      
+      <button
+        onClick={handleDeleteAsset}
+        className="w-full px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-700"
+      >
+        Delete Asset
+      </button>
     </div>
   );
 };
