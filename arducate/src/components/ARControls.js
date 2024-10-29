@@ -83,6 +83,27 @@ const ARControls = () => {
       }
     });
   };
+  const handleRotationChange = (axis, value) => {
+    if (selectedObject) {
+      // Ensure rotation is a 3-value array
+      const currentRotation = Array.isArray(selectedObject.rotation) 
+        ? selectedObject.rotation.slice(0, 3) 
+        : [0, 0, 0];
+      
+      const newRotation = [...currentRotation];
+      newRotation[axis] = parseFloat(value);
+      
+      console.log('Manual rotation update:', newRotation);
+  
+      setARObjects({
+        type: 'UPDATE_OBJECT',
+        payload: {
+          id: selectedObject.id,
+          rotation: newRotation
+        }
+      });
+    }
+  };
 
   if (!selectedObject) {
     return (
@@ -221,7 +242,49 @@ const ARControls = () => {
         </div>
       </div>
     </div>
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Rotation (degrees):</label>
+        <div className="flex space-x-4">
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value={selectedObject.rotation ? selectedObject.rotation[0] : 0}
+              onChange={(e) => handleRotationChange(0, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">X</label>
+          </div>
 
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value={selectedObject.rotation ? selectedObject.rotation[1] : 0}
+              onChange={(e) => handleRotationChange(1, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">Y</label>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <input
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value={selectedObject.rotation ? selectedObject.rotation[2] : 0}
+              onChange={(e) => handleRotationChange(2, e.target.value)}
+              className="w-full text-center"
+            />
+            <label className="mt-2 text-sm font-medium">Z</label>
+          </div>
+        </div>
+      </div>
       {/* control for changing position, rotation, etc. */}
       <div>
         <button

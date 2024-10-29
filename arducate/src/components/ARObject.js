@@ -6,6 +6,7 @@ import { Edges } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import AnimationController from "../controllers/AnimationController";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import * as THREE from 'three';
 
 const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
@@ -88,7 +89,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       ref={meshRef}
       position={object.position || [0, 0, 0]}
       scale={object.scale || [1, 1, 1]}
-      rotation={object.rotation || [0, 0, 0]}
+      rotation={object.rotation.slice(0, 3).map(deg => THREE.MathUtils.degToRad(deg))}
       onPointerDown={handlePointerDown}
     >
       {/* Render the correct geometry */}
