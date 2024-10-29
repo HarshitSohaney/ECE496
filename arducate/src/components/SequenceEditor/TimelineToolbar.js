@@ -1,13 +1,13 @@
 // src/components/SequenceEditor/TimelineToolbar.js
 import React from "react";
-import { Play, Square, DiamondPlus } from "lucide-react";
+import { Play, Pause, Square, DiamondPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../../atoms";
 import AnimationController from "../../controllers/AnimationController";
 
 const TimelineToolbar = ({ totalTime }) => {
-  const { play, stop, addKeyframe, currentTime } = AnimationController();
+  const { play, pause, stop, addKeyframe, currentTime, isPlaying } = AnimationController();
   const [selectedObject] = useAtom(selectedObjectAtom);
 
   const handleAddKeyframe = () => {
@@ -19,15 +19,27 @@ const TimelineToolbar = ({ totalTime }) => {
     addKeyframe(selectedObject.id);
   };
 
+  const handlePlayPauseClick = () => {
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  };
+
   return (
     <div className="flex items-center justify-center space-x-2 h-10 min-h-[40px] px-2 bg-gray-800 border-b border-gray-700">
       <Button
         variant="outline"
         size="icon"
         className="navbar-button h-6 w-6"
-        onClick={play}
+        onClick={handlePlayPauseClick}
       >
-        <Play size={14} strokeWidth={1.5} />
+        {isPlaying ? (
+          <Pause size={14} strokeWidth={1.5} />
+        ) : (
+          <Play size={14} strokeWidth={1.5} />
+        )}
       </Button>
 
       <Button

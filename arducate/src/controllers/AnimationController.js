@@ -39,6 +39,8 @@ const AnimationController = () => {
   }, [isPlaying, setCurrentTime]);
 
   const play = () => setIsPlaying(true);
+  
+  const pause = () => setIsPlaying(false);
 
   const stop = () => {
     setIsPlaying(false);
@@ -154,6 +156,7 @@ const AnimationController = () => {
 
   return {
     play,
+    pause,
     stop,
     addKeyframe,
     updateKeyframe,
