@@ -8,7 +8,8 @@ import { Eye, EyeOff } from "lucide-react";
 // Custom decorator for tree nodes that includes a visibility toggle
 const CustomHeader = ({ node, style, ...props }) => {
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
-  
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
+
   // Only show visibility toggle for non-folder nodes
   const isObject = !node.children;
   
@@ -18,11 +19,18 @@ const CustomHeader = ({ node, style, ...props }) => {
     if (isObject) {
       const object = arObjects.find(obj => obj.id === node.id);
       if (object) {
+        const newVisibility = object.visible === false ? true : false;
+        
+        // If turning visibility off and this object is selected, clear selection
+        if (!newVisibility && selectedObject?.id === object.id) {
+          setSelectedObject(null);
+        }
+
         setARObjects({
           type: 'UPDATE_OBJECT',
           payload: {
             ...object,
-            visible: object.visible === false ? true : false
+            visible: newVisibility
           }
         });
       }

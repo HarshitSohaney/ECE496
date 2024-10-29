@@ -4,7 +4,7 @@ import { selectedObjectAtom, arObjectsAtom } from "../atoms";
 import { Switch } from "../@/components/ui/switch";
 
 const ARControls = () => {
-  const [selectedObject] = useAtom(selectedObjectAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [, setARObjects] = useAtom(arObjectsAtom);
 
   const handleColorChange = (e) => {
@@ -95,6 +95,11 @@ const ARControls = () => {
 
   const handleVisibilityChange = (checked) => {
     if (selectedObject) {
+      // If turning visibility off, clear the selected object
+      if (!checked) {
+        setSelectedObject(null);
+      }
+      
       setARObjects({
         type: 'UPDATE_OBJECT',
         payload: {
