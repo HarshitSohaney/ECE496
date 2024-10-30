@@ -1,5 +1,6 @@
 // src/components/Assets.js
 import { Text } from '@react-three/drei';
+import { Line } from "@react-three/drei";
 
 // Define your geometry components if not already done
 const BoxGeometry = () => <boxGeometry args={[1, 1, 1]} />;
@@ -32,6 +33,7 @@ const Assets = new Map([
   ['torus', <TorusGeometry />],
   ['ring', <RingGeometry />],
   ['text', (props) => <TextAsset text={props.text} />],
+  ['line', <Line points={[[0, 0, 0], [0, 2, 0]]} lineWidth={2} color="black"/>]
 ]);
 
 export const getAsset = (itemSelected, props) => {
@@ -50,6 +52,7 @@ const AssetsAR = new Map([
     ['torus', 'a-torus'],
     ['ring', 'a-ring'],
     ['text', 'a-text'],
+    ['line', 'a-element']
 ]);
 
 export const getArAsset = (item) => {

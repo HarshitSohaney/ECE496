@@ -93,6 +93,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
             <SelectItem value="torus">Torus</SelectItem>
             <SelectItem value="ring">Ring</SelectItem>
             <SelectItem value="text">Text</SelectItem>
+            <SelectItem value="line">Line</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
