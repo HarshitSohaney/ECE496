@@ -54,6 +54,7 @@ export const renderTextLabel = (object) => `
     opacity="0.8"
     side="double"></a-text>
 `;
+
 // Returns A-frame Entity for Asset
 export const renderObject = (object) => {
   const commonPosition = object.position.join(" ");
