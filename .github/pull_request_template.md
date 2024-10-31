@@ -41,5 +41,9 @@ Add screenshots to demonstrate the changes that were made.
 **Publish Environment:**
 - [ ] Quick scan that graphics & functionality appears same as in preview
 
+**Animation:** 
+- [ ] For 2 assets: Can add two assets and apply an animation to both that executes at the same time 
+- [ ] For 1 asset: Can move keyframe around for 1 asset animation, 2 keyframes can be added at a time & works
+
 ### Additional Context
 Add any other context or screenshots about the pull request here
