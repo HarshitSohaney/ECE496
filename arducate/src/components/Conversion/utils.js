@@ -86,3 +86,35 @@ export const renderObject = (object) => {
     </a-entity>
   `;
 };
+
+// Helper function to determine the initial position based on keyframes
+export const getInitialPosition = (object) => {
+  if (object.keyframes && object.keyframes.length > 0) {
+    return object.keyframes[0].position.start; // Use the first keyframe start position
+  }
+  return object.position; // Fallback to the specified position
+};
+
+export const renderObject = (object) => {
+  const initialPosition = getInitialPosition(object);
+  const animations = generateAnimations(object.keyframes);
+
+  return `
+    <a-entity position="${initialPosition}" ${animations}>
+      <${object.entity}
+          scale="${object.scale.join(" ")}" 
+          rotation="${object.rotation.join(" ")}"
+          color="${object.color}">
+      </${object.entity}>
+      <a-text visible="${object.showLabel}" 
+          value="${object.name || `Object ${object.id}`}"
+          position="0 ${-object.scale[1]} 0"
+          render-order="1"
+          scale="0.5 0.5 0.5"
+          align="center"
+          color="#000000"
+          opacity="0.8"
+          side="double">
+      </a-text>
+    </a-entity>`;
+};
