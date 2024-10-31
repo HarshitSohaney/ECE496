@@ -1,11 +1,13 @@
 import { renderObject } from "./utils"; // Ensure renderObject is imported
 
 export const convertSceneToVR = (vrObjects) => {
+  // Validate input
   if (!Array.isArray(vrObjects)) {
     console.error("vrObjects must be an array");
     return "";
   }
 
+  // Create the HTML structure
   return `
     <!DOCTYPE html>
     <html lang="en">
