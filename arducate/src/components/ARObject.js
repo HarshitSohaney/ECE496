@@ -84,20 +84,20 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   });
 
   return (
-      <mesh
-        ref={meshRef}
-        position={object.position || [0, 0, 0]}
-        scale={object.scale || [1, 1, 1]}
-        rotation={object.rotation || [0, 0, 0]}
-        onPointerDown={handlePointerDown} // Detect object selection
-      >
-        {/* Render the correct geometry */}
-        {getAsset(object.type)}
-        <meshStandardMaterial color={object.color || "orange"}/>
-        {object.type !== "line" && (
+    <mesh
+      ref={meshRef}
+      position={object.position || [0, 0, 0]}
+      scale={object.scale || [1, 1, 1]}
+      rotation={object.rotation || [0, 0, 0]}
+      onPointerDown={handlePointerDown}
+    >
+      {/* Render the correct geometry */}
+      {getAsset(object.type, { text: object.text })}
+      <meshStandardMaterial color={object.color || "orange"} />
+      {object.type != "text" && object.type != "line" && (
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
       )}
-      </mesh>
+    </mesh>
   );
 };
 
