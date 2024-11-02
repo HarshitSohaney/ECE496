@@ -5,12 +5,14 @@ import {
   arObjectsAtom,
   currentTimeAtom,
   isPlayingAtom,
+  timelineDurationAtom,
 } from '../atoms';
 
 const AnimationController = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
   const [arObjects, setArObjects] = useAtom(arObjectsAtom);
+  const [duration] = useAtom(timelineDurationAtom);
 
   useEffect(() => {
     let animationFrameId;
@@ -21,8 +23,19 @@ const AnimationController = () => {
       const deltaTime = (timestamp - lastTimestamp) / 1000;
       lastTimestamp = timestamp;
 
-      setCurrentTime((prevTime) => prevTime + deltaTime);
-      animationFrameId = requestAnimationFrame(animate);
+      setCurrentTime((prevTime) => {
+        const newTime = prevTime + deltaTime;
+        // Stop playing if we reach the end of the timeline
+        if (newTime >= duration) {
+          setIsPlaying(false);
+          return duration;
+        }
+        return newTime;
+      });
+
+      if (isPlaying) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
     };
 
     if (isPlaying) {
@@ -36,9 +49,15 @@ const AnimationController = () => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [isPlaying, setCurrentTime]);
+  }, [isPlaying, setCurrentTime, duration, setIsPlaying]);
 
-  const play = () => setIsPlaying(true);
+  // Update to check if currentTime is within duration when starting playback
+  const play = () => {
+    if (currentTime >= duration) {
+      setCurrentTime(0);
+    }
+    setIsPlaying(true);
+  };
 
   const stop = () => {
     setIsPlaying(false);
@@ -48,6 +67,9 @@ const AnimationController = () => {
   const addKeyframe = useCallback((objectId) => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
     if (!targetObject) return;
+
+    // Don't add keyframe if we're beyond the timeline duration
+    if (currentTime > duration) return;
 
     const existingKeyframes = targetObject.keyframes || [];
     const lastKeyframe = existingKeyframes[existingKeyframes.length - 1];
@@ -64,9 +86,11 @@ const AnimationController = () => {
         },
       };
     } else {
+      // Ensure the end time doesn't exceed the timeline duration
+      const endTime = Math.min(currentTime, duration);
       newKeyframe = {
         ...lastKeyframe,
-        end: currentTime,
+        end: endTime,
         position: {
           ...lastKeyframe.position,
           end: [...(targetObject.position || [0, 0, 0])],
@@ -86,14 +110,23 @@ const AnimationController = () => {
         keyframes: updatedKeyframes,
       },
     });
-  }, [arObjects, currentTime, setArObjects]);
+  }, [arObjects, currentTime, duration, setArObjects]);
 
   const updateKeyframe = useCallback((objectId, keyframeId, updatedKeyframeData) => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
     if (!targetObject) return;
   
+    // Ensure keyframe times don't exceed timeline duration
+    const sanitizedData = { ...updatedKeyframeData };
+    if (sanitizedData.start !== undefined) {
+      sanitizedData.start = Math.min(sanitizedData.start, duration);
+    }
+    if (sanitizedData.end !== undefined) {
+      sanitizedData.end = Math.min(sanitizedData.end, duration);
+    }
+  
     const updatedKeyframes = targetObject.keyframes.map(kf =>
-      kf.id === keyframeId ? { ...kf, ...updatedKeyframeData } : kf
+      kf.id === keyframeId ? { ...kf, ...sanitizedData } : kf
     );
   
     setArObjects({
@@ -103,8 +136,9 @@ const AnimationController = () => {
         keyframes: updatedKeyframes,
       },
     });
-  }, [arObjects, setArObjects]);
+  }, [arObjects, setArObjects, duration]);
 
+  // Rest of the code remains the same
   const interpolatePosition = (start, end, progress) => {
     if (!start || !end) {
       console.error('Start or end positions are undefined');
@@ -141,16 +175,11 @@ const AnimationController = () => {
 
       return {
         position: interpolatedPosition,
-        // Include rotation and scale if needed
       };
     }
 
     return null;
   };
-
-  useEffect(() => {
-    // Optionally update arObjects here if needed
-  }, [currentTime, isPlaying]);
 
   return {
     play,

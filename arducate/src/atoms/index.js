@@ -66,3 +66,4 @@ export const timelineScaleAtom = atom(100);
 export const currentTimeAtom = atom(0);
 export const isPlayingAtom = atom(false);
 export const timelineWidthAtom = atom(0);
+export const timelineDurationAtom = atom(20); // Default 20 seconds
