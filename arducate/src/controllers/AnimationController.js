@@ -1,4 +1,5 @@
 // src/controllers/AnimationController.js
+import * as THREE from 'three';
 import { useAtom } from 'jotai';
 import { useEffect, useCallback } from 'react';
 import {
@@ -64,6 +65,14 @@ const AnimationController = () => {
           start: [...(targetObject.position || [0, 0, 0])],
           end: null,
         },
+        rotation: {
+          start: [...(targetObject.rotation || [0, 0, 0])],
+          end: null,
+        },
+        scale: {
+          start: [...(targetObject.scale || [1, 1, 1])],
+          end: null,
+        },
       };
     } else {
       newKeyframe = {
@@ -72,6 +81,14 @@ const AnimationController = () => {
         position: {
           ...lastKeyframe.position,
           end: [...(targetObject.position || [0, 0, 0])],
+        },
+        rotation: {
+          ...lastKeyframe.rotation,
+          end: [...(targetObject.rotation || [0, 0, 0])],
+        },
+        scale: {
+          ...lastKeyframe.scale,
+          end: [...(targetObject.scale || [1, 1, 1])],
         },
       };
     }
@@ -119,6 +136,34 @@ const AnimationController = () => {
     });
   };
 
+  const interpolateRotation = (start, end, progress) => {
+    if (!start || !end) {
+      console.error('Start or end rotations are undefined');
+      return start || end || [0, 0, 0];
+    }
+    
+    const startQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(...start));
+    const endQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(...end));
+  
+    const interpolatedQuaternion = new THREE.Quaternion().slerp(startQuaternion, endQuaternion, progress);
+  
+    // Convert back to Euler angles if needed
+    const euler = new THREE.Euler().setFromQuaternion(interpolatedQuaternion);
+    return [euler.x, euler.y, euler.z];
+  };
+
+  const interpolateScale = (start, end, progress) => {
+    if (!start || !end) {
+      console.error('Start or end scale are undefined');
+      return start || end || [1, 1, 1];
+    }
+
+    return start.map((startValue, index) => {
+      const endValue = end[index];
+      return startValue + (endValue - startValue) * progress;
+    });
+  };
+
   const interpolateProperties = (objectId) => {
     const obj = arObjects.find((o) => o.id === objectId);
     if (!obj) return null;
@@ -141,9 +186,22 @@ const AnimationController = () => {
         progress
       );
 
+      const interpolatedRotation = interpolateRotation(
+        activeKeyframe.rotation.start,
+        activeKeyframe.rotation.end,
+        progress
+      );
+
+      const interpolatedScale = interpolateScale(
+        activeKeyframe.scale.start,
+        activeKeyframe.scale.end,
+        progress
+      );
+
       return {
         position: interpolatedPosition,
-        // Include rotation and scale if needed
+        rotation: interpolatedRotation,
+        scale: interpolatedScale,
       };
     }
 

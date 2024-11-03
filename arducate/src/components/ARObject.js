@@ -75,10 +75,18 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     const interpolatedProps = interpolateProperties(object.id);
 
     if (interpolatedProps) {
-      const { position } = interpolatedProps;
+      const { position, rotation, scale } = interpolatedProps;
 
       if (position) {
         meshRef.current.position.set(...position);
+      }
+
+      if (rotation) {
+        meshRef.current.rotation.set(...rotation);
+      }
+      
+      if (scale) {
+        meshRef.current.scale.set(...scale);
       }
     }
   });
