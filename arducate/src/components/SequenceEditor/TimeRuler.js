@@ -58,11 +58,21 @@ function drawRuler(context, width, height, start, end) {
   context.fillStyle = "#E2E8F0";
   context.strokeStyle = "#E2E8F0";
   context.lineWidth = 1;
-  context.font = "8px Inter, sans-serif";
+  context.font = "10px Inter, sans-serif";
   context.textBaseline = "bottom";
 
-  for (let i = start; i <= end; i++) {
-    const x = (i - start) * tickSpacing;
+  // Calculate optimal step size based on available width
+  const secondsPerMajorTick = calculateOptimalTickInterval(width, start, end);
+  const minorTicksPerMajor = 10;
+
+  // Draw from the first major tick before or at start to the first major tick after or at end
+  const firstMajorTick = Math.floor(start / secondsPerMajorTick) * secondsPerMajorTick;
+  const lastMajorTick = Math.ceil(end / secondsPerMajorTick) * secondsPerMajorTick;
+
+  for (let time = firstMajorTick; time <= lastMajorTick; time += secondsPerMajorTick) {
+    if (time < start || time > end) continue;
+
+    const x = (time - start) * tickSpacing;
 
     // Draw major tick
     context.beginPath();
@@ -70,27 +80,19 @@ function drawRuler(context, width, height, start, end) {
     context.lineTo(x, height - majorTickHeight);
     context.stroke();
 
-    // Default label position (centered)
-    let labelX = x;
-
-    // Offset the 0s label slightly to the right
-    if (i === 0) {
-      labelX += 5; // Move the "0s" label to the right
-    }
-
-    // Offset the last label (end label) slightly to the left
-    if (i === end) {
-      labelX -= 5; // Move the last label to the left
-    }
-
     // Draw time label
     context.textAlign = "center";
-    context.fillText(`${i}s`, labelX, height - majorTickHeight - 2);
+    context.fillText(`${time}s`, x, height - majorTickHeight - 2);
 
     // Draw minor ticks
-    if (i < end) {
-      for (let j = 1; j < 10; j++) {
-        const minorX = x + (j * tickSpacing) / 10;
+    if (time < lastMajorTick) {
+      const minorStep = secondsPerMajorTick / minorTicksPerMajor;
+      for (let i = 1; i < minorTicksPerMajor; i++) {
+        const minorTime = time + (i * minorStep);
+        if (minorTime > end) break;
+        if (minorTime < start) continue;
+        
+        const minorX = (minorTime - start) * tickSpacing;
         context.beginPath();
         context.moveTo(minorX, height);
         context.lineTo(minorX, height - minorTickHeight);
@@ -100,6 +102,26 @@ function drawRuler(context, width, height, start, end) {
   }
 }
 
-
+function calculateOptimalTickInterval(width, start, end) {
+  const totalSeconds = end - start;
+  const pixelsPerSecond = width / totalSeconds;
+  const minPixelsBetweenLabels = 80; // Minimum pixels between major ticks
+  
+  // Calculate minimum seconds between ticks to avoid overlap
+  const minSecondsBetweenTicks = minPixelsBetweenLabels / pixelsPerSecond;
+  
+  // Common intervals in seconds
+  const intervals = [1, 2, 5, 10, 15, 20, 30, 60];
+  
+  // Find the first interval that provides enough space between labels
+  for (const interval of intervals) {
+    if (interval >= minSecondsBetweenTicks) {
+      return interval;
+    }
+  }
+  
+  // If none of the predefined intervals work, use a multiple of 60
+  return Math.ceil(minSecondsBetweenTicks / 60) * 60;
+}
 
 export default TimeRuler;
