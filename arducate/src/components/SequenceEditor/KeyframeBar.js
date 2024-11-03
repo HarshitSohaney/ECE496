@@ -1,10 +1,10 @@
 // src/components/SequenceEditor/KeyframeBar.js
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Draggable from 'react-draggable';
-import AnimationController from '../../controllers/AnimationController';
+import useAnimationController from '../../controllers/AnimationController';
 
 const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd, timelineWidth }) => {
-  const { updateKeyframe } = AnimationController();
+  const { updateKeyframe } = useAnimationController();
   const [isResizing, setIsResizing] = useState(null);
   const [activeKeyframe, setActiveKeyframe] = useState(null);
   const barRef = useRef(null);

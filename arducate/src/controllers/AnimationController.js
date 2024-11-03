@@ -1,51 +1,79 @@
-// src/controllers/AnimationController.js
+// src/controllers/useAnimationController.js
 import { useAtom } from 'jotai';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import {
   arObjectsAtom,
   currentTimeAtom,
   isPlayingAtom,
 } from '../atoms';
 
-const AnimationController = () => {
+const useAnimationController = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
   const [arObjects, setArObjects] = useAtom(arObjectsAtom);
 
+  // Refs to keep track of timing
+  const startTimeRef = useRef(null);
+  const accumulatedTimeRef = useRef(0);
+  const animationFrameIdRef = useRef(null);
+
+  const animate = useCallback((timestamp) => {
+    if (!startTimeRef.current) {
+      startTimeRef.current = timestamp;
+    }
+
+    const elapsed = (timestamp - startTimeRef.current) / 1000;
+    const newCurrentTime = accumulatedTimeRef.current + elapsed;
+
+    setCurrentTime(newCurrentTime);
+
+    animationFrameIdRef.current = requestAnimationFrame(animate);
+  }, [setCurrentTime]);
+
   useEffect(() => {
-    let animationFrameId;
-    let lastTimestamp;
-
-    const animate = (timestamp) => {
-      if (!lastTimestamp) lastTimestamp = timestamp;
-      const deltaTime = (timestamp - lastTimestamp) / 1000;
-      lastTimestamp = timestamp;
-
-      setCurrentTime((prevTime) => prevTime + deltaTime);
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
     if (isPlaying) {
-      animationFrameId = requestAnimationFrame(animate);
-    } else if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId);
+      startTimeRef.current = performance.now() - accumulatedTimeRef.current * 1000;
+      animationFrameIdRef.current = requestAnimationFrame(animate);
+    } else if (animationFrameIdRef.current) {
+      cancelAnimationFrame(animationFrameIdRef.current);
+      animationFrameIdRef.current = null;
+
+      if (startTimeRef.current) {
+        const now = performance.now();
+        accumulatedTimeRef.current += (now - startTimeRef.current) / 1000;
+        startTimeRef.current = null;
+      }
     }
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
       }
     };
-  }, [isPlaying, setCurrentTime]);
+  }, [isPlaying, animate]);
 
-  const play = () => setIsPlaying(true);
-  
-  const pause = () => setIsPlaying(false);
+  const play = useCallback(() => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+    }
+  }, [isPlaying, setIsPlaying]);
 
-  const stop = () => {
+  const pause = useCallback(() => {
+    if (isPlaying) {
+      setIsPlaying(false);
+    }
+  }, [isPlaying, setIsPlaying]);
+
+  const stop = useCallback(() => {
     setIsPlaying(false);
     setCurrentTime(0);
-  };
+    accumulatedTimeRef.current = 0;
+    startTimeRef.current = null;
+    if (animationFrameIdRef.current) {
+      cancelAnimationFrame(animationFrameIdRef.current);
+      animationFrameIdRef.current = null;
+    }
+  }, [setIsPlaying, setCurrentTime]);
 
   const addKeyframe = useCallback((objectId) => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
@@ -76,36 +104,37 @@ const AnimationController = () => {
       };
     }
 
-    const updatedKeyframes = [
-      ...existingKeyframes.filter((k) => k.id !== newKeyframe.id),
-      newKeyframe,
-    ];
-
-    setArObjects({
-      type: 'UPDATE_OBJECT',
-      payload: {
-        id: objectId,
-        keyframes: updatedKeyframes,
-      },
-    });
+    setArObjects((prevArObjects) =>
+      prevArObjects.map(obj => {
+        if (obj.id !== objectId) return obj;
+        return {
+          ...obj,
+          keyframes: [
+            ...obj.keyframes.filter(k => k.id !== newKeyframe.id),
+            newKeyframe,
+          ],
+        };
+      })
+    );
   }, [arObjects, currentTime, setArObjects]);
 
   const updateKeyframe = useCallback((objectId, keyframeId, updatedKeyframeData) => {
-    const targetObject = arObjects.find(obj => obj.id === objectId);
-    if (!targetObject) return;
-  
-    const updatedKeyframes = targetObject.keyframes.map(kf =>
-      kf.id === keyframeId ? { ...kf, ...updatedKeyframeData } : kf
+    setArObjects((prevArObjects) =>
+      prevArObjects.map(obj => {
+        if (obj.id !== objectId) return obj;
+
+        const updatedKeyframes = obj.keyframes.map(kf => {
+          if (kf.id !== keyframeId) return kf;
+          return { ...kf, ...updatedKeyframeData };
+        });
+
+        return {
+          ...obj,
+          keyframes: updatedKeyframes,
+        };
+      })
     );
-  
-    setArObjects({
-      type: 'UPDATE_OBJECT',
-      payload: {
-        id: objectId,
-        keyframes: updatedKeyframes,
-      },
-    });
-  }, [arObjects, setArObjects]);
+  }, [setArObjects]);
 
   const interpolatePosition = (start, end, progress) => {
     if (!start || !end) {
@@ -119,7 +148,7 @@ const AnimationController = () => {
     });
   };
 
-  const interpolateProperties = (objectId) => {
+  const interpolateProperties = useCallback((objectId) => {
     const obj = arObjects.find((o) => o.id === objectId);
     if (!obj) return null;
 
@@ -148,11 +177,7 @@ const AnimationController = () => {
     }
 
     return null;
-  };
-
-  useEffect(() => {
-    // Optionally update arObjects here if needed
-  }, [currentTime, isPlaying]);
+  }, [arObjects, currentTime]);
 
   return {
     play,
@@ -166,4 +191,4 @@ const AnimationController = () => {
   };
 };
 
-export default AnimationController;
+export default useAnimationController;

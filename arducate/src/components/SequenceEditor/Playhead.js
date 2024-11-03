@@ -1,12 +1,13 @@
+// src/components/SequenceEditor/Playhead.js
 import React from 'react';
 import Draggable from "react-draggable";
 import { Tally3 } from "lucide-react";
 import { useAtom } from 'jotai';
 import { currentTimeAtom, timelineScaleAtom } from '../../atoms';
 
-const Playhead = ({ containerWidth }) => {
-  const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
-  const [scale] = useAtom(timelineScaleAtom);
+const Playhead = ({ scale, currentTime, containerWidth }) => {
+  const [currentTimeState, setCurrentTime] = useAtom(currentTimeAtom);
+  const [scaleState] = useAtom(timelineScaleAtom);
 
   // Calculate the current x position based on currentTime and scale
   const positionX = currentTime * scale;
@@ -30,7 +31,7 @@ const Playhead = ({ containerWidth }) => {
           top: 0,
           height: "100%",
           cursor: "ew-resize",
-          zIndex: 1000,
+          zIndex: 1000, // Ensure this is higher than Time Ruler and Rows
           pointerEvents: "none",
         }}
       >
@@ -44,7 +45,7 @@ const Playhead = ({ containerWidth }) => {
             position: "absolute",
             left: "-5.25px",
             top: "0",
-            zIndex: 1001,
+            zIndex: 1001, // Higher than playhead-container
             pointerEvents: "auto",
             display: "flex",
             justifyContent: "center",
