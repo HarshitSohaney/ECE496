@@ -49,6 +49,9 @@ const convertSceneToVR = (arObjects) => {
     `;
 };
 
+// Function to convert radians to degrees
+const radiansToDegrees = (radians) => radians * (180 / Math.PI);
+
 // Returns Label for Respective Asset
 const renderTextLabel = (object) => `
   <a-text 
@@ -67,7 +70,7 @@ const renderTextLabel = (object) => `
 const renderObject = (object) => {
   const commonPosition = object.position.join(" ");
   const commonScale = object.scale.join(" ");
-  const commonRotation = object.rotation.join(" ");
+  const commonRotation = object.rotation.map(radiansToDegrees).join(" ");
   const commonTextLabel = renderTextLabel(object);
 
   switch (object.entity) {

@@ -137,19 +137,29 @@ const AnimationController = () => {
   };
 
   const interpolateRotation = (start, end, progress) => {
-    if (!start || !end) {
-      console.error('Start or end rotations are undefined');
-      return start || end || [0, 0, 0];
+    if (!start || !end || progress < 0 || progress > 1) {
+        console.error('Invalid input parameters');
+        return [0, 0, 0];
     }
+
+    // Create Euler objects with the correct order
+    const startEuler = new THREE.Euler(...start, 'XYZ');
+    const endEuler = new THREE.Euler(...end, 'XYZ');
+
+    // Convert to quaternions
+    const startQuaternion = new THREE.Quaternion();
+    const endQuaternion = new THREE.Quaternion();
+    startQuaternion.setFromEuler(startEuler);
+    endQuaternion.setFromEuler(endEuler);
+
+    // Perform spherical interpolation (slerp)
+    const interpolatedQuaternion = startQuaternion.clone();
+    interpolatedQuaternion.slerp(endQuaternion, progress);
+
+    // Convert back to Euler angles
+    const interpolatedEuler = new THREE.Euler().setFromQuaternion(interpolatedQuaternion, 'XYZ');
     
-    const startQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(...start));
-    const endQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(...end));
-  
-    const interpolatedQuaternion = new THREE.Quaternion().slerp(startQuaternion, endQuaternion, progress);
-  
-    // Convert back to Euler angles if needed
-    const euler = new THREE.Euler().setFromQuaternion(interpolatedQuaternion);
-    return [euler.x, euler.y, euler.z];
+    return [interpolatedEuler.x, interpolatedEuler.y, interpolatedEuler.z];
   };
 
   const interpolateScale = (start, end, progress) => {

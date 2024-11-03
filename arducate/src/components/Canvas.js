@@ -67,8 +67,7 @@ const ARCanvas = () => {
 
     // Create a new Euler from the TransformControls' quaternion
     const euler = new THREE.Euler().setFromQuaternion(transformControlsRef.quaternion);
-    const euler_arr = [euler.x, euler.y, euler.z]
-    const transformedRotation = euler_arr
+    const transformedRotation = [euler.x, euler.y, euler.z]
     
     setARObjects({
       type: 'UPDATE_OBJECT',
