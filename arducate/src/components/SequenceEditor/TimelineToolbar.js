@@ -4,10 +4,10 @@ import { Play, Pause, Square, DiamondPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../../atoms";
-import AnimationController from "../../controllers/AnimationController";
+import useAnimation from '../../hooks/useAnimation';
 
 const TimelineToolbar = ({ totalTime }) => {
-  const { play, pause, stop, addKeyframe, currentTime, isPlaying } = AnimationController();
+  const { play, pause, stop, addKeyframe, currentTime, isPlaying } = useAnimation();
   const [selectedObject] = useAtom(selectedObjectAtom);
 
   const handleAddKeyframe = () => {
