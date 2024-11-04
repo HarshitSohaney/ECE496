@@ -61,16 +61,13 @@ const ARCanvas = () => {
   const [transformMode] = useAtom(transformModeAtom);
   const [transformControlsRef, setTransformControlsRef] = useState(null); // State to store the selected object's mesh ref
 
-  // Function to convert radians to degrees
-  const radiansToDegrees = (radians) => radians * (180 / Math.PI);
-
   // Handle the transformation change and update state
   const handleObjectTransform = useCallback(() => {
     if (!selectedObject || !transformControlsRef) return;
 
     // Create a new Euler from the TransformControls' quaternion
     const euler = new THREE.Euler().setFromQuaternion(transformControlsRef.quaternion);
-    const transformedRotation = euler.toArray().map(radiansToDegrees);
+    const transformedRotation = [euler.x, euler.y, euler.z]
     
     setARObjects({
       type: 'UPDATE_OBJECT',
