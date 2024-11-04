@@ -28,8 +28,8 @@ export const arObjectsAtom = atom(
 
         break;
       case 'UPDATE_OBJECT':
-        const updatedObjects = get(arObjectsAtom).map(obj =>  //payload: ...selectedObject, scale: [scaleValue, scaleValue, scaleValue]} 
-          obj.id === action.payload.id 
+        const updatedObjects = get(arObjectsAtom).map(obj =>  //payload: ...selectedObject, scale: [scaleValue, scaleValue, scaleValue]}
+          obj.id === action.payload.id
             ? { ...obj, ...action.payload }
             : obj
         );
@@ -66,13 +66,15 @@ export const timelineScaleAtom = atom(100);
 export const currentTimeAtom = atom(0);
 export const isPlayingAtom = atom(false);
 export const timelineWidthAtom = atom(0);
-export const TIMELINE_DURATION_PRESETS = [20, 30, 40, 50, 60];
-export const timelineDurationAtom = atom(
-  TIMELINE_DURATION_PRESETS[0], // Default 20 seconds
-  (get, set, presetIndex) => {
-    const newDuration = TIMELINE_DURATION_PRESETS[presetIndex];
-    if (newDuration !== undefined) {
-      set(timelineDurationAtom, newDuration);
-    }
-  }
-);
+// export const TIMELINE_DURATION_PRESETS = [20, 30, 40, 50, 60];
+// export const timelineDurationAtom = atom(
+//   TIMELINE_DURATION_PRESETS[0], // Default 20 seconds
+//   (get, set, presetIndex) => {
+//     const newDuration = TIMELINE_DURATION_PRESETS[presetIndex];
+//     if (newDuration !== undefined) {
+//       set(timelineDurationAtom, newDuration);
+//     }
+//   }
+// );
+
+export const timelineDurationAtom = atom(20); // Default 20 seconds, but now can be any number

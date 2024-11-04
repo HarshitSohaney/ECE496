@@ -1,9 +1,9 @@
 // src/components/SequenceEditor/TimelineToolbar.js
 import React from "react";
-import { Play, Pause, Square, DiamondPlus, Clock } from "lucide-react";
+import { Play, Pause, Square, Plus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
-import { selectedObjectAtom, timelineDurationAtom, TIMELINE_DURATION_PRESETS } from "../../atoms";
+import { selectedObjectAtom, timelineDurationAtom } from "../../atoms";
 import useAnimation from '../../hooks/useAnimation';
 
 const TimelineToolbar = ({ totalTime }) => {
@@ -16,14 +16,14 @@ const TimelineToolbar = ({ totalTime }) => {
     addKeyframe(selectedObject.id);
   };
 
-  const getCurrentPresetIndex = () => {
-    return TIMELINE_DURATION_PRESETS.indexOf(duration);
-  };
+  // const getCurrentPresetIndex = () => {
+  //   return TIMELINE_DURATION_PRESETS.indexOf(duration);
+  // };
 
-  const handleDurationChange = (e) => {
-    const newIndex = parseInt(e.target.value);
-    setDuration(newIndex);
-  };
+  // const handleDurationChange = (e) => {
+  //   const newIndex = parseInt(e.target.value);
+  //   setDuration(newIndex);
+  // };
 
   const handlePlayPauseClick = () => {
     if (isPlaying) {
@@ -63,12 +63,16 @@ const TimelineToolbar = ({ totalTime }) => {
         className="navbar-button h-6 w-6"
         onClick={handleAddKeyframe}
       >
-        <DiamondPlus size={14} strokeWidth={1.5} />
+        <Plus size={14} strokeWidth={1.5} />
       </Button>
 
       <div className="border-l h-6 border-gray-400 mx-2"></div>
 
-      <div className="flex items-center space-x-2">
+        <span className="text-white font-mono text-xs">
+          {currentTime.toFixed(2)} / {duration.toFixed(2)}
+        </span>
+
+      {/* <div className="flex items-center space-x-2">
         <Clock size={14} strokeWidth={1.5} className="text-gray-400" />
         <div className="relative w-20 flex items-center">
           <input
@@ -112,7 +116,7 @@ const TimelineToolbar = ({ totalTime }) => {
           `}</style>
         </div>
         <span className="text-gray-400 text-xs">{duration}s</span>
-      </div>
+      </div> */}
     </div>
   );
 };

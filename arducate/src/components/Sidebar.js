@@ -1,52 +1,83 @@
-// src/components/Sidebar.js
 import React, { useState } from "react";
 import SceneGraph from "./SceneGraph";
 import AssetHandler from "./AssetHandler";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../@/components/ui/select";
-import { Button } from "../@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../@/components/ui/tabs";
+import { Input } from "../@/components/ui/input";
 import { useAtom } from "jotai";
-import { treeDataAtom } from "../atoms";
+import { treeDataAtom, timelineDurationAtom } from "../atoms";
+import { Clock } from "lucide-react";
+
+// import React from "react";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "../@/components/ui/tabs";
+// import { Input } from "../@/components/ui/input";
+// import { useAtom } from "jotai";
+// import { treeDataAtom, timelineDurationAtom } from "../atoms";
+// import { Clock } from "lucide-react";
 
 const Sidebar = () => {
-  const [data, setData] = useAtom(treeDataAtom)
-  const [cursor, setCursor] = useState(null);
+  const [data, setData] = useAtom(treeDataAtom);
+  const [duration, setDuration] = useAtom(timelineDurationAtom);
 
-  const handleActionChange = (value) => {
-    // dummy function
-    console.log(`Selected action: ${value}`);
-  };
-
-  const handleAddFrame = () => {
-    // dummy function
-    console.log("Frame added");
+  const handleDurationChange = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 0) {
+      setDuration(value);
+    }
   };
 
   return (
-    <div className="w-[15vw] items-center p-2 bg-secondary">
-      {/* AssetHandler Component */}
-      <AssetHandler data={data} setData={setData} cursor={cursor} setCursor={setCursor} />
+    <aside className="w-[15vw] h-full flex flex-col bg-secondary border-r border-border">
+      <Tabs defaultValue="assets" className="flex-1 flex flex-col">
+        <div className="border-b border-border">
+          <TabsList className="w-full h-10 grid grid-cols-2">
+            <TabsTrigger
+              value="assets"
+              className="text-sm font-medium data-[state=active]:bg-secondary"
+            >
+              Assets
+            </TabsTrigger>
+            <TabsTrigger
+              value="animation"
+              className="text-sm font-medium data-[state=active]:bg-secondary"
+            >
+              Animation
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      {/* Add Action */}
-      <Select onValueChange={handleActionChange}>
-        <SelectTrigger variant="outline" className="mt-1">
-          <SelectValue placeholder="Add Action" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="translate">Translation</SelectItem>
-            <SelectItem value="rotate">Rotation</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+        <TabsContent
+          value="assets"
+          className="flex-1 overflow-auto p-3"
+        >
+          <AssetHandler data={data} setData={setData} />
+          <SceneGraph data={data} setData={setData} />
+        </TabsContent>
 
-      {/* Add Frame */}
-      <Button onClick={handleAddFrame} className="mt-1 bg-input text-black w-full">
-        Add Frame
-      </Button>
-
-      {/* SceneGraph Component */}
-      <SceneGraph data={data} setData={setData} />
-    </div>
+        <TabsContent
+          value="animation"
+          className="flex-1 p-3"
+        >
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground/70 px-1">Animation Duration</h3>
+            <div className="relative">
+              <Clock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+              <Input
+                type="number"
+                min="0"
+                step="0.1"
+                className="pl-8 bg-background"
+                value={duration}
+                onChange={handleDurationChange}
+                placeholder="Duration (seconds)"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground px-1">
+              Animation duration in seconds
+            </p>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </aside>
   );
 };
 

@@ -1,11 +1,21 @@
 import React, { useRef, useEffect } from "react";
 import { useAtom } from 'jotai';
-import { timelineScaleAtom, timelineWidthAtom } from "../../atoms";
+import { timelineScaleAtom, timelineWidthAtom, timelineDurationAtom } from "../../atoms";
 
-const TimeRuler = ({ start = 0, end = 10, height = 20 }) => {
+const TimeRuler = ({ height = 20 }) => {
   const canvasRef = useRef(null);
   const [, setScale] = useAtom(timelineScaleAtom);
   const [timelineWidth, setTimelineWidth] = useAtom(timelineWidthAtom);
+  const [duration] = useAtom(timelineDurationAtom);
+
+  // Calculate optimal tick intervals based on duration
+  const calculateTickInterval = (duration) => {
+    if (duration <= 10) return 1; // 1 second intervals
+    if (duration <= 30) return 2; // 2 second intervals
+    if (duration <= 60) return 5; // 5 second intervals
+    if (duration <= 300) return 15; // 15 second intervals
+    return Math.ceil(duration / 20); // Aim for about 20 major ticks for longer durations
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -16,7 +26,6 @@ const TimeRuler = ({ start = 0, end = 10, height = 20 }) => {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, [setTimelineWidth]);
 
@@ -32,12 +41,12 @@ const TimeRuler = ({ start = 0, end = 10, height = 20 }) => {
     canvas.height = height * pixelRatio;
     context.scale(pixelRatio, pixelRatio);
 
-    drawRuler(context, timelineWidth, height, start, end);
+    drawRuler(context, timelineWidth, height, 0, duration);
 
     // Update scale
-    const newScale = timelineWidth / (end - start);
+    const newScale = timelineWidth / duration;
     setScale(newScale);
-  }, [timelineWidth, start, end, height, setScale]);
+  }, [timelineWidth, duration, height, setScale]);
 
   return (
     <canvas
@@ -48,8 +57,9 @@ const TimeRuler = ({ start = 0, end = 10, height = 20 }) => {
 };
 
 function drawRuler(context, width, height, start, end) {
-  const totalSeconds = end - start;
-  const tickSpacing = width / totalSeconds;
+  const totalDuration = end - start;
+  const majorTickInterval = calculateTickInterval(totalDuration);
+  const tickSpacing = width / totalDuration;
   const majorTickHeight = height * 0.5;
   const minorTickHeight = height * 0.3;
 
@@ -61,8 +71,9 @@ function drawRuler(context, width, height, start, end) {
   context.font = "8px Inter, sans-serif";
   context.textBaseline = "bottom";
 
-  for (let i = start; i <= end; i++) {
-    const x = (i - start) * tickSpacing;
+  // Draw major ticks and labels
+  for (let i = 0; i <= totalDuration; i += majorTickInterval) {
+    const x = i * tickSpacing;
 
     // Draw major tick
     context.beginPath();
@@ -70,27 +81,20 @@ function drawRuler(context, width, height, start, end) {
     context.lineTo(x, height - majorTickHeight);
     context.stroke();
 
-    // Default label position (centered)
+    // Position label
     let labelX = x;
-
-    // Offset the 0s label slightly to the right
-    if (i === 0) {
-      labelX += 5; // Move the "0s" label to the right
-    }
-
-    // Offset the last label (end label) slightly to the left
-    if (i === end) {
-      labelX -= 5; // Move the last label to the left
-    }
+    if (i === 0) labelX += 5;
+    if (i === totalDuration) labelX -= 5;
 
     // Draw time label
     context.textAlign = "center";
     context.fillText(`${i}s`, labelX, height - majorTickHeight - 2);
 
-    // Draw minor ticks
-    if (i < end) {
-      for (let j = 1; j < 10; j++) {
-        const minorX = x + (j * tickSpacing) / 10;
+    // Draw minor ticks (if space permits)
+    if (i < totalDuration && tickSpacing * majorTickInterval > 30) {
+      const minorTickCount = majorTickInterval >= 5 ? 4 : 9; // Fewer subdivisions for larger intervals
+      for (let j = 1; j <= minorTickCount; j++) {
+        const minorX = x + (j * tickSpacing * majorTickInterval) / (minorTickCount + 1);
         context.beginPath();
         context.moveTo(minorX, height);
         context.lineTo(minorX, height - minorTickHeight);
@@ -100,6 +104,12 @@ function drawRuler(context, width, height, start, end) {
   }
 }
 
-
+function calculateTickInterval(duration) {
+  if (duration <= 10) return 1;
+  if (duration <= 30) return 2;
+  if (duration <= 60) return 5;
+  if (duration <= 300) return 15;
+  return Math.ceil(duration / 20);
+}
 
 export default TimeRuler;

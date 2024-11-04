@@ -36,13 +36,6 @@ const SequenceEditor = () => {
 
   return (
     <div className="relative flex flex-col w-full" style={{ minHeight: "250px", height: "250px" }}>
-      {/* Timer row - Spans full width */}
-      <div className="w-full h-6 bg-gray-800 flex items-center justify-center border-b border-gray-700">
-        <span className="text-white font-mono text-xs">
-          {currentTime.toFixed(2)} / {duration.toFixed(2)}
-        </span>
-      </div>
-
       {/* Main content */}
       <div className="relative flex flex-row w-full" style={{ height: "calc(100% - 24px)" }}>
         {/* Left Sidebar - Fixed width instead of viewport units */}
