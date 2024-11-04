@@ -1,10 +1,10 @@
 // src/components/SequenceEditor/KeyframeBar.js
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Draggable from 'react-draggable';
-import AnimationController from '../../controllers/AnimationController';
+import useAnimation from '../../hooks/useAnimation';
 
 const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd, timelineWidth }) => {
-  const { updateKeyframe } = AnimationController();
+  const { updateKeyframe } = useAnimation();
   const [isResizing, setIsResizing] = useState(null);
   const [activeKeyframe, setActiveKeyframe] = useState(null);
   const barRef = useRef(null);
@@ -64,16 +64,18 @@ const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd,
         const newStartTime = pixelsToTime(data.x);
         const duration = keyframe.end ? keyframe.end - keyframe.start : 0;
         const newEndTime = keyframe.end ? newStartTime + duration : null;
-
-        const updatedKeyframeData = { start: newStartTime };
-        if (newEndTime !== null) {
-          updatedKeyframeData.end = newEndTime;
+  
+        // Only update if the new times are within bounds
+        if (newStartTime >= timeRulerStart && (!newEndTime || newEndTime <= timeRulerEnd)) {
+          const updatedKeyframeData = { start: newStartTime };
+          if (newEndTime !== null) {
+            updatedKeyframeData.end = newEndTime;
+          }
+          updateKeyframe(objectId, keyframe.id, updatedKeyframeData);
         }
-
-        updateKeyframe(objectId, keyframe.id, updatedKeyframeData);
       }
     },
-    [isResizing, pixelsToTime, updateKeyframe, objectId]
+    [isResizing, pixelsToTime, updateKeyframe, objectId, timeRulerStart, timeRulerEnd]
   );
 
   return (

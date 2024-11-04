@@ -1,26 +1,40 @@
 // src/components/SequenceEditor/TimelineToolbar.js
 import React from "react";
-import { Play, Square, DiamondPlus } from "lucide-react";
+import { Play, Pause, Square, DiamondPlus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
-import { selectedObjectAtom } from "../../atoms";
-import AnimationController from "../../controllers/AnimationController";
+import { selectedObjectAtom, timelineDurationAtom, TIMELINE_DURATION_PRESETS } from "../../atoms";
+import useAnimation from '../../hooks/useAnimation';
 
 const TimelineToolbar = ({ totalTime }) => {
-  const { play, stop, addKeyframe, currentTime } = AnimationController();
+  const { play, pause, stop, addKeyframe, currentTime, isPlaying } = useAnimation();
   const [selectedObject] = useAtom(selectedObjectAtom);
+  const [duration, setDuration] = useAtom(timelineDurationAtom);
 
   const handleAddKeyframe = () => {
-    if (!selectedObject) {
-      console.log("No object selected");
-      return;
-    }
-
+    if (!selectedObject) return;
     addKeyframe(selectedObject.id);
   };
 
+  const getCurrentPresetIndex = () => {
+    return TIMELINE_DURATION_PRESETS.indexOf(duration);
+  };
+
+  const handleDurationChange = (e) => {
+    const newIndex = parseInt(e.target.value);
+    setDuration(newIndex);
+  };
+
+  const handlePlayPauseClick = () => {
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center space-x-2 h-10 min-h-[40px] px-2 bg-gray-800 border-b border-gray-700">
+    <div className="flex items-center space-x-2 h-10 min-h-[40px] px-2 bg-gray-800 border-b border-gray-700">
       <Button
         variant="outline"
         size="icon"
@@ -50,12 +64,51 @@ const TimelineToolbar = ({ totalTime }) => {
 
       <div className="border-l h-6 border-gray-400 mx-2"></div>
 
-      <span
-        className="text-white font-mono whitespace-nowrap"
-        style={{ fontSize: "10px" }}
-      >
-        {currentTime.toFixed(2)} / {totalTime.toFixed(2)}
-      </span>
+      <div className="flex items-center space-x-2">
+        <Clock size={14} strokeWidth={1.5} className="text-gray-400" />
+        <div className="relative w-20 flex items-center">
+          <input
+            type="range"
+            min="0"
+            max="4"
+            value={getCurrentPresetIndex()}
+            onChange={handleDurationChange}
+            className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+            style={{
+              background: 'linear-gradient(to right, #4A5568 0%, #4A5568 100%)',
+              WebkitAppearance: 'none',
+            }}
+          />
+          <style jsx>{`
+            input[type='range']::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              appearance: none;
+              width: 12px;
+              height: 12px;
+              background: #A0AEC0;
+              border-radius: 50%;
+              cursor: pointer;
+              transition: background .3s ease-in-out;
+            }
+            input[type='range']::-webkit-slider-thumb:hover {
+              background: #CBD5E0;
+            }
+            input[type='range']::-moz-range-thumb {
+              width: 12px;
+              height: 12px;
+              background: #A0AEC0;
+              border: none;
+              border-radius: 50%;
+              cursor: pointer;
+              transition: background .3s ease-in-out;
+            }
+            input[type='range']::-moz-range-thumb:hover {
+              background: #CBD5E0;
+            }
+          `}</style>
+        </div>
+        <span className="text-gray-400 text-xs">{duration}s</span>
+      </div>
     </div>
   );
 };
