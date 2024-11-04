@@ -1,30 +1,55 @@
-import React from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import Draggable from "react-draggable";
 import { Tally3 } from "lucide-react";
 import { useAtom } from 'jotai';
-import { currentTimeAtom, timelineScaleAtom } from '../../atoms';
+import { timelineScaleAtom } from '../../atoms';
+import useAnimation from '../../hooks/useAnimation';
 
 const Playhead = ({ containerWidth }) => {
-  const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
+  const { currentTime, setCurrentTime, isPlaying, pause } = useAnimation();
   const [scale] = useAtom(timelineScaleAtom);
+  const dragRef = useRef(false);
 
-  // Calculate the current x position based on currentTime and scale
-  const positionX = currentTime * scale;
+  // Memoize the position calculation
+  const positionX = Math.min(currentTime * scale, containerWidth);
 
-  const handlePlayheadDrag = (e, data) => {
-    const newTime = data.x / scale;
+  // Handle drag start
+  const handleStart = useCallback(() => {
+    dragRef.current = true;
+    if (isPlaying) {
+      pause(); // Pause animation while dragging
+    }
+  }, [isPlaying, pause]);
+
+  // Handle drag
+  const handleDrag = useCallback((e, data) => {
+    const newTime = Math.max(0, data.x / scale);
     setCurrentTime(newTime);
-  };
+  }, [scale, setCurrentTime]);
+
+  // Handle drag end
+  const handleStop = useCallback(() => {
+    dragRef.current = false;
+  }, []);
+
+  // Clean up drag state on unmount
+  useEffect(() => {
+    return () => {
+      dragRef.current = false;
+    };
+  }, []);
 
   return (
     <Draggable
       axis="x"
       bounds={{ left: 0, right: containerWidth }}
       position={{ x: positionX, y: 0 }}
-      onDrag={handlePlayheadDrag}
+      onStart={handleStart}
+      onDrag={handleDrag}
+      onStop={handleStop}
     >
       <div
-        className="playhead-container"
+        className="playhead-container group"
         style={{
           position: "absolute",
           top: 0,
@@ -32,6 +57,7 @@ const Playhead = ({ containerWidth }) => {
           cursor: "ew-resize",
           zIndex: 1000,
           pointerEvents: "none",
+          transform: `translateZ(0)` // Force GPU acceleration
         }}
       >
         <div
@@ -51,6 +77,7 @@ const Playhead = ({ containerWidth }) => {
             alignItems: "center",
             fontSize: "10px",
             color: "#FFFFFF",
+            willChange: "transform" // Optimize for animations
           }}
         >
           <Tally3
@@ -69,6 +96,7 @@ const Playhead = ({ containerWidth }) => {
             left: 0,
             zIndex: 1000,
             pointerEvents: "none",
+            willChange: "transform" // Optimize for animations
           }}
         />
       </div>
@@ -76,4 +104,4 @@ const Playhead = ({ containerWidth }) => {
   );
 };
 
-export default Playhead;
+export default React.memo(Playhead);
