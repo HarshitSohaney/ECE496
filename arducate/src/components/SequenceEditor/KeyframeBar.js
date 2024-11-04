@@ -64,16 +64,18 @@ const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd,
         const newStartTime = pixelsToTime(data.x);
         const duration = keyframe.end ? keyframe.end - keyframe.start : 0;
         const newEndTime = keyframe.end ? newStartTime + duration : null;
-
-        const updatedKeyframeData = { start: newStartTime };
-        if (newEndTime !== null) {
-          updatedKeyframeData.end = newEndTime;
+  
+        // Only update if the new times are within bounds
+        if (newStartTime >= timeRulerStart && (!newEndTime || newEndTime <= timeRulerEnd)) {
+          const updatedKeyframeData = { start: newStartTime };
+          if (newEndTime !== null) {
+            updatedKeyframeData.end = newEndTime;
+          }
+          updateKeyframe(objectId, keyframe.id, updatedKeyframeData);
         }
-
-        updateKeyframe(objectId, keyframe.id, updatedKeyframeData);
       }
     },
-    [isResizing, pixelsToTime, updateKeyframe, objectId]
+    [isResizing, pixelsToTime, updateKeyframe, objectId, timeRulerStart, timeRulerEnd]
   );
 
   return (

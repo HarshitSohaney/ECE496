@@ -4,12 +4,14 @@ import {
   arObjectsAtom,
   currentTimeAtom,
   isPlayingAtom,
+  timelineDurationAtom,
 } from '../atoms';
 
 const useAnimation = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
   const [arObjects, setArObjects] = useAtom(arObjectsAtom);
+  const [duration] = useAtom(timelineDurationAtom);
 
   const animationRef = useRef({
     startTime: null,
@@ -83,6 +85,9 @@ const useAnimation = () => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
     if (!targetObject) return;
 
+    // Don't add keyframe if we're beyond the timeline duration
+    if (currentTime > duration) return;
+
     const existingKeyframes = targetObject.keyframes || [];
     const lastKeyframe = existingKeyframes[existingKeyframes.length - 1];
 
@@ -98,9 +103,11 @@ const useAnimation = () => {
         },
       };
     } else {
+      // Ensure the end time doesn't exceed the timeline duration
+      const endTime = Math.min(currentTime, duration);
       newKeyframe = {
         ...lastKeyframe,
-        end: currentTime,
+        end: endTime,
         position: {
           ...lastKeyframe.position,
           end: [...(targetObject.position || [0, 0, 0])],
@@ -120,14 +127,23 @@ const useAnimation = () => {
         keyframes: updatedKeyframes,
       },
     });
-  }, [arObjects, currentTime, setArObjects]);
+  }, [arObjects, currentTime, duration, setArObjects]);
 
   const updateKeyframe = useCallback((objectId, keyframeId, updatedKeyframeData) => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
     if (!targetObject) return;
 
+    // Ensure keyframe times don't exceed timeline duration
+    const sanitizedData = { ...updatedKeyframeData };
+    if (sanitizedData.start !== undefined) {
+      sanitizedData.start = Math.min(sanitizedData.start, duration);
+    }
+    if (sanitizedData.end !== undefined) {
+      sanitizedData.end = Math.min(sanitizedData.end, duration);
+    }
+
     const updatedKeyframes = targetObject.keyframes.map(kf =>
-      kf.id === keyframeId ? { ...kf, ...updatedKeyframeData } : kf
+      kf.id === keyframeId ? { ...kf, ...sanitizedData } : kf
     );
 
     setArObjects({
@@ -137,8 +153,9 @@ const useAnimation = () => {
         keyframes: updatedKeyframes,
       },
     });
-  }, [arObjects, setArObjects]);
+  }, [arObjects, setArObjects, duration]);
 
+  // Rest of the code remains the same
   const interpolatePosition = (start, end, progress) => {
     if (!start || !end) {
       console.error('Start or end positions are undefined');
