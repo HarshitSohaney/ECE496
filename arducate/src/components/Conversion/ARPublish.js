@@ -1,6 +1,4 @@
 import { renderObject } from "./utils";
-// convertSceneToAR.js
-import { renderObject } from "./utils";
 
 export const convertSceneToAR = (arObjects) => {
   // Validate input

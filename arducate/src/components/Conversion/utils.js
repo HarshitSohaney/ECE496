@@ -55,38 +55,6 @@ export const renderTextLabel = (object) => `
     side="double"></a-text>
 `;
 
-// Returns A-frame Entity for Asset
-export const renderObject = (object) => {
-  const commonPosition = object.position.join(" ");
-  const commonScale = object.scale.join(" ");
-  const commonRotation = object.rotation.map(radiansToDegrees).join(" ");
-  
-  // Generate animations for the object using its keyframes
-  const animations = generateAnimations(object.keyframes || []);
-
-  return `
-    <a-entity position="${commonPosition}" scale="${commonScale}" rotation="${commonRotation}" ${animations}>
-      <${object.entity} 
-        scale="${commonScale}"
-        rotation="${commonRotation}"
-        color="${object.color || "#000000"}">
-      </${object.entity}>
-
-      <a-text 
-        visible="${object.showLabel || false}" 
-        value="${object.name || `Object ${object.id}`}"
-        position="0 ${-object.scale[1]} 0"
-        scale="0.5 0.5 0.5"
-        align="center"
-        color="#000000"
-        opacity="0.8"
-        side="double"
-        ${animations}>
-      </a-text>
-    </a-entity>
-  `;
-};
-
 // Helper function to determine the initial position based on keyframes
 export const getInitialPosition = (object) => {
   if (object.keyframes && object.keyframes.length > 0) {
