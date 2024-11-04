@@ -81,7 +81,7 @@ const TimelineToolbar = ({ totalTime }) => {
         <div className="border-l h-6 border-gray-400 mx-1 flex-shrink-0"></div>
 
         <div className="flex items-center">
-          <span className="text-white font-mono text-xs">
+          <span className="text-white font-mono text-[10px] sm:text-[12px]">
             {currentTime.toFixed(2)} / {totalTime.toFixed(2)}
           </span>
         </div>
