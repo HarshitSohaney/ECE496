@@ -8,14 +8,16 @@ import SequenceEditor from 'components/SequenceEditor/SequenceEditor';
 
 const App = () => {
   return (
-    <div className="flex flex-col items-center h-screen">
-      <Toolbar className="flex-shrink-0"/>
-      <div className="flex flex-1">
+    <div className="flex flex-col h-screen w-full overflow-hidden">
+      <Toolbar className="flex-shrink-0" />
+      <div className="flex flex-1 min-h-0 w-full overflow-hidden">
         <Sidebar />
         <ARCanvas />
         <ARControls />
       </div>
-      <SequenceEditor />
+      <div className="flex-shrink-0 w-full ">
+        <SequenceEditor />
+      </div>
     </div>
   );
 };

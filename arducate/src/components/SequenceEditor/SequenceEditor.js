@@ -45,21 +45,20 @@ const SequenceEditor = () => {
   };
 
   return (
-    <div className="relative flex flex-col w-full h-60 bg-gray-900">
-      <div className="relative flex flex-row w-full h-full min-w-0"> {/* Added min-w-0 */}
-        <div className="w-40 md:w-48 lg:w-56 border-r border-gray-700 bg-gray-800 flex flex-col min-w-0"> {/* Modified width classes */}
+    <div className="flex flex-col w-full h-[35vh] bg-gray-900">
+      <div className="flex flex-row w-full h-full min-w-0">
+        <div className="w-40 md:w-48 lg:w-56 border-r border-gray-700 bg-gray-800 flex flex-col flex-shrink-0">
           <div
             className="h-10 bg-gray-800 flex items-center justify-center relative"
             style={{
-              boxShadow:
-                "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
               zIndex: 10,
             }}
           >
             <TimelineToolbar totalTime={timeRulerEnd} />
           </div>
           <div
-            className="flex-grow overflow-auto"
+            className="flex-1 overflow-y-auto"
             ref={objectListRef}
             onScroll={handleScroll}
           >
@@ -76,13 +75,11 @@ const SequenceEditor = () => {
           </div>
         </div>
 
-        <div className="flex-grow relative bg-gray-800 text-gray-300 min-w-0"> {/* Added min-w-0 */}
+        <div className="flex-1 relative bg-gray-800 text-gray-300 min-w-0">
           <div
-            className="relative flex items-center"
+            className="relative flex items-center h-10"
             style={{
-              height: "40px",
-              boxShadow:
-                "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
               zIndex: 5,
             }}
           >
@@ -92,12 +89,11 @@ const SequenceEditor = () => {
           <Playhead currentTime={currentTime} containerWidth={timelineWidth} />
 
           <div
-            className="relative overflow-y-auto"
+            className="absolute inset-0 top-10 overflow-y-auto"
             ref={(el) => {
               containerRef.current = el;
               timelineRowsRef.current = el;
             }}
-            style={{ height: "calc(100% - 40px)" }}
             onScroll={handleScroll}
           >
             {arObjects.map((object) => (
