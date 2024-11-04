@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { useAtom } from 'jotai';
 import { timelineScaleAtom, timelineWidthAtom, timelineDurationAtom } from "../../atoms";
 
-const TimeRuler = ({ height = 20 }) => {
+const TimeRuler = ({ height = 32 }) => {
   const canvasRef = useRef(null);
   const [, setScale] = useAtom(timelineScaleAtom);
   const [timelineWidth, setTimelineWidth] = useAtom(timelineWidthAtom);
@@ -51,6 +51,7 @@ const TimeRuler = ({ height = 20 }) => {
   return (
     <canvas
       ref={canvasRef}
+      className="bg-gray-800"
       style={{ width: "100%", height: `${height}px` }}
     />
   );
@@ -65,10 +66,11 @@ function drawRuler(context, width, height, start, end) {
 
   context.clearRect(0, 0, width, height);
 
-  context.fillStyle = "#E2E8F0";
-  context.strokeStyle = "#E2E8F0";
+  // Updated colors to match dark theme
+  context.fillStyle = "#9CA3AF"; // text-gray-400
+  context.strokeStyle = "#4B5563"; // border-gray-600
   context.lineWidth = 1;
-  context.font = "8px Inter, sans-serif";
+  context.font = "10px Inter, sans-serif";
   context.textBaseline = "bottom";
 
   // Draw major ticks and labels

@@ -64,7 +64,7 @@ const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd,
         const newStartTime = pixelsToTime(data.x);
         const duration = keyframe.end ? keyframe.end - keyframe.start : 0;
         const newEndTime = keyframe.end ? newStartTime + duration : null;
-  
+
         // Only update if the new times are within bounds
         if (newStartTime >= timeRulerStart && (!newEndTime || newEndTime <= timeRulerEnd)) {
           const updatedKeyframeData = { start: newStartTime };
