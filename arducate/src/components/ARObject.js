@@ -1,10 +1,11 @@
+// src/components/ARObject.js
 import React, { useRef, useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
 import { getAsset } from "./Assets";
 import { Edges } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import AnimationController from "../controllers/AnimationController";
+import useAnimation from "hooks/useAnimation";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 
 const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
@@ -12,7 +13,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const meshRef = useRef();
   const labelRef = useRef();
 
-  const { interpolateProperties } = AnimationController();
+  const { interpolateProperties } = useAnimation();
 
   // Assign the mesh reference to the transform controls when the object is selected
   useEffect(() => {
@@ -84,20 +85,20 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   });
 
   return (
-      <mesh
-        ref={meshRef}
-        position={object.position || [0, 0, 0]}
-        scale={object.scale || [1, 1, 1]}
-        rotation={object.rotation || [0, 0, 0]}
-        onPointerDown={handlePointerDown} // Detect object selection
-      >
-        {/* Render the correct geometry */}
-        {getAsset(object.type)}
-        <meshStandardMaterial color={object.color || "orange"}/>
-        {object.type !== "line" && (
+    <mesh
+      ref={meshRef}
+      position={object.position || [0, 0, 0]}
+      scale={object.scale || [1, 1, 1]}
+      rotation={object.rotation || [0, 0, 0]}
+      onPointerDown={handlePointerDown}
+    >
+      {/* Render the correct geometry */}
+      {getAsset(object.type, { text: object.text })}
+      <meshStandardMaterial color={object.color || "orange"} />
+      {object.type !== "text" && object.type !== "line" && (
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
       )}
-      </mesh>
+    </mesh>
   );
 };
 

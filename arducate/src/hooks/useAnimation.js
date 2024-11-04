@@ -1,6 +1,5 @@
-// src/controllers/AnimationController.js
 import { useAtom } from 'jotai';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import {
   arObjectsAtom,
   currentTimeAtom,
@@ -8,61 +7,79 @@ import {
   timelineDurationAtom,
 } from '../atoms';
 
-const AnimationController = () => {
+const useAnimation = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
   const [arObjects, setArObjects] = useAtom(arObjectsAtom);
   const [duration] = useAtom(timelineDurationAtom);
 
+  const animationRef = useRef({
+    startTime: null,
+    lastFrameTime: null,
+    initialPlayTime: 0,
+    frameId: null
+  });
+
   useEffect(() => {
-    let animationFrameId;
-    let lastTimestamp;
+    const animate = (currentFrameTime) => {
+      const anim = animationRef.current;
 
-    const animate = (timestamp) => {
-      if (!lastTimestamp) lastTimestamp = timestamp;
-      const deltaTime = (timestamp - lastTimestamp) / 1000;
-      lastTimestamp = timestamp;
+      if (!isPlaying) return;
 
-      setCurrentTime((prevTime) => {
-        const newTime = prevTime + deltaTime;
-        // Stop playing if we reach the end of the timeline
-        if (newTime >= duration) {
-          setIsPlaying(false);
-          return duration;
-        }
-        return newTime;
-      });
-
-      if (isPlaying) {
-        animationFrameId = requestAnimationFrame(animate);
+      // Initialize animation timing on first frame
+      if (!anim.startTime) {
+        anim.startTime = currentFrameTime;
+        anim.lastFrameTime = currentFrameTime;
+        anim.initialPlayTime = currentTime;
       }
+
+      // Calculate precise elapsed time since animation started
+      const elapsedTime = (currentFrameTime - anim.startTime) / 1000;
+      const newTime = anim.initialPlayTime + elapsedTime;
+
+      setCurrentTime(newTime);
+
+      anim.frameId = requestAnimationFrame(animate);
     };
 
     if (isPlaying) {
-      animationFrameId = requestAnimationFrame(animate);
-    } else if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId);
+      animationRef.current.frameId = requestAnimationFrame(animate);
+    } else {
+      if (animationRef.current.frameId) {
+        cancelAnimationFrame(animationRef.current.frameId);
+      }
+      // Reset animation state
+      animationRef.current = {
+        startTime: null,
+        lastFrameTime: null,
+        initialPlayTime: currentTime,
+        frameId: null
+      };
     }
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      if (animationRef.current.frameId) {
+        cancelAnimationFrame(animationRef.current.frameId);
       }
     };
-  }, [isPlaying, setCurrentTime, duration, setIsPlaying]);
+  }, [isPlaying, setCurrentTime, currentTime]);
 
-  // Update to check if currentTime is within duration when starting playback
-  const play = () => {
-    if (currentTime >= duration) {
-      setCurrentTime(0);
-    }
+  const play = useCallback(() => {
+    // Store the current time as the starting point for playback
+    animationRef.current.initialPlayTime = currentTime;
     setIsPlaying(true);
-  };
+  }, [currentTime, setIsPlaying]);
 
-  const stop = () => {
+  const pause = useCallback(() => {
     setIsPlaying(false);
-    setCurrentTime(0);
-  };
+  }, [setIsPlaying]);
+
+  const stop = useCallback(() => {
+    setIsPlaying(false);
+    requestAnimationFrame(() => {
+      setCurrentTime(0);
+    });
+  }, [setIsPlaying, setCurrentTime]);
 
   const addKeyframe = useCallback((objectId) => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
@@ -115,7 +132,7 @@ const AnimationController = () => {
   const updateKeyframe = useCallback((objectId, keyframeId, updatedKeyframeData) => {
     const targetObject = arObjects.find(obj => obj.id === objectId);
     if (!targetObject) return;
-  
+
     // Ensure keyframe times don't exceed timeline duration
     const sanitizedData = { ...updatedKeyframeData };
     if (sanitizedData.start !== undefined) {
@@ -124,11 +141,11 @@ const AnimationController = () => {
     if (sanitizedData.end !== undefined) {
       sanitizedData.end = Math.min(sanitizedData.end, duration);
     }
-  
+
     const updatedKeyframes = targetObject.keyframes.map(kf =>
       kf.id === keyframeId ? { ...kf, ...sanitizedData } : kf
     );
-  
+
     setArObjects({
       type: 'UPDATE_OBJECT',
       payload: {
@@ -183,13 +200,15 @@ const AnimationController = () => {
 
   return {
     play,
+    pause,
     stop,
     addKeyframe,
     updateKeyframe,
     interpolateProperties,
     currentTime,
+    setCurrentTime,
     isPlaying,
   };
 };
 
-export default AnimationController;
+export default useAnimation;

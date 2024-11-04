@@ -5,12 +5,12 @@ import TimelineRow from "./TimelineRow";
 import TimeRuler from "./TimeRuler";
 import Playhead from "./Playhead";
 import TimelineToolbar from "./TimelineToolbar";
-import AnimationController from "../../controllers/AnimationController";
+import useAnimation from "../../hooks/useAnimation";
 
 const SequenceEditor = () => {
   const [arObjects] = useAtom(arObjectsAtom);
   const [duration] = useAtom(timelineDurationAtom);
-  const { currentTime } = AnimationController();
+  const { currentTime } = useAnimation();
   const [timelineWidth, setTimelineWidth] = useState(0);
 
   const containerRef = useRef(null);
