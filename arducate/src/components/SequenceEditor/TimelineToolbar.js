@@ -28,46 +28,49 @@ const TimelineToolbar = ({ totalTime }) => {
   };
 
   return (
-    <div className="flex items-center justify-center space-x-2 h-10 min-h-[40px] px-2 bg-gray-800 border-b border-gray-700">
-      <Button
-        variant="outline"
-        size="icon"
-        className="navbar-button h-6 w-6"
-        onClick={handlePlayPauseClick}
-      >
-        {isPlaying ? (
-          <Pause size={14} strokeWidth={1.5} />
-        ) : (
-          <Play size={14} strokeWidth={1.5} />
-        )}
-      </Button>
+    <div className="h-10 min-h-[40px] bg-gray-800 border-b border-gray-700 w-full flex items-center justify-center">
+      <div className="flex items-center gap-1 px-1 overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <Button
+            variant="outline"
+            size="icon"
+            className="navbar-button h-6 w-6 min-w-6"
+            onClick={handlePlayPauseClick}
+          >
+            {isPlaying ? (
+              <Pause size={14} strokeWidth={1.5} />
+            ) : (
+              <Play size={14} strokeWidth={1.5} />
+            )}
+          </Button>
 
-      <Button
-        variant="outline"
-        size="icon"
-        className="navbar-button h-6 w-6"
-        onClick={stop}
-      >
-        <Square size={14} strokeWidth={1.5} />
-      </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="navbar-button h-6 w-6 min-w-6"
+            onClick={stop}
+          >
+            <Square size={14} strokeWidth={1.5} />
+          </Button>
 
-      <Button
-        variant="outline"
-        size="icon"
-        className="navbar-button h-6 w-6"
-        onClick={handleAddKeyframe}
-      >
-        <DiamondPlus size={14} strokeWidth={1.5} />
-      </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="navbar-button h-6 w-6 min-w-6"
+            onClick={handleAddKeyframe}
+          >
+            <DiamondPlus size={14} strokeWidth={1.5} />
+          </Button>
+        </div>
 
-      <div className="border-l h-6 border-gray-400 mx-2"></div>
+        <div className="border-l h-6 border-gray-400 mx-1 flex-shrink-0"></div>
 
-      <span
-        className="text-white font-mono whitespace-nowrap"
-        style={{ fontSize: "10px" }}
-      >
-        {currentTime.toFixed(2)} / {totalTime.toFixed(2)}
-      </span>
+        <div className="flex items-center min-w-0 flex-shrink">
+          <span className="text-white font-mono text-xs truncate">
+            {currentTime.toFixed(2)} / {totalTime.toFixed(2)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

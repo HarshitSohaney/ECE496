@@ -21,9 +21,18 @@ const SequenceEditor = () => {
   const timeRulerEnd = 20;
 
   useEffect(() => {
-    if (containerRef.current) {
-      setTimelineWidth(containerRef.current.offsetWidth);
-    }
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setTimelineWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    // Initial width
+    updateWidth();
+
+    // Add resize listener
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
   const handleScroll = (event) => {
@@ -37,8 +46,8 @@ const SequenceEditor = () => {
 
   return (
     <div className="relative flex flex-col w-full h-60 bg-gray-900">
-      <div className="relative flex flex-row w-full h-full">
-        <div className="w-[15vw] border-r border-gray-700 bg-gray-800 flex flex-col">
+      <div className="relative flex flex-row w-full h-full min-w-0"> {/* Added min-w-0 */}
+        <div className="w-40 md:w-48 lg:w-56 border-r border-gray-700 bg-gray-800 flex flex-col min-w-0"> {/* Modified width classes */}
           <div
             className="h-10 bg-gray-800 flex items-center justify-center relative"
             style={{
@@ -67,7 +76,7 @@ const SequenceEditor = () => {
           </div>
         </div>
 
-        <div className="flex-grow relative bg-gray-800 text-gray-300">
+        <div className="flex-grow relative bg-gray-800 text-gray-300 min-w-0"> {/* Added min-w-0 */}
           <div
             className="relative flex items-center"
             style={{
