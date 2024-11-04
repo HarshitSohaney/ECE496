@@ -13,6 +13,8 @@ Editor Environment: Add 3 shapes of different types
 	Ensure its persistent after clicking and modifying another shape
 	Ensure its persistent in the Preview Environment
 - Try the buttons & sliders – Make sure it performs as expected
+- Text:
+	Ensure text asset is editable and can be transformed as any other object. 
 
 Preview Environment:
 	Can move around in the environment as expected (see all sides and all shapes)
