@@ -10,11 +10,12 @@ const ARControls = () => {
   const handleColorChange = (e) => {
     if (selectedObject) {
       setARObjects({
-        type: 'UPDATE_OBJECT', 
-        payload: { 
+        //Actual update handled in the atom
+        type: "UPDATE_OBJECT",
+        payload: {
           ...selectedObject,
-          color: e.target.value
-        } 
+          color: e.target.value,
+        },
       });
     }
   };
@@ -50,37 +51,37 @@ const ARControls = () => {
 
   const handleDeleteAsset = useCallback(() => {
     if (selectedObject) {
-      setARObjects({ type: 'REMOVE_OBJECT', payload: selectedObject.id });
+      setARObjects({ type: "REMOVE_OBJECT", payload: selectedObject.id });
     }
   }, [selectedObject, setARObjects]);
 
   const handleLabelChange = (e) => {
     setARObjects({
-      type: 'UPDATE_OBJECT',
+      type: "UPDATE_OBJECT",
       payload: {
         id: selectedObject.id,
-        name: e.target.value
-      }
+        name: e.target.value,
+      },
     });
   };
-  
+
   const handleLabelVisibilityChange = (checked) => {
     setARObjects({
-      type: 'UPDATE_OBJECT',
+      type: "UPDATE_OBJECT",
       payload: {
         id: selectedObject.id,
-        showLabel: checked
-      }
+        showLabel: checked,
+      },
     });
   };
 
   const handleTextChange = (e) => {
     setARObjects({
-      type: 'UPDATE_OBJECT',
+      type: "UPDATE_OBJECT",
       payload: {
         id: selectedObject.id,
-        text: e.target.value
-      }
+        text: e.target.value,
+      },
     });
   };
 
@@ -122,8 +123,11 @@ const ARControls = () => {
 
   if (!selectedObject) {
     return (
-      <div className="w-[15vw] bg-secondary">
-        <div className="mt-1 text-center text-sm">No Object Selected</div>
+      <div className="w-[15vw] h-full flex flex-col items-center justify-center bg-secondary text-gray-700 rounded-lg shadow-lg p-4">
+        <div className="text-lg font-semibold">No Object Selected</div>
+        <p className="text-sm text-gray-500 mt-1 text-center">
+          Please select an object to view its details.
+        </p>
       </div>
     );
   }
@@ -193,8 +197,8 @@ const ARControls = () => {
           />
         </div>
       }
-      <div className="mb-3">
-        <label className="block text-xs font-medium">Color:</label>
+      <div className="mb-4">
+        <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
           type="color"
           value={selectedObject.color || "#ffa500"}

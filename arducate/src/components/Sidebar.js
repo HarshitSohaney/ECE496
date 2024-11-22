@@ -2,14 +2,24 @@
 import React, { useState } from "react";
 import SceneGraph from "./SceneGraph";
 import AssetHandler from "./AssetHandler";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../@/components/ui/select";
 import { Button } from "../@/components/ui/button";
 import { useAtom } from "jotai";
 import { treeDataAtom } from "../atoms";
+import { Move, MoveDiagonal, RotateCw } from "lucide-react";
+import { transformModeAtom } from "../atoms";
 
 const Sidebar = () => {
-  const [data, setData] = useAtom(treeDataAtom)
+  const [data, setData] = useAtom(treeDataAtom);
   const [cursor, setCursor] = useState(null);
+  const [, setTransformMode] = useAtom(transformModeAtom);
 
   const handleActionChange = (value) => {
     // dummy function
@@ -22,12 +32,38 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-[15vw] items-center p-2 bg-secondary">
-      {/* AssetHandler Component */}
-      <AssetHandler data={data} setData={setData} cursor={cursor} setCursor={setCursor} />
-
+    <div className="w-[15vw] items-center p-2 bg-secondary flex flex-col space-y-2 overflow-y-auto">
       {/* Add Action */}
-      <Select onValueChange={handleActionChange}>
+      <div className="navbar-button-container flex flex-row space-x-2">
+        <Button
+          variant="outline"
+          size="icon"
+          className="navbar-button"
+          onClick={() => setTransformMode("translate")}
+        >
+          <Move />
+        </Button>
+
+        <Button
+          variant="outline"
+          size="icon"
+          className="navbar-button"
+          onClick={() => setTransformMode("scale")}
+        >
+          <MoveDiagonal />
+        </Button>
+
+        <Button
+          variant="outline"
+          size="icon"
+          className="navbar-button"
+          onClick={() => setTransformMode("rotate")}
+        >
+          <RotateCw />
+        </Button>
+      </div>
+
+      {/* <Select onValueChange={handleActionChange}>
         <SelectTrigger variant="outline" className="mt-1">
           <SelectValue placeholder="Add Action" />
         </SelectTrigger>
@@ -37,12 +73,12 @@ const Sidebar = () => {
             <SelectItem value="rotate">Rotation</SelectItem>
           </SelectGroup>
         </SelectContent>
-      </Select>
+      </Select> */}
 
       {/* Add Frame */}
-      <Button onClick={handleAddFrame} className="mt-1 bg-input text-black w-full">
+      {/* <Button onClick={handleAddFrame} className="mt-1 bg-input text-black w-full">
         Add Frame
-      </Button>
+      </Button> */}
 
       {/* SceneGraph Component */}
       <SceneGraph data={data} setData={setData} />
