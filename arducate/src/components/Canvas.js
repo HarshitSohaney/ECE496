@@ -60,9 +60,6 @@ const ARCanvas = () => {
   const [transformMode] = useAtom(transformModeAtom);
   const [transformControlsRef, setTransformControlsRef] = useState(null); // State to store the selected object's mesh ref
 
-  // Function to convert radians to degrees
-  const radiansToDegrees = (radians) => radians * (180 / Math.PI);
-
   // Handle the transformation change and update state
 const handleObjectTransform = useCallback(() => {
   if (!selectedObject || !transformControlsRef) return;

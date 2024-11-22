@@ -1,5 +1,5 @@
 Purpose: This file describes the unit tests that must be conducted prior to merging a PR 
-Date Last Modified: September 24, 2024 
+Date Last Modified: November 3rd, 2024 
 
 ADDING UNIT TESTS - As new features are added, they can be added to this list of tests 
 Please update 'Date Last Modified' after adding a unit test
@@ -13,6 +13,10 @@ Editor Environment: Add 3 shapes of different types
 	Ensure its persistent after clicking and modifying another shape
 	Ensure its persistent in the Preview Environment
 - Try the buttons & sliders – Make sure it performs as expected
+- Text:
+	Ensure text asset is editable and can be transformed as any other object. 
+- Animation:
+	Can animate rotation, scaling and translation in editor
 
 Preview Environment:
 	Can move around in the environment as expected (see all sides and all shapes)
