@@ -53,6 +53,9 @@ function CSS2DRendererSetup() {
   return null;
 }
 
+function radiansToDegrees(radians) {
+  return radians * (180 / Math.PI);
+}
 
 const ARCanvas = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
@@ -132,7 +135,7 @@ const handleObjectTransform = useCallback(() => {
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && transformControlsRef && (
+        {selectedObject && transformControlsRef && selectedObject.visible !== false &&  (
           <TransformControls
             object={transformControlsRef} // Attach transform controls to the selected object's mesh
             mode={transformMode}
