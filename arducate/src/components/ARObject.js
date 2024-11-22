@@ -7,7 +7,7 @@ import { Edges } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import useAnimation from "hooks/useAnimation";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
-import * as THREE from 'three';
+import * as THREE from "three";
 
 const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
@@ -69,6 +69,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     const interpolatedProps = interpolateProperties(object.id);
 
     if (interpolatedProps) {
+      // const { position, rotation, scale, color } = interpolatedProps;
       const { position, rotation, scale } = interpolatedProps;
 
       if (position) {
@@ -82,6 +83,11 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       if (scale) {
         meshRef.current.scale.set(...scale);
       }
+
+      // if (color) {
+      //   const threeColor = new THREE.Color(color[0], color[1], color[2]);
+      //   meshRef.current.material.color.copy(threeColor);
+      // }
     }
   });
 
