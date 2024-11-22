@@ -69,9 +69,10 @@ export const renderObject = (object) => {
 
   const commonPosition = object.position.join(" ");
   const commonScale = object.scale.join(" ");
-  const commonRotation = object.rotation.join(" ");
+  const commonRotation = object.rotation.map(radiansToDegrees).join(" ");
   const commonTextLabel = renderTextLabel(object);
   
+
   switch (object.entity) {
     case "a-text":
       return `
@@ -105,8 +106,9 @@ export const renderObject = (object) => {
       return `
       <a-entity position="${initialPosition}" ${animations}>
         <${object.entity}
-            scale="${object.scale.join(" ")}" 
-            rotation="${object.rotation.join(" ")}"
+            position="${commonPosition}"
+            scale="${commonScale}" 
+            rotation="${commonRotation}"
             color="${object.color}">
         </${object.entity}>
         <a-text visible="${object.showLabel}" 
