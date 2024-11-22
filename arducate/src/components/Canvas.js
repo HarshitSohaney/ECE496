@@ -135,7 +135,7 @@ const handleObjectTransform = useCallback(() => {
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && transformControlsRef && (
+        {selectedObject && transformControlsRef && selectedObject.visible !== false && (
           <TransformControls
             object={transformControlsRef} // Attach transform controls to the selected object's mesh
             mode={transformMode}
