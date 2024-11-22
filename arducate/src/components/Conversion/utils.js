@@ -1,41 +1,83 @@
 export const generateAnimations = (keyframes) => {
   if (!keyframes || keyframes.length === 0) return "";
 
-  const sortedKeyframes = [...keyframes].sort((a, b) => a.start - b.start);
+  // Memoize radians to degrees conversion
+  const radiansToDegrees = (() => {
+    const cache = new Map();
+    return (rad) => {
+      if (!cache.has(rad)) {
+        cache.set(rad, rad * (180 / Math.PI));
+      }
+      return cache.get(rad);
+    };
+  })();
+
+  // Sort and validate keyframes
+  const validKeyframes = keyframes
+    .filter(kf => 
+      kf.position?.start && 
+      kf.position?.end && 
+      Array.isArray(kf.position.start) && 
+      Array.isArray(kf.position.end)
+    )
+    .sort((a, b) => a.start - b.start);
+
   const animations = [];
-  let lastEndTime = 0; // Keep track of the last end time
+  let lastEndTime = 0;
 
-  sortedKeyframes.forEach((kf, index) => {
-    if (
-      !kf.position?.start ||
-      !kf.position.end ||
-      !Array.isArray(kf.position.start) ||
-      !Array.isArray(kf.position.end)
-    ) {
-      console.warn(`Keyframe ${kf.id} is missing valid position start/end`);
-      return;
-    }
-
+  validKeyframes.forEach((kf, index) => {
+    // Calculate duration and delay
     const duration = kf.end != null ? (kf.end - kf.start) * 1000 : 0;
-    let delay = kf.start * 1000;
+    let delay = Math.max(kf.start * 1000, lastEndTime);
 
-    // Adjust delay to avoid overlap
-    if (lastEndTime > delay) {
-      delay = lastEndTime; // Start immediately after the last animation ends
-    }
+    // Ensure scale and rotation have defaults
+    const scaleStart = kf.scale?.start || [1, 1, 1];
+    const scaleEnd = kf.scale?.end || [1, 1, 1];
+    const rotationStart = kf.rotation?.start || [0, 0, 0];
+    const rotationEnd = kf.rotation?.end || [0, 0, 0];
 
-    const from = kf.position.start.join(" ");
-    const to = kf.position.end.join(" ");
+    // Generate animations for position, rotation, and scale
+    const animationProps = [
+      {
+        prop: 'position',
+        from: kf.position.start.join(' '),
+        to: kf.position.end.join(' '),
+        defaultFrom: '0 0 0',
+        defaultTo: '0 0 0'
+      },
+      {
+        prop: 'rotation',
+        from: rotationStart.map(radiansToDegrees).join(' '),
+        to: rotationEnd.map(radiansToDegrees).join(' '),
+        defaultFrom: '0 0 0',
+        defaultTo: '0 0 0'
+      },
+      {
+        prop: 'scale',
+        from: scaleStart.join(' '),
+        to: scaleEnd.join(' '),
+        defaultFrom: '1 1 1',
+        defaultTo: '1 1 1'
+      }
+    ];
 
-    animations.push(
-      `animation__${index}="property: position; from: ${from}; to: ${to}; dur: ${duration}; delay: ${delay}; easing: easeInOutSine"`
-    );
+    // Create animation strings
+    animationProps.forEach(prop => {
+      const fromValue = prop.from || prop.defaultFrom;
+      const toValue = prop.to || prop.defaultTo;
 
-    // Update lastEndTime
-    lastEndTime = delay + duration; // Set lastEndTime to the end of the current animation
+      if (fromValue && toValue) {
+        animations.push(
+          `animation__${index}_${prop.prop}= "property: ${prop.prop}; from: ${fromValue}; to: ${toValue}; dur: ${duration}; delay: ${delay}"`
+        );
+      }
+    });
+
+    // Update last end time
+    lastEndTime = delay + duration;
   });
 
-  return animations.join(" ");
+  return animations.reverse().join(" ");
 };
 
 // Function to convert radians to degrees
@@ -71,7 +113,6 @@ export const renderObject = (object) => {
   const commonScale = object.scale.join(" ");
   const commonRotation = object.rotation.map(radiansToDegrees).join(" ");
   const commonTextLabel = renderTextLabel(object);
-  
 
   switch (object.entity) {
     case "a-text":
