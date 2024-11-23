@@ -1,10 +1,11 @@
+// src/components/ARObject.js
 import React, { useRef, useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom } from "../atoms";
 import { getAsset } from "./Assets";
 import { Edges } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import AnimationController from "../controllers/AnimationController";
+import useAnimation from "hooks/useAnimation";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import * as THREE from 'three';
 
@@ -13,7 +14,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const meshRef = useRef();
   const labelRef = useRef();
 
-  const { interpolateProperties } = AnimationController();
+  const { interpolateProperties } = useAnimation();
 
   // Assign the mesh reference to the transform controls when the object is selected
   useEffect(() => {
@@ -68,10 +69,18 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     const interpolatedProps = interpolateProperties(object.id);
 
     if (interpolatedProps) {
-      const { position } = interpolatedProps;
+      const { position, rotation, scale } = interpolatedProps;
 
       if (position) {
         meshRef.current.position.set(...position);
+      }
+
+      if (rotation) {
+        meshRef.current.rotation.set(...rotation);
+      }
+      
+      if (scale) {
+        meshRef.current.scale.set(...scale);
       }
     }
   });
@@ -89,9 +98,12 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       rotation={object.rotation.slice(0, 3).map(deg => THREE.MathUtils.degToRad(deg))}
       onPointerDown={handlePointerDown}
     >
-      {getAsset(object.type)}
+      {/* Render the correct geometry */}
+      {getAsset(object.type, { text: object.text })}
       <meshStandardMaterial color={object.color || "orange"} />
-      <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+      {object.type !== "text" && object.type !== "line" && (
+        <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+      )}
     </mesh>
   );
 };

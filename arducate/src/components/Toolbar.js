@@ -2,7 +2,8 @@
 import React from "react";
 import { useAtom } from "jotai";
 import { arObjectsAtom, transformModeAtom } from "../atoms";
-import { convertSceneToAR, convertSceneToVR } from "./ARPublish";
+import { convertSceneToAR } from "./Conversion/ARPublish";
+import { convertSceneToVR } from "./Conversion/VRPublish";
 import { Button } from "../@/components/ui/button"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "../@/components/ui/select"
 import { Move, MoveDiagonal, RotateCw } from "lucide-react";

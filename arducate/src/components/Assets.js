@@ -1,4 +1,6 @@
 // src/components/Assets.js
+import { Text } from '@react-three/drei';
+import { Line } from "@react-three/drei";
 
 // Define your geometry components if not already done
 const BoxGeometry = () => <boxGeometry args={[1, 1, 1]} />;
@@ -10,6 +12,16 @@ const ConeGeometry = () => <coneGeometry args={[1, 2, 32]} />;
 const TorusGeometry = () => <torusGeometry args={[1, 0.3, 2, 100]} />;
 const RingGeometry = () => <ringGeometry args={[0.3, 1, 32]} />;
 
+const TextAsset = ({text}) => 
+    <Text
+      color="black"
+      anchorX="center"
+      anchorY="middle"
+      position={[0, 0, 0]}
+    >
+      {text}
+    </Text>;
+
 // Define the Map for geometry types to JSX elements
 const Assets = new Map([
   ['box', <BoxGeometry />],
@@ -20,10 +32,14 @@ const Assets = new Map([
   ['cone', <ConeGeometry />],
   ['torus', <TorusGeometry />],
   ['ring', <RingGeometry />],
+  ['text', (props) => <TextAsset text={props.text} />],
+  ['line', <Line points={[[0, 0, 0], [0, 2, 0]]} lineWidth={2} color="black"/>]
 ]);
 
-export const getAsset = (itemSelected) => {
-    return Assets.get(itemSelected);
+export const getAsset = (itemSelected, props) => {
+    const asset = Assets.get(itemSelected);
+    // Only pass props if the asset type is 'text'
+    return itemSelected === 'text' ? asset(props) : asset;
 };
 
 const AssetsAR = new Map([
@@ -35,6 +51,8 @@ const AssetsAR = new Map([
     ['cone', 'a-cone'],
     ['torus', 'a-torus'],
     ['ring', 'a-ring'],
+    ['text', 'a-text'],
+    ['line', 'a-element']
 ]);
 
 export const getArAsset = (item) => {

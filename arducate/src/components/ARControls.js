@@ -74,6 +74,16 @@ const ARControls = () => {
     });
   };
 
+  const handleTextChange = (e) => {
+    setARObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: selectedObject.id,
+        text: e.target.value
+      }
+    });
+  };
+
   const handleRotationChange = (axis, value) => {
     if (selectedObject) {
       const currentRotation = Array.isArray(selectedObject.rotation) 
@@ -172,6 +182,17 @@ const ARControls = () => {
         </div>
       </div>
 
+      {selectedObject.type == 'text' && 
+        <div className="mb-4">
+          <label className="block mb-2 text-sm font-medium">Text Input:</label>
+          <input
+            type="text"
+            value={selectedObject.text}
+            onChange={handleTextChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+      }
       <div className="mb-3">
         <label className="block text-xs font-medium">Color:</label>
         <input

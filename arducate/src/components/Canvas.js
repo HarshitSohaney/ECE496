@@ -8,6 +8,7 @@ import ARObject from "./ARObject";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from 'three';
+
 // This function sets up and manages the CSS2DRenderer for rendering 2D labels in a 3D scene
 function CSS2DRendererSetup() {
   const { gl, scene, camera } = useThree();
@@ -59,9 +60,6 @@ const ARCanvas = () => {
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
   const [transformMode] = useAtom(transformModeAtom);
   const [transformControlsRef, setTransformControlsRef] = useState(null); // State to store the selected object's mesh ref
-
-  // Function to convert radians to degrees
-  const radiansToDegrees = (radians) => radians * (180 / Math.PI);
 
   // Handle the transformation change and update state
 const handleObjectTransform = useCallback(() => {
