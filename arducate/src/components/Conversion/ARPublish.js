@@ -24,7 +24,7 @@ export const convertSceneToAR = (arObjects) => {
       <a-scene embedded arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3;" renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false">
         <a-marker preset="hiro" global-animation-coordinator>
           <a-entity position="0 1.5 0">
-            ${arObjects.map(renderObject).join("")}
+            ${arObjects.filter(object => object.visible !== false).map(renderObject).join("")}
           </a-entity>
         </a-marker>
         <a-entity camera></a-entity>

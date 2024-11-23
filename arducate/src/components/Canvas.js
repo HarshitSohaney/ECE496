@@ -54,7 +54,10 @@ function CSS2DRendererSetup() {
   return null;
 }
 
-
+// Converts radians to degrees
+function radiansToDegrees(radians) {
+  return radians * (180 / Math.PI);
+}
 const ARCanvas = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
