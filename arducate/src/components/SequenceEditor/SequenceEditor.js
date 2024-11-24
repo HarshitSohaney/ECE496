@@ -46,10 +46,6 @@ const ObjectRow = ({ object }) => (
         <div className="w-4 mr-1" />
       )}
       <span className="text-sm text-gray-300 flex-grow">{object.name}</span>
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-        <Eye className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer" />
-        <Lock className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer" />
-      </div>
     </div>
   </div>
 );
