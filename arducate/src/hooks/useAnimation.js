@@ -172,6 +172,21 @@ const useAnimation = () => {
     });
   }, [arObjects, setArObjects, duration]);
 
+  const deleteKeyframe = useCallback((objectId, keyframeId) => {
+    const targetObject = arObjects.find(obj => obj.id === objectId);
+    if (!targetObject) return;
+
+    const updatedKeyframes = targetObject.keyframes.filter(kf => kf.id !== keyframeId);
+
+    setArObjects({
+      type: 'UPDATE_OBJECT',
+      payload: {
+        id: objectId,
+        keyframes: updatedKeyframes,
+      },
+    });
+  }, [arObjects, setArObjects]);
+
   // Rest of the code remains the same
   const interpolatePosition = (start, end, progress) => {
     if (!start || !end) {
@@ -207,7 +222,7 @@ const useAnimation = () => {
 
     // Convert back to Euler angles
     const interpolatedEuler = new THREE.Euler().setFromQuaternion(interpolatedQuaternion, 'XYZ');
-    
+
     return [interpolatedEuler.x, interpolatedEuler.y, interpolatedEuler.z];
   };
 
@@ -273,6 +288,7 @@ const useAnimation = () => {
     stop,
     addKeyframe,
     updateKeyframe,
+    deleteKeyframe,
     interpolateProperties,
     currentTime,
     setCurrentTime,

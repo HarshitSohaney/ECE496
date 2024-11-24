@@ -1,6 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
-  Play, Pause, SkipBack, ChevronRight, Eye, Lock, Plus
+  Play,
+  Pause,
+  SkipBack,
+  ChevronRight,
+  Eye,
+  Lock,
+  Plus,
+  Settings2,
 } from "lucide-react";
 import { useAtom } from "jotai";
 import {
@@ -8,13 +15,27 @@ import {
   timelineDurationAtom,
   arObjectsAtom,
   timelineScaleAtom,
-  timelineWidthAtom
+  timelineWidthAtom,
 } from "../../atoms";
 import useAnimation from "../../hooks/useAnimation";
 import TimeRuler from "./TimeRuler";
 import Playhead from "./Playhead";
-import KeyframeBar from './KeyframeBar';
+import KeyframeBar from "./KeyframeBar";
 import DurationInput from "./DurationInput";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const formatTime = (seconds) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  const ms = Math.floor((seconds % 1) * 100);
+  return `${mins.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}:${ms.toString().padStart(2, "0")}`;
+};
 
 const ObjectRow = ({ object }) => (
   <div className="group flex items-center h-8 border-b border-gray-700 hover:bg-gray-750">
@@ -37,7 +58,7 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
   const [arObjects] = useAtom(arObjectsAtom);
   const [scale] = useAtom(timelineScaleAtom);
   const [timelineWidth] = useAtom(timelineWidthAtom);
-  const object = arObjects.find(obj => obj.id === objectId);
+  const object = arObjects.find((obj) => obj.id === objectId);
 
   return (
     <div className="flex items-center h-8 relative border-b border-gray-700">
@@ -56,7 +77,8 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
 };
 
 const SequenceEditor = () => {
-  const { play, pause, stop, addKeyframe, currentTime, isPlaying } = useAnimation();
+  const { play, pause, stop, addKeyframe, currentTime, isPlaying } =
+    useAnimation();
   const [selectedObject] = useAtom(selectedObjectAtom);
   const [duration] = useAtom(timelineDurationAtom);
   const [zoom, setZoom] = useState(1);
@@ -92,13 +114,20 @@ const SequenceEditor = () => {
   return (
     <div className="flex flex-col h-60 w-full bg-gray-900 text-white rounded-lg overflow-hidden">
       {/* Fixed-height header */}
-      <div className="h-12 bg-gray-800 border-b border-gray-700 flex items-center px-4 gap-4">
+      <div className="h-12 bg-gray-800 border-b border-gray-700 flex items-center px-4">
         <div className="flex items-center gap-2">
           <button className="p-2 hover:bg-gray-700 rounded" onClick={stop}>
             <SkipBack className="w-4 h-4" />
           </button>
-          <button className="p-2 hover:bg-gray-700 rounded" onClick={isPlaying ? pause : play}>
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          <button
+            className="p-2 hover:bg-gray-700 rounded"
+            onClick={isPlaying ? pause : play}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
           <button
             className="p-2 hover:bg-gray-700 rounded"
@@ -107,26 +136,26 @@ const SequenceEditor = () => {
             <Plus className="w-4 h-4" />
           </button>
         </div>
-        <div className="text-sm text-gray-300">
-          <DurationInput currentTime={currentTime} />
+        <div className="flex-1" /> {/* Left spacer */}
+        <div className="text-sm text-gray-300 flex-shrink-0">
+          {formatTime(currentTime)} / {formatTime(duration)}
         </div>
-        <div className="flex items-center gap-2 ml-auto">
-          <span className="text-sm text-gray-400">Zoom:</span>
-          <input
-            type="range"
-            min="0.1"
-            max="2"
-            step="0.1"
-            value={zoom}
-            onChange={(e) => setZoom(parseFloat(e.target.value))}
-            className="w-24"
-          />
+        <div className="flex items-center gap-2 flex-1 justify-end">
+          <Popover>
+            <PopoverTrigger>
+              <button className="p-2 hover:bg-gray-700 rounded">
+                <Settings2 className="w-4 h-4" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto border-gray-700 bg-gray-800">
+              <DurationInput />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
       {/* Main content area */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Sidebar with original 15vw width */}
         <div className="w-[15vw] bg-gray-800 border-r border-gray-700 flex flex-col">
           <div className="h-8 border-b border-gray-700 bg-gray-800 flex items-center px-3">
             <span className="text-xs text-gray-400">Elements</span>
