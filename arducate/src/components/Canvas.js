@@ -54,7 +54,10 @@ function CSS2DRendererSetup() {
   return null;
 }
 
-
+// Converts radians to degrees
+function radiansToDegrees(radians) {
+  return radians * (180 / Math.PI);
+}
 const ARCanvas = () => {
   const [selectedObject] = useAtom(selectedObjectAtom);
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
@@ -62,22 +65,26 @@ const ARCanvas = () => {
   const [transformControlsRef, setTransformControlsRef] = useState(null); // State to store the selected object's mesh ref
 
   // Handle the transformation change and update state
-  const handleObjectTransform = useCallback(() => {
-    if (!selectedObject || !transformControlsRef) return;
+const handleObjectTransform = useCallback(() => {
+  if (!selectedObject || !transformControlsRef) return;
 
-    // Create a new Euler from the TransformControls' quaternion
-    const euler = new THREE.Euler().setFromQuaternion(transformControlsRef.quaternion);
-    const transformedRotation = [euler.x, euler.y, euler.z]
-    
-    setARObjects({
-      type: 'UPDATE_OBJECT',
-      payload: {
-        id: selectedObject.id,
-        position: transformControlsRef.position.toArray(),
-        rotation: transformedRotation,
-        scale: transformControlsRef.scale.toArray(),
-      }
-    });
+  // Create a new Euler from the TransformControls' quaternion
+  const euler = new THREE.Euler().setFromQuaternion(transformControlsRef.quaternion);
+  const transformedRotation = [
+    radiansToDegrees(euler.x),
+    radiansToDegrees(euler.y), 
+    radiansToDegrees(euler.z)
+  ]; // Only keep 3 values, no NaN
+
+  setARObjects({
+    type: 'UPDATE_OBJECT',
+    payload: {
+      id: selectedObject.id,
+      position: transformControlsRef.position.toArray(),
+      rotation: transformedRotation,
+      scale: transformControlsRef.scale.toArray(),
+    }
+  });
   }, [transformControlsRef, setARObjects]);
 
   
@@ -129,7 +136,7 @@ const ARCanvas = () => {
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && transformControlsRef && (
+        {selectedObject && transformControlsRef && selectedObject.visible !== false && (
           <TransformControls
             object={transformControlsRef} // Attach transform controls to the selected object's mesh
             mode={transformMode}
