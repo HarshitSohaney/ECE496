@@ -22,7 +22,7 @@ export const convertSceneToVR = (vrObjects) => {
     <body style="margin: 0; overflow: hidden;">
       <a-scene>
         <a-entity position="0 1.5 0">
-          ${vrObjects.map(object => renderObject(object)).join("")}
+          ${vrObjects.filter(object => object.visible !== false).map(object => renderObject(object)).join("")}
         </a-entity>
         
         <!-- Camera with movement and look controls -->

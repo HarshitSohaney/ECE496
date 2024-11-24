@@ -27,19 +27,27 @@ export const arObjectsAtom = atom(
         set(treeDataAtom, treeData => removeFromTreeData({...treeData}, action.payload));
 
         break;
-      case 'UPDATE_OBJECT':
-        const updatedObjects = get(arObjectsAtom).map(obj =>  //payload: ...selectedObject, scale: [scaleValue, scaleValue, scaleValue]} 
-          obj.id === action.payload.id 
-            ? { ...obj, ...action.payload }
-            : obj
-        );
-        set(arObjectsAtom, updatedObjects);
-        // Update selectedObjectAtom if it's the object being updated
-        const currentSelected = get(selectedObjectAtom);
-        if (currentSelected && currentSelected.id === action.payload.id) {
-          set(selectedObjectAtom, updatedObjects.find(obj => obj.id === action.payload.id));
-        }
-        break;
+        case 'UPDATE_OBJECT':
+          console.log('Atom UPDATE_OBJECT - Received payload:', action.payload);
+          const updatedObjects = get(arObjectsAtom).map(obj => {
+            if (obj.id === action.payload.id) {
+              const updatedObj = { ...obj, ...action.payload };
+              console.log('Atom UPDATE_OBJECT - Before update:', obj);
+              console.log('Atom UPDATE_OBJECT - After update:', updatedObj);
+              return updatedObj;
+            }
+            return obj;
+          });
+          set(arObjectsAtom, updatedObjects);
+          
+          // Update selectedObjectAtom if it's the object being updated
+          const currentSelected = get(selectedObjectAtom);
+          if (currentSelected && currentSelected.id === action.payload.id) {
+            const updatedSelected = updatedObjects.find(obj => obj.id === action.payload.id);
+            console.log('Atom UPDATE_OBJECT - Updating selectedObject:', updatedSelected);
+            set(selectedObjectAtom, updatedSelected);
+          }
+          break;
       default:
         console.error('Unknown action type:', action.type);
     }
