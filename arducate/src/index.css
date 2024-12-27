@@ -69,8 +69,12 @@
 }
 
 .navbar-button {
-  color: white; /* White text */
-  background-color: transparent; /* Transparent background */
+  color: rgb(97, 97, 97);
+  background-color: white;
+}
+
+.navbar-button:hover {
+  background-color: rgb(0, 77, 171);
 }
 
 .navbar-button-container {

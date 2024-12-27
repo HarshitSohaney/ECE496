@@ -1,7 +1,7 @@
 // src/components/AssetHandler.js
 import React, { useEffect } from "react";
 import { useAtom } from "jotai";
-import { arObjectsAtom, addAssetAtom, selectedObjectAtom } from "../atoms";
+import { arObjectsAtom, addAssetAtom, selectedObjectAtom, transformModeAtom } from "../atoms";
 import {
   Select,
   SelectContent,
@@ -31,25 +31,26 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
         arObjects.filter((obj) => obj.type === value).length + 1
       }`,
       showLabel: true,
-      text: 'Add Text',
+      text: "Add Text",
     };
 
     // Instead of directly manipulating the state with setARObjects
     setARObjects({
-      type: 'ADD_OBJECT',
-      payload: newObject
+      type: "ADD_OBJECT",
+      payload: newObject,
     });
-  
+
     // Update the file structure
-    const assetCount = data.children.filter((obj) => obj.type === value).length + 1;
+    const assetCount =
+      data.children.filter((obj) => obj.type === value).length + 1;
     const newFile = { id: newObject.id, name: `${value}${assetCount}` };
-  
+
     if (cursor && cursor.children) {
       cursor.children.push(newFile);
     } else {
       data.children.push(newFile);
     }
-    setData({...data});
+    setData({ ...data });
 
     setSelectedValue("");
   };
@@ -80,7 +81,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
     <div>
       <Select value={selectedValue} onValueChange={handleAddObject}>
         <SelectTrigger variant="outline">
-          <SelectValue placeholder="Add Asset" />
+          <SelectValue placeholder="Add 3D Asset" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

@@ -153,10 +153,9 @@ export const renderObject = (object) => {
           value="${object.text}"
           align="center"
           anchor="center"
-          color="${initialProps.color}"
+          color="#000"
           ${animations}>
         </a-text>
-        ${renderTextLabel({ ...object, position: initialProps.position })}
       `;
 
     case "a-element":
@@ -186,7 +185,7 @@ export const renderObject = (object) => {
             value="${object.name || `Object ${object.id}`}"
             position="0 ${-object.scale[1]} 0"
             render-order="1"
-            scale="0.5 0.5 0.5"
+            scale="1 1 1"
             align="center"
             color="#000000"
             opacity="0.8"
