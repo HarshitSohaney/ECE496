@@ -47,7 +47,8 @@ const Toolbar = () => {
       }
   
       // Open the unique URL in a new tab
-      const arContentUrl = `${window.location.origin}/ar-content/${uniqueId}`;
+      const arContentUrl = `/ar-content/${uniqueId}`;
+      //window.location.href = arContentUrl;  // Navigate to the content page
       window.open(arContentUrl, '_blank');
     } catch (err) {
       console.error(err.message);
