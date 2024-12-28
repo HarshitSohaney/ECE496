@@ -55,7 +55,7 @@ const ARControls = () => {
     }
   }, [selectedObject, setARObjects]);
 
-  const handleLabelChange = (e) => {
+  const handleNameChange = (e) => {
     setARObjects({
       type: "UPDATE_OBJECT",
       payload: {
@@ -65,22 +65,21 @@ const ARControls = () => {
     });
   };
 
+  const handleLabelChange = (e) => {
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        label: e.target.value,
+      },
+    });
+  };
   const handleLabelVisibilityChange = (checked) => {
     setARObjects({
       type: "UPDATE_OBJECT",
       payload: {
         id: selectedObject.id,
         showLabel: checked,
-      },
-    });
-  };
-
-  const handleTextChange = (e) => {
-    setARObjects({
-      type: "UPDATE_OBJECT",
-      payload: {
-        id: selectedObject.id,
-        text: e.target.value,
       },
     });
   };
@@ -167,10 +166,23 @@ const ARControls = () => {
       <div className="mb-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex-1">
-            <label className="text-xs font-medium">Label:</label>
+            <label className="text-xs font-medium">Name:</label>
             <input
               type="text"
               value={selectedObject.name}
+              onChange={handleNameChange}
+              className="w-full p-1 border rounded text-sm"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1">
+            <label className="text-xs font-medium">Label:</label>
+            <input
+              type="text"
+              value={selectedObject.label}
               onChange={handleLabelChange}
               className="w-full p-1 border rounded text-sm"
             />
@@ -186,18 +198,6 @@ const ARControls = () => {
         </div>
       </div>
 
-
-      {selectedObject.type == 'text' && 
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium">Text Input:</label>
-          <input
-            type="text"
-            value={selectedObject.text}
-            onChange={handleTextChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-      }
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input

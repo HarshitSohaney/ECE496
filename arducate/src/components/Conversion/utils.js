@@ -98,7 +98,7 @@ export const generateAnimations = (keyframes) => {
 export const renderTextLabel = (object) => `
   <a-text 
     visible="${object.showLabel}" 
-    value="${object.name || `Object ${object.id}`}"
+    value="${object.label || `Object ${object.id}`}"
     position="0 ${-object.scale[1]} 0"
     render-order="2"
     scale="0.5 0.5 0.5"
@@ -182,7 +182,7 @@ export const renderObject = (object) => {
           ${animations}>
           <a-text 
             visible="${object.showLabel}" 
-            value="${object.name || `Object ${object.id}`}"
+            value="${object.label || `Object ${object.id}`}"
             position="0 ${-object.scale[1]} 0"
             render-order="1"
             scale="1 1 1"
