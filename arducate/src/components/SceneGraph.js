@@ -184,7 +184,7 @@ const SceneGraph = ({ data, setData }) => {
   );
 
   return (
-    <Card className="bg-white shadow-sm rounded-md w-full mt-2 h-1/2">
+    <Card className="bg-white shadow-sm rounded-md w-full mt-2 h-3/4">
       <div className="font-sm font-bold mb-2 border-b border-gray-200">
         <div className="p-2">Layers</div>
       </div>
