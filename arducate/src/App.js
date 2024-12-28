@@ -9,6 +9,7 @@ import SequenceEditor from 'components/SequenceEditor/SequenceEditor';
 const App = () => {
   return (
     <div className="flex flex-col items-center h-screen">
+      <Toolbar className="flex-shrink-0" />
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1">
           <Sidebar />

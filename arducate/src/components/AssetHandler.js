@@ -33,6 +33,8 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       showLabel: true,
       text: "Add Text",
     };
+  
+    // Dispatch action to add object
     setARObjects({
       type: "ADD_OBJECT",
       payload: newObject,
@@ -47,6 +49,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       data.children.push(newFile);
     }
     setData({ ...data });
+  
     setSelectedValue("");
   };
 
