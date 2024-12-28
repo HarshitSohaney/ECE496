@@ -1,4 +1,3 @@
-// src/components/Toolbar.js
 import React, { useState } from "react";
 import { useAtom } from "jotai";
 import { arObjectsAtom, transformModeAtom } from "../atoms";
@@ -23,6 +22,8 @@ const Toolbar = () => {
   const [arObjects] = useAtom(arObjectsAtom);
   const [data, setData] = useAtom(treeDataAtom);
   const [cursor, setCursor] = useState(null);
+  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [generatedUrl, setGeneratedUrl] = useState(sessionStorage.getItem('ar_content_url') || null); // Check sessionStorage for the URL
 
   const handlePreview = () => {
     const htmlContent = convertSceneToVR(arObjects);
@@ -31,27 +32,81 @@ const Toolbar = () => {
     window.open(url, "_blank");
   };
 
+  // Handle the publishing action
   const handlePublish = async () => {
-    const htmlContent = convertSceneToAR(arObjects);
-    const uniqueId = uuidv4(); // Generate a unique ID for the content
+    if (!generatedUrl) { // Only generate a new URL if one doesn't exist
+      const htmlContent = convertSceneToAR(arObjects);
+      const uniqueId = uuidv4(); // Generate a unique ID for the content
+
+      try {
+        const { data, error } = await supabase
+          .from('ar_content')
+          .insert([
+            { url: uniqueId, html_content: htmlContent }
+          ]);
   
-    try {
-      const { data, error } = await supabase
-        .from('ar_content')
-        .insert([
-          { url: uniqueId, html_content: htmlContent }
-        ]);
-  
-      if (error) {
-        throw new Error('Failed to save content: ' + error.message);
+        if (error) {
+          throw new Error('Failed to save content: ' + error.message);
+        }
+
+        const baseUrl = window.location.origin; 
+        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;        setGeneratedUrl(arContentUrl); // Store the URL
+        sessionStorage.setItem('ar_content_url', arContentUrl); // Persist in sessionStorage
+        window.open(arContentUrl, '_blank'); // Open the generated URL
+      } catch (err) {
+        console.error(err.message);
       }
+    } else {
+      // If the URL already exists, just open it
+      window.open(generatedUrl, '_blank');
+    }
+  };
+
+  // Handle the sharing action
+  const handleShare = async () => {
+    if (!generatedUrl) { // Only generate a new URL if one doesn't exist
+      const htmlContent = convertSceneToAR(arObjects); // Get the HTML content for the AR scene
+      const uniqueId = uuidv4(); // Generate a unique ID for the content
+      
+      try {
+        const { data, error } = await supabase
+          .from('ar_content')
+          .insert([
+            { url: uniqueId, html_content: htmlContent }
+          ]);
+
+        if (error) {
+          throw new Error('Failed to save content: ' + error.message);
+        }
+
+        const baseUrl = window.location.origin; 
+        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;
+        setGeneratedUrl(arContentUrl); // Store the URL
+        sessionStorage.setItem('ar_content_url', arContentUrl); // Persist in sessionStorage
+
+        // Copy the full URL to clipboard
+        navigator.clipboard.writeText(arContentUrl).then(() => {
+          setShowPopup(true); // Show the popup to indicate success
+          setTimeout(() => {
+            setShowPopup(false); // Hide the popup after a short delay
+          }, 2000);
+        }).catch((err) => {
+          console.error("Error copying text to clipboard: ", err);
+        });
   
-      // Open the unique URL in a new tab
-      const arContentUrl = `/ar-content/${uniqueId}`;
-      //window.location.href = arContentUrl;  // Navigate to the content page
-      window.open(arContentUrl, '_blank');
-    } catch (err) {
-      console.error(err.message);
+      } catch (err) {
+        console.error(err.message); // Log any errors
+      }
+    } else {
+      // If the URL already exists, just copy it
+      navigator.clipboard.writeText(generatedUrl).then(() => {
+        setShowPopup(true); // Show the popup to indicate success
+        setTimeout(() => {
+          setShowPopup(false); // Hide the popup after a short delay
+        }, 2000);
+      }).catch((err) => {
+        console.error("Error copying text to clipboard: ", err);
+      });
     }
   };
 
@@ -65,18 +120,6 @@ const Toolbar = () => {
           cursor={cursor}
           setCursor={setCursor}
         />
-        {/* <Select>
-          <SelectTrigger variant="outline" className="w-[180px] navbar-button">
-            <SelectValue placeholder="Perspective"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="x">Opt 1</SelectItem>
-              <SelectItem value="y">Opt 2</SelectItem>
-              <SelectItem value="z">Opt 3</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
       </div>
 
       {/* Center Aligned */}
@@ -88,7 +131,6 @@ const Toolbar = () => {
 
       {/* Right Aligned */}
       <div className="navbar-button-container">
-
         <Button
           variant="outline"
           onClick={handlePreview}
@@ -104,6 +146,22 @@ const Toolbar = () => {
         >
           Publish
         </Button>
+
+        {/* Share Button */}
+        <Button
+          variant="outline"
+          className="navbar-button"
+          onClick={handleShare}
+        >
+          Share
+        </Button>
+
+        {/* Popup Notification */}
+        {showPopup && (
+          <div className="absolute top-12 right-0 bg-green-500 text-white p-2 rounded">
+            Link copied to clipboard!
+          </div>
+        )}
       </div>
     </nav>
   );
