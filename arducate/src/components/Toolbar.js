@@ -16,6 +16,8 @@ import {
 import { Move, MoveDiagonal, RotateCw } from "lucide-react";
 import AssetHandler from "./AssetHandler";
 import { treeDataAtom } from "../atoms";
+import { supabase } from './supabaseClient'; // Adjust the import path as necessary
+import { v4 as uuidv4 } from 'uuid'; // Install uuid package for unique IDs
 
 const Toolbar = () => {
   const [arObjects] = useAtom(arObjectsAtom);
@@ -29,11 +31,27 @@ const Toolbar = () => {
     window.open(url, "_blank");
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const htmlContent = convertSceneToAR(arObjects);
-    const blob = new Blob([htmlContent], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
+    const uniqueId = uuidv4(); // Generate a unique ID for the content
+  
+    try {
+      const { data, error } = await supabase
+        .from('ar_content')
+        .insert([
+          { url: uniqueId, html_content: htmlContent }
+        ]);
+  
+      if (error) {
+        throw new Error('Failed to save content: ' + error.message);
+      }
+  
+      // Open the unique URL in a new tab
+      const arContentUrl = `${window.location.origin}/ar-content/${uniqueId}`;
+      window.open(arContentUrl, '_blank');
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   return (
