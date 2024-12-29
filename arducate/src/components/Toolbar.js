@@ -50,7 +50,8 @@ const Toolbar = () => {
         }
 
         const baseUrl = window.location.origin; 
-        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;        setGeneratedUrl(arContentUrl); // Store the URL
+        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;        
+        setGeneratedUrl(arContentUrl); // Store the URL
         sessionStorage.setItem('ar_content_url', arContentUrl); // Persist in sessionStorage
         window.open(arContentUrl, '_blank'); // Open the generated URL
       } catch (err) {
