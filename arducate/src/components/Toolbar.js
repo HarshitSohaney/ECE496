@@ -24,6 +24,7 @@ const Toolbar = () => {
   const [cursor, setCursor] = useState(null);
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
   const [generatedUrl, setGeneratedUrl] = useState(sessionStorage.getItem('ar_content_url') || null); // Check sessionStorage for the URL
+  const [popupMessage, setPopupMessage] = useState(''); // State to hold the popup message
 
   const handlePreview = () => {
     const htmlContent = convertSceneToVR(arObjects);
@@ -87,10 +88,12 @@ const Toolbar = () => {
 
         // Copy the full URL to clipboard
         navigator.clipboard.writeText(arContentUrl).then(() => {
+          setPopupMessage(
+            <span>
+              <strong>Link copied to clipboard:</strong> {arContentUrl}
+            </span>
+          ); // Set the popup message with the URL in regular font
           setShowPopup(true); // Show the popup to indicate success
-          setTimeout(() => {
-            setShowPopup(false); // Hide the popup after a short delay
-          }, 2000);
         }).catch((err) => {
           console.error("Error copying text to clipboard: ", err);
         });
@@ -101,14 +104,21 @@ const Toolbar = () => {
     } else {
       // If the URL already exists, just copy it
       navigator.clipboard.writeText(generatedUrl).then(() => {
+        setPopupMessage(
+          <span>
+            <strong>Link copied to clipboard:</strong> {generatedUrl}
+          </span>
+        ); // Set the popup message with the URL in regular font
         setShowPopup(true); // Show the popup to indicate success
-        setTimeout(() => {
-          setShowPopup(false); // Hide the popup after a short delay
-        }, 2000);
       }).catch((err) => {
         console.error("Error copying text to clipboard: ", err);
       });
     }
+  };
+
+  // Function to close the popup
+  const closePopup = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -159,9 +169,22 @@ const Toolbar = () => {
 
         {/* Popup Notification */}
         {showPopup && (
-          <div className="absolute top-12 right-0 bg-green-500 text-white p-2 rounded">
-            Link copied to clipboard!
-          </div>
+          <>
+            <div className="fixed inset-0 bg-black opacity-50 z-40" /> {/* Backdrop overlay */}
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-gray-800 text-white p-4 rounded shadow-lg border border-gray-600">
+                <span>
+                  {popupMessage}
+                </span>
+                <button 
+                  onClick={closePopup} 
+                  className="ml-2 text-white bg-red-500 hover:bg-red-600 rounded px-2 py-1 transition duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </nav>
