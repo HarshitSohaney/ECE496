@@ -24,13 +24,13 @@ export const radiansToDegrees = (radians) => {
  * @param {Array} rgb - Array of RGB values [r, g, b] between 0 and 1
  * @returns {string} CSS color string
  */
-// const rgbArrayToString = (rgb) => {
-//   if (!Array.isArray(rgb) || rgb.length !== 3) {
-//     return "#ffffff"; // Default white color
-//   }
-//   const [r, g, b] = rgb.map((value) => Math.round(value * 255));
-//   return `rgb(${r}, ${g}, ${b})`;
-// };
+const rgbArrayToString = (rgb) => {
+  if (!Array.isArray(rgb) || rgb.length !== 3) {
+    return "#ffffff"; // Default white color
+  }
+  const [r, g, b] = rgb.map((value) => Math.round(value * 255));
+  return `rgb(${r}, ${g}, ${b})`;
+};
 
 /**
  * Generates animation strings for AR objects based on keyframes
@@ -64,6 +64,11 @@ export const generateAnimations = (keyframes) => {
           prop: "scale",
           from: kf.scale?.join(" ") || "1 1 1",
           to: nextKf.scale?.join(" ") || "1 1 1",
+        },
+        {
+          prop: "color",
+          from: rgbArrayToString(kf.color?.start || [1, 1, 1]),
+          to: rgbArrayToString(kf.color?.end || [1, 1, 1]),
         },
       ];
 
@@ -119,14 +124,14 @@ export const getInitialProperties = (object) => {
       position: object.keyframes[0].position || [0, 0, 0],
       rotation: object.keyframes[0].rotation || [0, 0, 0],
       scale: object.keyframes[0].scale || [1, 1, 1],
-      // color: rgbArrayToString(object.keyframes[0].color?.start || defaultColor),
+      color: rgbArrayToString(object.keyframes[0].color?.start || defaultColor),
     };
   }
   return {
     position: object.position || [0, 0, 0],
     rotation: object.rotation || [0, 0, 0],
-    scale: object.scale || [1, 1, 1]
-    // color: rgbArrayToString(object.color ? object.color : defaultColor),
+    scale: object.scale || [1, 1, 1],
+    color: rgbArrayToString(object.color ? object.color : defaultColor),
   };
 
 };
