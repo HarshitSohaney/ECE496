@@ -13,6 +13,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
   const meshRef = useRef();
   const labelRef = useRef();
+  const edgeRef = useRef();
   const [currentTime] = useAtom(currentTimeAtom);
 
   const { interpolateProperties } = useAnimation();
@@ -70,7 +71,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     const interpolatedProps = interpolateProperties(object.id);
 
     if (interpolatedProps) {
-      const { position, rotation, scale } = interpolatedProps;
+      const { position, rotation, scale, color } = interpolatedProps;
 
       if (Array.isArray(position) && position.length === 3) {
         meshRef.current.position.set(...position);
@@ -89,6 +90,42 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       } else {
         console.warn(`Invalid scale for object ${object.id}:`, scale);
       }
+
+      if (color && Array.isArray(color) && color.length === 3) {
+        // Convert RGB [0,1] values back to hex format
+        const r = Math.floor(color[0] * 255);
+        const g = Math.floor(color[1] * 255);
+        const b = Math.floor(color[2] * 255);
+        const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        
+        // Update the material color during animation
+        meshRef.current.material.color.set(hexColor);
+        
+        if (edgeRef.current) {
+          const darkerHex = getDarkerColor(hexColor);
+          edgeRef.current.material.color.set(darkerHex);
+        }
+        
+        // Store the last applied color on the ref
+        meshRef.current.lastAppliedColor = hexColor;
+      }
+    } else {
+      // No active animation, but we have a previous animation color
+      if (meshRef.current.lastAppliedColor) {
+        // Keep using the last color that was applied during animation
+        meshRef.current.material.color.set(meshRef.current.lastAppliedColor);
+        
+        if (edgeRef.current) {
+          edgeRef.current.material.color.set(getDarkerColor(meshRef.current.lastAppliedColor));
+        }
+      } else {
+        // No previous animation, use the base color
+        meshRef.current.material.color.set(object.color);
+        
+        if (edgeRef.current) {
+          edgeRef.current.material.color.set(getDarkerColor(object.color));
+        }
+      }
     }
   }, [currentTime]);
 
@@ -103,16 +140,18 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       ref={meshRef}
       position={object.position || [0, 0, 0]}
       scale={object.scale || [1, 1, 1]}
-      rotation={object.rotation.slice(0, 3).map(deg => THREE.MathUtils.degToRad(deg))}
+      rotation={object.rotation
+        .slice(0, 3)
+        .map((deg) => THREE.MathUtils.degToRad(deg))}
       onPointerDown={handlePointerDown}
       castShadow
       receiveShadow
     >
       {/* Render the correct geometry */}
       {getAsset(object.type, { text: object.text, color: object.color })}
-      <meshMatcapMaterial color={object.color || "orange"} toneMapped={false} />
+      <meshMatcapMaterial color={new THREE.Color(object.color)} toneMapped={false}/>
       {object.type !== "text" && object.type !== "line" && (
-        <Edges lineWidth={2} color={getDarkerColor(object.color)} />
+        <Edges ref={edgeRef} lineWidth={2} color={getDarkerColor(object.color)} />
       )}
     </mesh>
   );
