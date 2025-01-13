@@ -18,6 +18,8 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
 
   const handleAddObject = (value) => {
+    const assetCount = arObjects.filter((obj) => obj.type === value).length + 1;
+  
     const newObject = {
       id: Date.now(),
       position: [0, 0, 0],
@@ -27,31 +29,27 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       type: value,
       entity: getArAsset(value),
       keyframes: [], // Initialize keyframes
-      name: `${value}-${
-        arObjects.filter((obj) => obj.type === value).length + 1
-      }`,
+      name: `${value}-${assetCount}`, // Ensure unique name here
       showLabel: true,
       text: "Add Text",
     };
-
-    // Instead of directly manipulating the state with setARObjects
+  
+    // Dispatch action to add object
     setARObjects({
       type: "ADD_OBJECT",
       payload: newObject,
     });
-
+  
     // Update the file structure
-    const assetCount =
-      data.children.filter((obj) => obj.type === value).length + 1;
-    const newFile = { id: newObject.id, name: `${value}${assetCount}` };
-
+    const newFile = { id: newObject.id, name: `${value}-${assetCount}` };
+  
     if (cursor && cursor.children) {
       cursor.children.push(newFile);
     } else {
       data.children.push(newFile);
     }
     setData({ ...data });
-
+  
     setSelectedValue("");
   };
 

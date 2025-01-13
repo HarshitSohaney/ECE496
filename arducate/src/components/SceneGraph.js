@@ -184,33 +184,35 @@ const SceneGraph = ({ data, setData }) => {
   );
 
   return (
-    <Card className="bg-white shadow-sm rounded-md w-full mt-2 h-1/2">
+    <Card className="bg-white shadow-sm rounded-md w-full mt-2 h-3/4">
       <div className="font-sm font-bold mb-2 border-b border-gray-200">
         <div className="p-2">Layers</div>
       </div>
-      <div className="overflow-y-auto max-h-[calc(100%-2rem)] p-2">
-        {data.children && data.children.length > 0 ? (
-          data.children.map((childNode) => (
-            <TreeNode
-              key={childNode.id}
-              node={childNode}
-              level={0}
-              onToggle={handleToggle}
-              onAddFolder={handleAddFolder}
-              onRename={handleRename}
-              selectedId={selectedObject?.id}
-              onSelect={handleSelect}
-            />
-          ))
-        ) : (
-          <div className="flex items-center flex-col justify-center h-full text-gray-500">
-            <div className="text-lg font-semibold">No Assets Added</div>
-            <p className="text-sm text-gray-500 mt-1 text-center">
-              Your 3D assets will show here
-            </p>
-          </div>
-        )}
-      </div>
+      <div className="overflow-x-auto overflow-y-auto max-h-[calc(100%-3rem)] p-2">
+        <div className="min-w-max">
+          {data.children && data.children.length > 0 ? (
+            data.children.map((childNode) => (
+              <TreeNode
+                key={childNode.id}
+                node={childNode}
+                level={0}
+                onToggle={handleToggle}
+                onAddFolder={handleAddFolder}
+                onRename={handleRename}
+                selectedId={selectedObject?.id}
+                onSelect={handleSelect}
+              />
+            ))
+          ) : (
+            <div className="flex items-center flex-col justify-center h-full text-gray-500">
+              <div className="text-lg font-semibold">No Assets Added</div>
+              <p className="text-sm text-gray-500 mt-1 text-center">
+                Your 3D assets will show here
+              </p>
+            </div>
+          )}
+        </div>
+    </div>
     </Card>
   );
 };
