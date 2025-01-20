@@ -30,6 +30,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       entity: getArAsset(value),
       keyframes: [], // Initialize keyframes
       name: `${value}-${assetCount}`, // Ensure unique name here
+      label: `${value}-${assetCount}-label`,
       showLabel: true,
       text: "Add Text",
     };
