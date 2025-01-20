@@ -33,13 +33,15 @@ const Toolbar = () => {
     window.open(url, "_blank");
   };
 
-  // Handle the publishing action
   const handlePublish = async () => {
-    if (!generatedUrl) { // Only generate a new URL if one doesn't exist
+    
+    // Only generate a new URL if one doesn't exist
+    if (!generatedUrl) { 
       const htmlContent = convertSceneToAR(arObjects);
-      const uniqueId = uuidv4(); // Generate a unique ID for the content
+      const uniqueId = uuidv4();
 
       try {
+        // Insert entry into database uniqueId: htmlContent
         const { data, error } = await supabase
           .from('ar_content')
           .insert([
@@ -50,11 +52,15 @@ const Toolbar = () => {
           throw new Error('Failed to save content: ' + error.message);
         }
 
+        // Construct & store the arContent URL
         const baseUrl = window.location.origin; 
-        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;        
-        setGeneratedUrl(arContentUrl); // Store the URL
-        sessionStorage.setItem('ar_content_url', arContentUrl); // Persist in sessionStorage
-        window.open(arContentUrl, '_blank'); // Open the generated URL
+        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;    
+                setGeneratedUrl(arContentUrl); 
+
+        // Persist URL in sessionStorage so that regenerating URLs in the same session refers to the same link
+        sessionStorage.setItem('ar_content_url', arContentUrl); 
+        window.open(arContentUrl, '_blank');
+      
       } catch (err) {
         console.error(err.message);
       }
@@ -64,13 +70,15 @@ const Toolbar = () => {
     }
   };
 
-  // Handle the sharing action
   const handleShare = async () => {
-    if (!generatedUrl) { // Only generate a new URL if one doesn't exist
-      const htmlContent = convertSceneToAR(arObjects); // Get the HTML content for the AR scene
-      const uniqueId = uuidv4(); // Generate a unique ID for the content
+
+    // Only generate a new URL if one doesn't exist
+    if (!generatedUrl) { 
+      const htmlContent = convertSceneToAR(arObjects);
+      const uniqueId = uuidv4();
       
       try {
+        // Insert id: htmlContent into the database
         const { data, error } = await supabase
           .from('ar_content')
           .insert([
@@ -81,35 +89,38 @@ const Toolbar = () => {
           throw new Error('Failed to save content: ' + error.message);
         }
 
+        // Construct & store the arContent URL
         const baseUrl = window.location.origin; 
         const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;
-        setGeneratedUrl(arContentUrl); // Store the URL
-        sessionStorage.setItem('ar_content_url', arContentUrl); // Persist in sessionStorage
+        setGeneratedUrl(arContentUrl);
+        
+        // Persist URL in sessionStorage so that regenerating URLs in the same session refers to the same link
+        sessionStorage.setItem('ar_content_url', arContentUrl);
 
-        // Copy the full URL to clipboard
+        // Copy the full URL to clipboard & show popup
         navigator.clipboard.writeText(arContentUrl).then(() => {
           setPopupMessage(
             <span>
               <strong>Link copied to clipboard:</strong> {arContentUrl}
             </span>
-          ); // Set the popup message with the URL in regular font
-          setShowPopup(true); // Show the popup to indicate success
+          ); 
+          setShowPopup(true);
         }).catch((err) => {
           console.error("Error copying text to clipboard: ", err);
         });
   
       } catch (err) {
-        console.error(err.message); // Log any errors
+        console.error(err.message);
       }
     } else {
-      // If the URL already exists, just copy it
+      // If the URL already exists, just copy it and display in popup
       navigator.clipboard.writeText(generatedUrl).then(() => {
         setPopupMessage(
           <span>
             <strong>Link copied to clipboard:</strong> {generatedUrl}
           </span>
-        ); // Set the popup message with the URL in regular font
-        setShowPopup(true); // Show the popup to indicate success
+        );
+        setShowPopup(true);
       }).catch((err) => {
         console.error("Error copying text to clipboard: ", err);
       });
