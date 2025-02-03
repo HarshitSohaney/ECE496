@@ -65,6 +65,16 @@ const ARControls = () => {
     });
   };
 
+  const handleTextChange = (e) => {
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        text: e.target.value,
+      },
+    });
+  };
+  
   const handleLabelChange = (e) => {
     setARObjects({
       type: "UPDATE_OBJECT",
@@ -197,6 +207,18 @@ const ARControls = () => {
           </div>
         </div>
       </div>
+
+      {selectedObject.type == 'text' && 
+        <div className="mb-4">
+          <label className="block mb-2 text-xs font-medium">Text Input:</label>
+          <input
+            type="text"
+            value={selectedObject.text}
+            onChange={handleTextChange}
+            className="w-full p-1 border rounded text-sm"
+          />
+        </div>
+      }
 
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
