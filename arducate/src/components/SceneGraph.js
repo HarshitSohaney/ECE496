@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
-import { arObjectsAtom, selectedObjectAtom } from "../atoms";
+import {
+  arObjectsAtom,
+  selectedObjectAtom,
+  selectedObjectsAtom,
+  groupsAtom,
+  transformControlsRefAtom,
+} from "../atoms";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, ChevronDown, Folder, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +27,8 @@ const TreeNode = ({
   onRename,
   selectedId,
   onSelect,
+  isInGroup,
+  groupId,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [nodeName, setNodeName] = useState(node.name);
@@ -47,7 +55,8 @@ const TreeNode = ({
               "flex items-center p-1 rounded-md group relative transition-colors duration-200",
               selectedId === node.id && "bg-blue-50 text-blue-600",
               !selectedId === node.id && "hover:bg-gray-50",
-              "active:scale-[0.99] hover:scale-[1.01]"
+              "active:scale-[0.99] hover:scale-[1.01]",
+              isInGroup && "ml-4" // Indent grouped items
             )}
             style={{ marginLeft: `${level * 16}px` }}
             onClick={() => onSelect(node)}
@@ -98,6 +107,11 @@ const TreeNode = ({
           <ContextMenuItem onClick={() => setIsEditing(true)}>
             Rename
           </ContextMenuItem>
+          {/* {isInGroup && (
+            <ContextMenuItem onClick={() => handleUngroup(groupId)}>
+              Ungroup
+            </ContextMenuItem>
+          )} */}
         </ContextMenuContent>
       </ContextMenu>
 
@@ -113,6 +127,8 @@ const TreeNode = ({
               onRename={onRename}
               selectedId={selectedId}
               onSelect={onSelect}
+              isInGroup={isInGroup}
+              groupId={groupId}
             />
           ))}
         </div>
@@ -124,6 +140,9 @@ const TreeNode = ({
 const SceneGraph = ({ data, setData }) => {
   const [arObjects] = useAtom(arObjectsAtom);
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
+  const [groups] = useAtom(groupsAtom);
+  const [selectedObjects, setSelectedObjects] = useAtom(selectedObjectsAtom);
+  const [, setTransformControlsRef] = useAtom(transformControlsRefAtom);
 
   const findNodeById = useCallback((node, id) => {
     if (node.id === id) return node;
@@ -183,36 +202,45 @@ const SceneGraph = ({ data, setData }) => {
     [arObjects, setSelectedObject]
   );
 
+  const renderGroupNode = (group) => {
+    return (
+      <TreeNode
+        key={group.id}
+        node={{
+          id: group.id,
+          name: group.name,
+          children: group.objectIds.map((id) => {
+            const obj = arObjects.find((o) => o.id === id);
+            return { id: obj.id, name: obj.name };
+          }),
+          toggled: true,
+        }}
+        onSelect={() => {
+          const groupObjects = arObjects.filter((obj) =>
+            group.objectIds.includes(obj.id)
+          );
+          setSelectedObjects(groupObjects);
+          setTransformControlsRef(group.threeGroup);
+        }}
+        onToggle={(node) => {
+          node.toggled = !node.toggled;
+          setData({ ...data });
+        }}
+      />
+    );
+  };
+
   return (
     <Card className="bg-white shadow-sm rounded-md w-full mt-2 h-3/4">
-      <div className="font-sm font-bold mb-2 border-b border-gray-200">
-        <div className="p-2">Layers</div>
+      <div className="p-2">
+        {groups.map(renderGroupNode)}
+        {data.children.map(
+          (node) =>
+            !groups.some((g) => g.objectIds.includes(node.id)) && (
+              <TreeNode key={node.id} node={node} />
+            )
+        )}
       </div>
-      <div className="overflow-x-auto overflow-y-auto max-h-[calc(100%-3rem)] p-2">
-        <div className="min-w-max">
-          {data.children && data.children.length > 0 ? (
-            data.children.map((childNode) => (
-              <TreeNode
-                key={childNode.id}
-                node={childNode}
-                level={0}
-                onToggle={handleToggle}
-                onAddFolder={handleAddFolder}
-                onRename={handleRename}
-                selectedId={selectedObject?.id}
-                onSelect={handleSelect}
-              />
-            ))
-          ) : (
-            <div className="flex items-center flex-col justify-center h-full text-gray-500">
-              <div className="text-lg font-semibold">No Assets Added</div>
-              <p className="text-sm text-gray-500 mt-1 text-center">
-                Your 3D assets will show here
-              </p>
-            </div>
-          )}
-        </div>
-    </div>
     </Card>
   );
 };
