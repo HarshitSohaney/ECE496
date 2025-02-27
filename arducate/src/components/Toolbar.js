@@ -36,7 +36,6 @@ const Toolbar = () => {
   const handlePublish = async () => {
     
     // Only generate a new URL if one doesn't exist
-    if (!generatedUrl) { 
       const htmlContent = convertSceneToAR(arObjects);
       const uniqueId = uuidv4();
 
@@ -64,16 +63,11 @@ const Toolbar = () => {
       } catch (err) {
         console.error(err.message);
       }
-    } else {
-      // If the URL already exists, just open it
-      window.open(generatedUrl, '_blank');
-    }
   };
 
   const handleShare = async () => {
 
     // Only generate a new URL if one doesn't exist
-    if (!generatedUrl) { 
       const htmlContent = convertSceneToAR(arObjects);
       const uniqueId = uuidv4();
       
@@ -112,19 +106,6 @@ const Toolbar = () => {
       } catch (err) {
         console.error(err.message);
       }
-    } else {
-      // If the URL already exists, just copy it and display in popup
-      navigator.clipboard.writeText(generatedUrl).then(() => {
-        setPopupMessage(
-          <span>
-            <strong>Link copied to clipboard:</strong> {generatedUrl}
-          </span>
-        );
-        setShowPopup(true);
-      }).catch((err) => {
-        console.error("Error copying text to clipboard: ", err);
-      });
-    }
   };
 
   // Function to close the popup
