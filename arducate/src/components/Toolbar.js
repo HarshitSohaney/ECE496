@@ -23,7 +23,7 @@ const Toolbar = () => {
   const [data, setData] = useAtom(treeDataAtom);
   const [cursor, setCursor] = useState(null);
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
-  const [generatedUrl, setGeneratedUrl] = useState(sessionStorage.getItem('ar_content_url') || null); // Check sessionStorage for the URL
+  const [generatedUrl, setGeneratedUrl] = useState(null); // Check sessionStorage for the URL
   const [popupMessage, setPopupMessage] = useState(''); // State to hold the popup message
 
   const handlePreview = () => {
@@ -58,7 +58,7 @@ const Toolbar = () => {
                 setGeneratedUrl(arContentUrl); 
 
         // Persist URL in sessionStorage so that regenerating URLs in the same session refers to the same link
-        sessionStorage.setItem('ar_content_url', arContentUrl); 
+        // sessionStorage.setItem('ar_content_url', arContentUrl); 
         window.open(arContentUrl, '_blank');
       
       } catch (err) {
@@ -95,7 +95,7 @@ const Toolbar = () => {
         setGeneratedUrl(arContentUrl);
         
         // Persist URL in sessionStorage so that regenerating URLs in the same session refers to the same link
-        sessionStorage.setItem('ar_content_url', arContentUrl);
+        // sessionStorage.setItem('ar_content_url', arContentUrl);
 
         // Copy the full URL to clipboard & show popup
         navigator.clipboard.writeText(arContentUrl).then(() => {
