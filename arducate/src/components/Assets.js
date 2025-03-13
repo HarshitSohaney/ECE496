@@ -12,15 +12,19 @@ const ConeGeometry = () => <coneGeometry args={[1, 2, 32]} />;
 const TorusGeometry = () => <torusGeometry args={[1, 0.3, 2, 100]} />;
 const RingGeometry = () => <ringGeometry args={[0.3, 1, 32]} />;
 
-const TextAsset = ({text}) => 
+const TextAsset = ({text, color}) => 
     <Text
-      color="black"
+      color={color}
       anchorX="center"
       anchorY="middle"
       position={[0, 0, 0]}
     >
       {text}
     </Text>;
+
+  const LineAsset = ({color}) => {
+    return <Line points={[[0, 0, 0], [0, 2, 0]]} lineWidth={2} color={color} />;
+  };
 
 // Define the Map for geometry types to JSX elements
 const Assets = new Map([
@@ -32,14 +36,16 @@ const Assets = new Map([
   ['cone', <ConeGeometry />],
   ['torus', <TorusGeometry />],
   ['ring', <RingGeometry />],
-  ['text', (props) => <TextAsset text={props.text} />],
-  ['line', <Line points={[[0, 0, 0], [0, 2, 0]]} lineWidth={2} color="black"/>]
+  ['text', (props) => <TextAsset text={props.text} color={props.color} />],
+  ['line', (props) => <LineAsset color={props.color} />]
 ]);
 
 export const getAsset = (itemSelected, props) => {
     const asset = Assets.get(itemSelected);
-    // Only pass props if the asset type is 'text'
-    return itemSelected === 'text' ? asset(props) : asset;
+    // Only pass props if the asset type is 'text' or 'line'
+    if (itemSelected === 'text' || itemSelected === 'line') {
+      return asset(props);
+  }
 };
 
 const AssetsAR = new Map([

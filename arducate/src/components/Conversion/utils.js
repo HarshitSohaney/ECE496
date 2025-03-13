@@ -153,7 +153,7 @@ export const renderObject = (object) => {
           value="${object.text}"
           align="center"
           anchor="center"
-          color="#000"
+          color="${object.color}"
           ${animations}>
         </a-text>
       `;
