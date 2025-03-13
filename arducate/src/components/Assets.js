@@ -45,7 +45,10 @@ export const getAsset = (itemSelected, props) => {
     // Only pass props if the asset type is 'text' or 'line'
     if (itemSelected === 'text' || itemSelected === 'line') {
       return asset(props);
-  }
+    }
+    
+    return asset;
+    
 };
 
 const AssetsAR = new Map([
