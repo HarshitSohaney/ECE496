@@ -143,6 +143,12 @@ export const renderObject = (object) => {
   const scale = object.scale.join(" ");
   const rotation = object.rotation.map(radiansToDegrees).join(" ");
 
+  function fixLineRotation(rotation) {
+    let [x, y, z] = rotation.split(' ').map(Number);
+    x = -x;
+    return `${x} ${y} ${z}`;
+  }
+
   switch (object.entity) {
     case "a-text":
       return `
@@ -163,7 +169,7 @@ export const renderObject = (object) => {
         <a-entity 
           position="${position}"
           scale="${scale}"
-          rotation="${rotation}"
+          rotation="${fixLineRotation(rotation)}"
           line="color: ${
             object.color
           }; lineWidth: 2; start: 0 0 0; end: 0 2 0"
