@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Draggable from 'react-draggable';
 import useAnimation from '../../hooks/useAnimation';
+import useKeyframe from 'hooks/useKeyframe';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,7 @@ import {
 import { Trash2, Clock } from "lucide-react";
 
 const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timeRulerEnd, timelineWidth }) => {
-  const { updateKeyframe, deleteKeyframe } = useAnimation();
+  const { updateKeyframe, deleteKeyframe } = useKeyframe();
   const [isResizing, setIsResizing] = useState(null);
   const [activeKeyframe, setActiveKeyframe] = useState(null);
   const [openPopoverId, setOpenPopoverId] = useState(null);

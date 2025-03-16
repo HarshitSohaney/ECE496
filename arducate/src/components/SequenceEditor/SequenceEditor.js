@@ -27,6 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import useKeyframe from "hooks/useKeyframe";
 
 const formatTime = (seconds) => {
   const mins = Math.floor(seconds / 60);
@@ -73,8 +74,9 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
 };
 
 const SequenceEditor = () => {
-  const { play, pause, stop, addKeyframe, currentTime, isPlaying } =
+  const { play, pause, stop, currentTime, isPlaying } =
     useAnimation();
+    const { addKeyframe } = useKeyframe();
   const [selectedObject] = useAtom(selectedObjectAtom);
   const [duration] = useAtom(timelineDurationAtom);
   const [zoom, setZoom] = useState(1);
