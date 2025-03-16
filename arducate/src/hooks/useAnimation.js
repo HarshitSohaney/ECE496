@@ -77,9 +77,12 @@ const useAnimation = () => {
     });
   }, [setIsPlaying, setCurrentTime]);
 
-  // Interpolation functions
-  const interpolate = (start, end, progress) =>
-    start.map((s, i) => s + (end[i] - s) * progress);
+  // Use THREE.js built-in interpolation functions
+  const interpolateVector = (start, end, progress) => {
+    if (!start || !end) return start || end || [0, 0, 0];
+
+    return new THREE.Vector3().fromArray(start).lerp(new THREE.Vector3().fromArray(end), progress).toArray();
+  };
 
   const interpolateRotation = (start, end, progress) => {
     if (!start || !end || progress < 0 || progress > 1) return [0, 0, 0];
@@ -87,7 +90,9 @@ const useAnimation = () => {
     const startQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(...start, "XYZ"));
     const endQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(...end, "XYZ"));
 
-    const interpolatedQ = startQ.clone().slerp(endQ, progress);
+    const interpolatedQ = new THREE.Quaternion();
+    interpolatedQ.copy(startQ).slerp(endQ, progress);
+
     const interpolatedEuler = new THREE.Euler().setFromQuaternion(interpolatedQ, "XYZ");
 
     return [interpolatedEuler.x, interpolatedEuler.y, interpolatedEuler.z];
@@ -101,10 +106,11 @@ const useAnimation = () => {
     if (!keyframe || !keyframe.position.end) return null;
 
     const progress = (currentTime - keyframe.start) / (keyframe.end - keyframe.start);
+
     return {
-      position: interpolate(keyframe.position.start, keyframe.position.end, progress),
+      position: interpolateVector(keyframe.position.start, keyframe.position.end, progress),
       rotation: interpolateRotation(keyframe.rotation.start, keyframe.rotation.end, progress),
-      scale: interpolate(keyframe.scale.start, keyframe.scale.end, progress),
+      scale: interpolateVector(keyframe.scale.start, keyframe.scale.end, progress),
     };
   };
 
