@@ -24,7 +24,7 @@ const ARControls = () => {
     if (selectedObject) {
       const newScale = [...selectedObject.scale];
       newScale[axis] = parseFloat(scaleValue);
-  
+
       setARObjects({
         type: 'UPDATE_OBJECT',
         payload: {
@@ -36,15 +36,15 @@ const ARControls = () => {
   };
 
   const handlePositionChange = (axis, value) => {
-    if (selectedObject) {    
+    if (selectedObject) {
       const newPos = [...selectedObject.position];
       newPos[axis] = parseFloat(value);
-      setARObjects({ 
-        type: 'UPDATE_OBJECT', 
-        payload: { 
+      setARObjects({
+        type: 'UPDATE_OBJECT',
+        payload: {
           ...selectedObject,
           position: newPos
-        } 
+        }
       });
     }
   };
@@ -87,13 +87,13 @@ const ARControls = () => {
 
   const handleRotationChange = (axis, value) => {
     if (selectedObject) {
-      const currentRotation = Array.isArray(selectedObject.rotation) 
-        ? selectedObject.rotation.slice(0, 3) 
+      const currentRotation = Array.isArray(selectedObject.rotation)
+        ? selectedObject.rotation.slice(0, 3)
         : [0, 0, 0];
-      
+
       const newRotation = [...currentRotation];
       newRotation[axis] = parseFloat(value);
-      
+
       setARObjects({
         type: 'UPDATE_OBJECT',
         payload: {
@@ -110,7 +110,7 @@ const ARControls = () => {
       if (!checked) {
         setSelectedObject(null);
       }
-      
+
       setARObjects({
         type: 'UPDATE_OBJECT',
         payload: {
@@ -187,7 +187,7 @@ const ARControls = () => {
       </div>
 
 
-      {selectedObject.type == 'text' && 
+      {selectedObject.type == 'text' &&
         <div className="mb-4">
           <label className="block mb-2 text-sm font-medium">Text Input:</label>
           <input
@@ -209,15 +209,6 @@ const ARControls = () => {
       </div>
 
       <InputGroup
-        label="Scale"
-        values={selectedObject.scale}
-        onChange={handleScaleChange}
-        min="0.1"
-        max="15"
-        step="0.1"
-      />
-
-      <InputGroup
         label="Position"
         values={selectedObject.position}
         onChange={handlePositionChange}
@@ -235,16 +226,25 @@ const ARControls = () => {
         step="1"
       />
 
+      <InputGroup
+        label="Scale"
+        values={selectedObject.scale}
+        onChange={handleScaleChange}
+        min="0.1"
+        max="15"
+        step="0.1"
+      />
+
       <button
-        onClick={() => setARObjects({ 
-          type: 'UPDATE_OBJECT', 
-          payload: { ...selectedObject, position: [0, 0, 0] } 
+        onClick={() => setARObjects({
+          type: 'UPDATE_OBJECT',
+          payload: { ...selectedObject, position: [0, 0, 0] }
         })}
         className="w-full px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-700 mb-2"
       >
         Reset Position
       </button>
-      
+
       <button
         onClick={handleDeleteAsset}
         className="w-full px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-700"

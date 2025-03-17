@@ -8,6 +8,7 @@ import {
   arObjectsAtom,
 } from "../atoms";
 
+
 const useAnimation = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
@@ -99,30 +100,65 @@ const useAnimation = () => {
   };
 
   const interpolateProperties = (objectId) => {
-    const obj = arObjects.find((o) => o.id === objectId);
-    if (!obj) return null;
+  const obj = arObjects.find((o) => o.id === objectId);
+  if (!obj || !obj.keyframes || obj.keyframes.length === 0) return null;
 
-    const keyframe = obj.keyframes?.find(kf => currentTime >= kf.start && kf.end !== null && currentTime <= kf.end);
-    if (!keyframe || !keyframe.position.end) return null;
+  const sortedKeyframes = [...obj.keyframes].sort((a, b) => a.time - b.time);
 
-    const progress = (currentTime - keyframe.start) / (keyframe.end - keyframe.start);
-
+  // 🔹 Handle edge cases where currentTime is before or after keyframes
+  if (currentTime <= sortedKeyframes[0].time) {
     return {
-      position: interpolateVector(keyframe.position.start, keyframe.position.end, progress),
-      rotation: interpolateRotation(keyframe.rotation.start, keyframe.rotation.end, progress),
-      scale: interpolateVector(keyframe.scale.start, keyframe.scale.end, progress),
+      position: sortedKeyframes[0].position?.time ?? [0, 0, 0],
+      rotation: sortedKeyframes[0].rotation?.time ?? [0, 0, 0],
+      scale: sortedKeyframes[0].scale?.time ?? [1, 1, 1],
     };
+  }
+  if (currentTime >= sortedKeyframes[sortedKeyframes.length - 1].time) {
+    return {
+      position: sortedKeyframes[sortedKeyframes.length - 1].position?.time ?? [0, 0, 0],
+      rotation: sortedKeyframes[sortedKeyframes.length - 1].rotation?.time ?? [0, 0, 0],
+      scale: sortedKeyframes[sortedKeyframes.length - 1].scale?.time ?? [1, 1, 1],
+    };
+  }
+
+  // 🔹 Find the two keyframes to interpolate between
+  let prevKeyframe = sortedKeyframes[0];
+  let nextKeyframe = sortedKeyframes[sortedKeyframes.length - 1];
+
+  for (let i = 0; i < sortedKeyframes.length - 1; i++) {
+    if (currentTime >= sortedKeyframes[i].time && currentTime < sortedKeyframes[i + 1].time) {
+      prevKeyframe = sortedKeyframes[i];
+      nextKeyframe = sortedKeyframes[i + 1];
+      break;
+    }
+  }
+
+  // 🔹 Interpolation factor (0 → start keyframe, 1 → next keyframe)
+  const progress = (currentTime - prevKeyframe.time) / (nextKeyframe.time - prevKeyframe.time);
+
+  return {
+    position: interpolateVector(prevKeyframe.position?.time, nextKeyframe.position?.time, progress),
+    rotation: interpolateRotation(prevKeyframe.rotation?.time, nextKeyframe.rotation?.time, progress),
+    scale: interpolateVector(prevKeyframe.scale?.time, nextKeyframe.scale?.time, progress),
+  };
+};
+
+
+  const setTimeAndUpdateObjects = (newTime) => {
+    setCurrentTime(newTime);
   };
 
   return {
     play,
     pause,
     stop,
+    setTimeAndUpdateObjects,
     interpolateProperties,
     currentTime,
     setCurrentTime,
     isPlaying,
   };
 };
+
 
 export default useAnimation;

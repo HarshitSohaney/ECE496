@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useEffect } from 'react';
 import Draggable from "react-draggable";
 import { Tally3 } from "lucide-react";
 import { useAtom } from 'jotai';
-import { timelineScaleAtom } from '../../atoms';
+import { timelineScaleAtom, currentTimeAtom } from '../../atoms';
 import useAnimation from '../../hooks/useAnimation';
 
 const Playhead = ({ containerWidth }) => {

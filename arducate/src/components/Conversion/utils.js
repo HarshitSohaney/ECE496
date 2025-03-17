@@ -96,8 +96,8 @@ export const generateAnimations = (keyframes) => {
  * @returns {string} A-Frame text entity markup
  */
 export const renderTextLabel = (object) => `
-  <a-text 
-    visible="${object.showLabel}" 
+  <a-text
+    visible="${object.showLabel}"
     value="${object.name || `Object ${object.id}`}"
     position="0 ${-object.scale[1]} 0"
     render-order="2"
@@ -146,7 +146,7 @@ export const renderObject = (object) => {
   switch (object.entity) {
     case "a-text":
       return `
-        <a-text 
+        <a-text
           position="${position}"
           scale="${scale}"
           rotation="${rotation}"
@@ -161,7 +161,7 @@ export const renderObject = (object) => {
 
     case "a-element":
       return `
-        <a-entity 
+        <a-entity
           position="${position}"
           scale="${scale}"
           rotation="${rotation}"
@@ -177,12 +177,12 @@ export const renderObject = (object) => {
       return `
         <${object.entity}
           position="${position}"
-          scale="${scale}" 
+          scale="${scale}"
           rotation="${rotation}"
           color="${object.color}"
           ${animations}>
-          <a-text 
-            visible="${object.showLabel}" 
+          <a-text
+            visible="${object.showLabel}"
             value="${object.name || `Object ${object.id}`}"
             position="0 ${-object.scale[1]} 0"
             render-order="1"
