@@ -210,7 +210,7 @@ const ARControls = () => {
 
       <InputGroup
         label="Position"
-        values={selectedObject.position}
+        values={selectedObject.position || [0, 0, 0]}
         onChange={handlePositionChange}
         min="-10"
         max="10"
@@ -228,7 +228,7 @@ const ARControls = () => {
 
       <InputGroup
         label="Scale"
-        values={selectedObject.scale}
+        values={selectedObject.scale || [1, 1, 1]}
         onChange={handleScaleChange}
         min="0.1"
         max="15"

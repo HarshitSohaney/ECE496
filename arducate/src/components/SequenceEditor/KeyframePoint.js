@@ -19,6 +19,7 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
   const [timelineWidth] = useAtom(timelineWidthAtom);
   const [scale] = useAtom(timelineScaleAtom);
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
+  const [arObjects, setARObjects] = useAtom(arObjectsAtom);
 
   // Use state to store the keyframe's X position (for re-rendering)
   const [keyframeX, setKeyframeX] = useState(timeToPixels(keyframe.time));
@@ -62,7 +63,14 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
       : { keyframeId: keyframe.id, objectId };
 
     setSelectedKeyframe(newSelection);
-    setSelectedObject(isSelected ? null : objectId);
+    if (!selectedObject || selectedObject.id !== objectId) {
+      // Assuming you have a way to get the full object from its id
+      const fullObject = arObjects.find(obj => obj.id === objectId);
+      if (fullObject) {
+        console.log("selected obj", fullObject);
+        setSelectedObject(fullObject);
+      }
+    }
     setCurrentTime(keyframe.time);
   };
 
