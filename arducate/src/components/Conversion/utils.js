@@ -34,52 +34,41 @@ export const radiansToDegrees = (radians) => {
 
 /**
  * Generates animation strings for AR objects based on keyframes
- * @param {Array} keyframes - Array of keyframe objects containing position, rotation, scale, and color data
+ * @param {Array} keyframes - Array of keyframe objects containing position, rotation, and scale
  * @returns {string} Concatenated animation string for A-Frame
  */
 export const generateAnimations = (keyframes) => {
-  if (!keyframes || keyframes.length === 0) return "";
+  if (!keyframes || keyframes.length < 2) return ""; // At least 2 keyframes needed for animation
 
-  const validKeyframes = keyframes.filter((kf) => {
-    return (
-      kf.position?.start &&
-      kf.position?.end &&
-      Array.isArray(kf.position.start) &&
-      Array.isArray(kf.position.end)
-    );
-  });
+  return keyframes
+    .sort((a, b) => a.time - b.time)
+    .map((kf, index, array) => {
+      if (index === array.length - 1) return "";
 
-  return validKeyframes
-    .sort((a, b) => a.start - b.start)
-    .map((kf, index) => {
-      const duration = (kf.end - kf.start) * 1000;
-      const delay = kf.start * 1000;
+      const nextKf = array[index + 1];
+      const duration = (nextKf.time - kf.time) * 1000;
+      const delay = kf.time * 1000;
 
       const animations = [
         {
           prop: "position",
-          from: kf.position.start.join(" "),
-          to: kf.position.end.join(" "),
+          from: kf.position?.join(" ") || "0 0 0",
+          to: nextKf.position?.join(" ") || "0 0 0",
         },
         {
           prop: "rotation",
-          from: kf.rotation?.start.map(radiansToDegrees).join(" ") || "0 0 0",
-          to: kf.rotation?.end.map(radiansToDegrees).join(" ") || "0 0 0",
+          from: kf.rotation?.join(" ") || "0 0 0",
+          to: nextKf.rotation?.join(" ") || "0 0 0",
         },
         {
           prop: "scale",
-          from: kf.scale?.start.join(" ") || "1 1 1",
-          to: kf.scale?.end.join(" ") || "1 1 1",
+          from: kf.scale?.join(" ") || "1 1 1",
+          to: nextKf.scale?.join(" ") || "1 1 1",
         },
-        // {
-        //   prop: "color",
-        //   from: rgbArrayToString(kf.color?.start || [1, 1, 1]),
-        //   to: rgbArrayToString(kf.color?.end || [1, 1, 1]),
-        // },
       ];
 
       return animations
-        .filter(({ from, to }) => from !== to)
+        .filter(({ from, to }) => from !== to) // Remove unnecessary animations
         .map(({ prop, from, to }) => {
           const property =
             prop === "color" ? "material.color; type: color" : prop;
@@ -89,6 +78,7 @@ export const generateAnimations = (keyframes) => {
     })
     .join(" ");
 };
+
 
 /**
  * Renders a text label for an AR object
@@ -117,17 +107,19 @@ export const renderTextLabel = (object) => `
 export const getInitialProperties = (object) => {
   const defaultColor = [1, 1, 1]; // Default white in RGB array format
 
-  console.log("getInitialProperties Keyframes:", object.keyframes)
-
-
+  console.log("InitProps Scale", object.keyframes[0].scale)
   if (object.keyframes && object.keyframes.length > 0) {
     return {
-      position: object.keyframes[0].position.start,
+      position: object.keyframes[0].position || [0, 0, 0],
+      rotation: object.keyframes[0].rotation || [0, 0, 0],
+      scale: object.keyframes[0].scale || [1, 1, 1],
       // color: rgbArrayToString(object.keyframes[0].color?.start || defaultColor),
     };
   }
   return {
-    position: object.position,
+    position: object.position || [0, 0, 0],
+    rotation: object.rotation || [0, 0, 0],
+    scale: object.scale || [1, 1, 1]
     // color: rgbArrayToString(object.color ? object.color : defaultColor),
   };
 
@@ -142,14 +134,12 @@ export const renderObject = (object) => {
   const initialProps = getInitialProperties(object);
   const animations = generateAnimations(object.keyframes);
 
-  console.log("Rotation in renderObject:", object.rotation)
+  console.log("Initial Scale in renderObject:", initialProps.scale);
 
-  // Use either keyframe initial position or object position
+
   const position = initialProps.position.join(" ");
-  const scale = object.scale.join(" ");
-  // const rotation = object.rotation.map(radiansToDegrees).join(" ");
-  const rotation = object.rotation.join(" ");
-
+  const scale = initialProps.scale.join(" ");
+  const rotation = initialProps.rotation.join(" ");
 
   switch (object.entity) {
     case "a-text":

@@ -24,9 +24,9 @@ export const convertSceneToVR = (vrObjects) => {
         <a-entity position="0 1.5 0">
           ${vrObjects.filter(object => object.visible !== false).map(object => renderObject(object)).join("")}
         </a-entity>
-        
+
         <!-- Camera with movement and look controls -->
-        <a-entity camera look-controls wasd-controls position="0 1 3"></a-entity>
+      <a-entity camera look-controls wasd-controls position="0 2 5" look-at="0 0 0"></a-entity>
       </a-scene>
     </body>
     </html>`;
