@@ -52,11 +52,11 @@ const KeyframeControls = () => {
   };
 
   const handlePropertyChange = (type, axis, value) => {
-    const updatedValues = [...(keyframe[type]?.time || [0, 0, 0])];
+    const updatedValues = [...(keyframe[type] || [0, 0, 0])];
     updatedValues[axis] = parseFloat(value);
 
     updateKeyframe(selectedKeyframe.objectId, selectedKeyframe.keyframeId, {
-      [type]: { time: updatedValues },
+      [type]: updatedValues,
     });
 
     // Update arObjectsAtom so ARObject re-renders
@@ -66,7 +66,7 @@ const KeyframeControls = () => {
           ? {
               ...obj,
               keyframes: obj.keyframes.map((kf) =>
-                kf.id === selectedKeyframe.keyframeId ? { ...kf, [type]: { time: updatedValues } } : kf
+                kf.id === selectedKeyframe.keyframeId ? { ...kf, [type]: updatedValues, } : kf
               ),
             }
           : obj
@@ -94,7 +94,7 @@ const KeyframeControls = () => {
     <div className="mb-3">
       <label className="block text-xs font-medium mb-1">{label}:</label>
       <div className="flex justify-between">
-        {(keyframe[type]?.time || [0, 0, 0]).map((value, axis) => (
+        {(keyframe[type] || [0, 0, 0]).map((value, axis) => (
           <div key={axis} className="flex flex-col items-center w-[28%]">
             <input
               type="number"

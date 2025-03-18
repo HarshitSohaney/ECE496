@@ -117,6 +117,9 @@ export const renderTextLabel = (object) => `
 export const getInitialProperties = (object) => {
   const defaultColor = [1, 1, 1]; // Default white in RGB array format
 
+  console.log("getInitialProperties Keyframes:", object.keyframes)
+
+
   if (object.keyframes && object.keyframes.length > 0) {
     return {
       position: object.keyframes[0].position.start,
@@ -127,6 +130,7 @@ export const getInitialProperties = (object) => {
     position: object.position,
     // color: rgbArrayToString(object.color ? object.color : defaultColor),
   };
+
 };
 
 /**
@@ -138,10 +142,14 @@ export const renderObject = (object) => {
   const initialProps = getInitialProperties(object);
   const animations = generateAnimations(object.keyframes);
 
+  console.log("Rotation in renderObject:", object.rotation)
+
   // Use either keyframe initial position or object position
   const position = initialProps.position.join(" ");
   const scale = object.scale.join(" ");
-  const rotation = object.rotation.map(radiansToDegrees).join(" ");
+  // const rotation = object.rotation.map(radiansToDegrees).join(" ");
+  const rotation = object.rotation.join(" ");
+
 
   switch (object.entity) {
     case "a-text":

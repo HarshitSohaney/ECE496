@@ -108,16 +108,16 @@ const useAnimation = () => {
   // 🔹 Handle edge cases where currentTime is before or after keyframes
   if (currentTime <= sortedKeyframes[0].time) {
     return {
-      position: sortedKeyframes[0].position?.time ?? [0, 0, 0],
-      rotation: sortedKeyframes[0].rotation?.time ?? [0, 0, 0],
-      scale: sortedKeyframes[0].scale?.time ?? [1, 1, 1],
+      position: sortedKeyframes[0].position ?? [0, 0, 0],
+      rotation: sortedKeyframes[0].rotation ?? [0, 0, 0],
+      scale: sortedKeyframes[0].scale ?? [1, 1, 1],
     };
   }
   if (currentTime >= sortedKeyframes[sortedKeyframes.length - 1].time) {
     return {
-      position: sortedKeyframes[sortedKeyframes.length - 1].position?.time ?? [0, 0, 0],
-      rotation: sortedKeyframes[sortedKeyframes.length - 1].rotation?.time ?? [0, 0, 0],
-      scale: sortedKeyframes[sortedKeyframes.length - 1].scale?.time ?? [1, 1, 1],
+      position: sortedKeyframes[sortedKeyframes.length - 1].position ?? [0, 0, 0],
+      rotation: sortedKeyframes[sortedKeyframes.length - 1].rotation ?? [0, 0, 0],
+      scale: sortedKeyframes[sortedKeyframes.length - 1].scale ?? [1, 1, 1],
     };
   }
 
@@ -137,9 +137,9 @@ const useAnimation = () => {
   const progress = (currentTime - prevKeyframe.time) / (nextKeyframe.time - prevKeyframe.time);
 
   return {
-    position: interpolateVector(prevKeyframe.position?.time, nextKeyframe.position?.time, progress),
-    rotation: interpolateRotation(prevKeyframe.rotation?.time, nextKeyframe.rotation?.time, progress),
-    scale: interpolateVector(prevKeyframe.scale?.time, nextKeyframe.scale?.time, progress),
+    position: interpolateVector(prevKeyframe.position, nextKeyframe.position, progress),
+    rotation: interpolateRotation(prevKeyframe.rotation, nextKeyframe.rotation, progress),
+    scale: interpolateVector(prevKeyframe.scale, nextKeyframe.scale, progress),
   };
 };
 

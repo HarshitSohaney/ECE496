@@ -26,22 +26,23 @@ const useKeyframe = () => {
 
       // Ensure a unique ID that does NOT overwrite existing keyframes
       const newId = existingKeyframes.length > 0
-        ? Math.max(...existingKeyframes.map(kf => kf.id)) + 1 // Get max ID and increment
+        ? Math.max(...existingKeyframes.map(kf => kf.id)) + 1
         : 1;
 
       let newKeyframe = {
-        id: newId, // ✅ Unique ID
-        time: currentTime,
-        position: { time: [...(targetObject.position || [0, 0, 0])] },
-        rotation: { time: [...(targetObject.rotation || [0, 0, 0])] },
-        scale: { time: [...(targetObject.scale || [1, 1, 1])] },
-      };
+          id: newId,
+          time: currentTime,
+          position: [...(targetObject.position || [0, 0, 0])],
+          rotation: [...(targetObject.rotation || [0, 0, 0])],
+          scale: [...(targetObject.scale || [1, 1, 1])],
+        };
+
 
       setArObjects({
         type: "UPDATE_OBJECT",
         payload: {
           id: objectId,
-          keyframes: [...existingKeyframes, newKeyframe].sort((a, b) => a.time - b.time), // Keep sorted
+          keyframes: [...existingKeyframes, newKeyframe].sort((a, b) => a.time - b.time),
         },
       });
     },
