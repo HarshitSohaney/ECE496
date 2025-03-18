@@ -80,7 +80,43 @@ export const useObjectHandlers = () => {
       setARObjects({ type: "REMOVE_OBJECT", payload: selectedObject.id });
     }
   }, [selectedObject, setARObjects]);
-
+  const handleLabelChange = (e) => {
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        label: e.target.value,
+      },
+    });
+  };
+  const handleLabelVisibilityChange = (checked) => {
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        showLabel: checked,
+      },
+    });
+  };
+  const handleTextChange = (e) => {
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        text: e.target.value,
+      },
+    });
+  };
+  const handleNameChange = (e) => {
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        name: e.target.value,
+      },
+    });
+    
+  };
   return {
     handleColorChange,
     handleScaleChange,
@@ -88,5 +124,9 @@ export const useObjectHandlers = () => {
     handleRotationChange,
     handleVisibilityChange,
     handleDeleteAsset,
+    handleLabelChange,
+    handleLabelVisibilityChange,
+    handleTextChange,
+    handleNameChange,
   };
 };

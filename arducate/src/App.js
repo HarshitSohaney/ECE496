@@ -11,22 +11,38 @@ import AssetControllers from 'components/AssetControllers';
 
 const App = () => {
   return (
-    <div className="flex flex-col items-center h-screen">
-      <Toolbar className="flex-shrink-0" />
-      <div className="flex flex-1 w-full">
-        {/* Sidebar should stay fixed */}
-        <Sidebar className="flex-none w-[15vw] min-w-[15vw]" />
 
-        {/* ARCanvas should fill remaining space */}
-        <div className="flex-1 flex h-full">
-          <ARCanvas className="w-full h-full" />
+    <Router>
+    <Routes>
+      {/* Main AR Editor Interface */}
+      <Route
+        path="/"
+        element={
+          <div className="flex flex-col items-center h-screen">
+          <Toolbar className="flex-shrink-0" />
+          <div className="flex flex-1 w-full">
+            {/* Sidebar should stay fixed */}
+            <Sidebar className="flex-none w-[15vw] min-w-[15vw]" />
+    
+            {/* ARCanvas should fill remaining space */}
+            <div className="flex-1 flex h-full">
+              <ARCanvas className="w-full h-full" />
+            </div>
+    
+            {/* AssetControllers remains on the side */}
+            <AssetControllers className="flex-none" />
+          </div>
+          <SequenceEditor />
         </div>
+        }
+      />
+      
+      {/* Dynamic AR Content Route */}
+      <Route path="/ar-content/:uniqueId" element={<ARContentViewer />} />
+    </Routes>
+  </Router>
 
-        {/* AssetControllers remains on the side */}
-        <AssetControllers className="flex-none" />
-      </div>
-      <SequenceEditor />
-    </div>
+
   );
 };
 

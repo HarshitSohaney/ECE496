@@ -17,6 +17,7 @@ const ARControls = () => {
     handleLabelVisibilityChange,
     handleTextChange,
     handleVisibilityChange,
+    handleNameChange,
   } = useObjectHandlers();
 
   if (!selectedObject) {
@@ -75,10 +76,8 @@ const ARControls = () => {
               className="w-full p-1 border rounded text-sm"
             />
           </div>
-        </div>
-      </div>
-      <div className="mb-3">
-        <div className="flex items-center justify-between gap-2">
+          </div>
+          <div className="flex items-center justify-between gap-2">
           <div className="flex-1">
             <label className="text-xs font-medium">Label:</label>
             <input
@@ -101,12 +100,12 @@ const ARControls = () => {
 
       {selectedObject.type == "text" && (
         <div className="mb-4">
-          <label className="block mb-2 text-xs font-medium">Text Input:</label>
+          <label className="block mb-2 text-sm font-medium">Text Input:</label>
           <input
             type="text"
             value={selectedObject.text}
             onChange={handleTextChange}
-            className="w-full p-1 border rounded text-sm"
+            className="w-full p-2 border rounded"
           />
         </div>
       )}
