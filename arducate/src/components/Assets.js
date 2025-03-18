@@ -23,7 +23,7 @@ const TextAsset = ({text, color}) =>
     </Text>;
 
   const LineAsset = ({color}) => {
-    return <Line points={[[0, 0, 0], [0, 2, 0]]} lineWidth={2} color={color} />;
+    return <Line points={[[0, -1, 0], [0, 1, 0]]} lineWidth={2} color={color} />;
   };
 
 // Define the Map for geometry types to JSX elements
