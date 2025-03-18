@@ -172,7 +172,7 @@ export const renderObject = (object) => {
           rotation="${fixLineRotation(rotation)}"
           line="color: ${
             object.color
-          }; lineWidth: 2; start: 0 0 0; end: 0 2 0"
+          }; lineWidth: 2; start: 0 -1 0; end: 0 1 0"
           ${animations}>
         </a-entity>
         ${renderTextLabel({ ...object, position: initialProps.position })}
