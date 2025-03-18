@@ -107,7 +107,6 @@ export const renderTextLabel = (object) => `
 export const getInitialProperties = (object) => {
   const defaultColor = [1, 1, 1]; // Default white in RGB array format
 
-  console.log("InitProps Scale", object.keyframes[0].scale)
   if (object.keyframes && object.keyframes.length > 0) {
     return {
       position: object.keyframes[0].position || [0, 0, 0],
