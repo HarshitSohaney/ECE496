@@ -15,31 +15,6 @@ const KeyframeBar = ({ objectId, keyframes, scale, timeRulerStart, timelineWidth
 
   return (
     <div ref={barRef} style={{ position: "relative", height: "20px", width: "100%" }}>
-      {sortedKeyframes.map((keyframe, index) => {
-        if (index === sortedKeyframes.length - 1) return null;
-
-        const startX = timeToPixels(keyframe.time);
-        const endX = timeToPixels(sortedKeyframes[index + 1].time);
-        const barWidth = endX - startX;
-
-        return (
-          <div
-            key={`bar-${keyframe.id}`}
-            style={{
-              position: "absolute",
-              height: "4px",
-              width: `${barWidth}px`,
-              backgroundColor: "#4A5568",
-              top: "50%",
-              left: `${startX}px`,
-              transform: "translateY(-50%)",
-              cursor: "pointer",
-            }}
-            onClick={() => handleBarClick(keyframe.time, sortedKeyframes[index + 1].time)}
-          />
-        );
-      })}
-
       {sortedKeyframes.map((keyframe) => (
         <KeyframePoint
           key={keyframe.id}
