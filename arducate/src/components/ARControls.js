@@ -2,124 +2,22 @@ import React, { useCallback } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
 import { Switch } from "../@/components/ui/switch";
+import { useObjectHandlers } from "hooks/objectHandlers";
 
 const ARControls = () => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
   const [, setARObjects] = useAtom(arObjectsAtom);
-
-  const handleColorChange = (e) => {
-    if (selectedObject) {
-      setARObjects({
-        //Actual update handled in the atom
-        type: "UPDATE_OBJECT",
-        payload: {
-          ...selectedObject,
-          color: e.target.value,
-        },
-      });
-    }
-  };
-
-  const handleScaleChange = (axis, scaleValue) => {
-    if (selectedObject) {
-      const newScale = [...selectedObject.scale];
-      newScale[axis] = parseFloat(scaleValue);
-
-      setARObjects({
-        type: 'UPDATE_OBJECT',
-        payload: {
-          ...selectedObject,
-          scale: newScale,
-        },
-      });
-    }
-  };
-
-  const handlePositionChange = (axis, value) => {
-    if (selectedObject) {
-      const newPos = [...selectedObject.position];
-      newPos[axis] = parseFloat(value);
-      setARObjects({
-        type: 'UPDATE_OBJECT',
-        payload: {
-          ...selectedObject,
-          position: newPos
-        }
-      });
-    }
-  };
-
-  const handleDeleteAsset = useCallback(() => {
-    if (selectedObject) {
-      setARObjects({ type: "REMOVE_OBJECT", payload: selectedObject.id });
-    }
-  }, [selectedObject, setARObjects]);
-
-  const handleLabelChange = (e) => {
-    setARObjects({
-      type: "UPDATE_OBJECT",
-      payload: {
-        id: selectedObject.id,
-        name: e.target.value,
-      },
-    });
-  };
-
-  const handleLabelVisibilityChange = (checked) => {
-    setARObjects({
-      type: "UPDATE_OBJECT",
-      payload: {
-        id: selectedObject.id,
-        showLabel: checked,
-      },
-    });
-  };
-
-  const handleTextChange = (e) => {
-    setARObjects({
-      type: "UPDATE_OBJECT",
-      payload: {
-        id: selectedObject.id,
-        text: e.target.value,
-      },
-    });
-  };
-
-  const handleRotationChange = (axis, value) => {
-    if (selectedObject) {
-      const currentRotation = Array.isArray(selectedObject.rotation)
-        ? selectedObject.rotation.slice(0, 3)
-        : [0, 0, 0];
-
-      const newRotation = [...currentRotation];
-      newRotation[axis] = parseFloat(value);
-
-      setARObjects({
-        type: 'UPDATE_OBJECT',
-        payload: {
-          id: selectedObject.id,
-          rotation: newRotation
-        }
-      });
-    }
-  };
-
-  const handleVisibilityChange = (checked) => {
-    if (selectedObject) {
-      // If turning visibility off, clear the selected object
-      if (!checked) {
-        setSelectedObject(null);
-      }
-
-      setARObjects({
-        type: 'UPDATE_OBJECT',
-        payload: {
-          ...selectedObject,
-          visible: checked
-        }
-      });
-    }
-  };
+  const {
+    handleScaleChange,
+    handlePositionChange,
+    handleRotationChange,
+    handleColorChange,
+    handleDeleteAsset,
+    handleLabelChange,
+    handleLabelVisibilityChange,
+    handleTextChange,
+    handleVisibilityChange,
+  } = useObjectHandlers();
 
   if (!selectedObject) {
     return (
@@ -147,7 +45,9 @@ const ARControls = () => {
               onChange={(e) => onChange(axis, e.target.value)}
               className="w-full text-center text-sm p-1 h-7"
             />
-            <label className="mt-1 text-xs font-medium">{['X', 'Y', 'Z'][axis]}</label>
+            <label className="mt-1 text-xs font-medium">
+              {["X", "Y", "Z"][axis]}
+            </label>
           </div>
         ))}
       </div>
@@ -186,8 +86,7 @@ const ARControls = () => {
         </div>
       </div>
 
-
-      {selectedObject.type == 'text' &&
+      {selectedObject.type == "text" && (
         <div className="mb-4">
           <label className="block mb-2 text-sm font-medium">Text Input:</label>
           <input
@@ -197,7 +96,7 @@ const ARControls = () => {
             className="w-full p-2 border rounded"
           />
         </div>
-      }
+      )}
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">Color:</label>
         <input
@@ -236,10 +135,12 @@ const ARControls = () => {
       />
 
       <button
-        onClick={() => setARObjects({
-          type: 'UPDATE_OBJECT',
-          payload: { ...selectedObject, position: [0, 0, 0] }
-        })}
+        onClick={() =>
+          setARObjects({
+            type: "UPDATE_OBJECT",
+            payload: { ...selectedObject, position: [0, 0, 0] },
+          })
+        }
         className="w-full px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-700 mb-2"
       >
         Reset Position
