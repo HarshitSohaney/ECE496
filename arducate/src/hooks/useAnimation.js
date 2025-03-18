@@ -6,6 +6,7 @@ import {
   isPlayingAtom,
   timelineDurationAtom,
   arObjectsAtom,
+  selectedObjectAtom
 } from "../atoms";
 
 
@@ -14,6 +15,7 @@ const useAnimation = () => {
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
   const [arObjects] = useAtom(arObjectsAtom);
   const [duration] = useAtom(timelineDurationAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
 
   const animationRef = useRef({
     startTime: null,
@@ -42,6 +44,7 @@ const useAnimation = () => {
     };
 
     if (isPlaying) {
+      setSelectedObject(null);
       animationRef.current.frameId = requestAnimationFrame(animate);
     } else {
       if (animationRef.current.frameId) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import Draggable from "react-draggable";
 import { Diamond } from "lucide-react";
@@ -8,81 +8,90 @@ import {
   currentTimeAtom,
   timelineWidthAtom,
   timelineScaleAtom,
+  selectedObjectAtom
 } from "atoms";
 import useKeyframe from "hooks/useKeyframe";
 
 const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
   const [selectedKeyframe, setSelectedKeyframe] = useAtom(selectedKeyframeAtom);
-  const [arObjects] = useAtom(arObjectsAtom);
   const [, setCurrentTime] = useAtom(currentTimeAtom);
   const { updateKeyframe } = useKeyframe();
   const [timelineWidth] = useAtom(timelineWidthAtom);
   const [scale] = useAtom(timelineScaleAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
 
-  // Store keyframe X position in a ref (avoids unnecessary re-renders)
-  const tempXRef = useRef(timeToPixels(keyframe.time));
+  // Use state to store the keyframe's X position (for re-rendering)
+  const [keyframeX, setKeyframeX] = useState(timeToPixels(keyframe.time));
 
-  // Force re-render when resizing happens
-  const [resizeTrigger, setResizeTrigger] = useState(0);
+  // Update keyframeX when timeline dimensions or the keyframe's time change
+  useEffect(() => {
+    setKeyframeX(timeToPixels(keyframe.time));
+  }, [timelineWidth, scale, keyframe.time, timeToPixels]);
 
   const [isDraggingAllowed, setIsDraggingAllowed] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Detect when Cmd (⌘) or Ctrl is held
+  // Detect Cmd (⌘) or Ctrl key press to allow dragging
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.metaKey || e.ctrlKey) {
-        setIsDraggingAllowed(true);
-      }
+      if (e.metaKey || e.ctrlKey) setIsDraggingAllowed(true);
     };
 
     const handleKeyUp = (e) => {
-      if (!e.metaKey && !e.ctrlKey) {
-        setIsDraggingAllowed(false);
-      }
+      if (!e.metaKey && !e.ctrlKey) setIsDraggingAllowed(false);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
-  useEffect(() => {
-    tempXRef.current = timeToPixels(keyframe.time);
-    setResizeTrigger((prev) => prev + 1); // Force re-render when resizing
-  }, [timelineWidth, scale, keyframe.time, timeToPixels]);
+  // Only select if not dragging
+  const handleLeftClick = (e) => {
+    if (isDragging || isDraggingAllowed) return;
 
-  const handleLeftClick = () => {
     const isSelected =
       selectedKeyframe.keyframeId === keyframe.id &&
       selectedKeyframe.objectId === objectId;
-    setSelectedKeyframe(
-      isSelected
-        ? { keyframeId: null, objectId: null }
-        : { keyframeId: keyframe.id, objectId }
-    );
+
+    const newSelection = isSelected
+      ? { keyframeId: null, objectId: null }
+      : { keyframeId: keyframe.id, objectId };
+
+    setSelectedKeyframe(newSelection);
+    setSelectedObject(isSelected ? null : objectId);
     setCurrentTime(keyframe.time);
   };
 
+  const handleDragStart = () => {
+    if (!isDraggingAllowed) return;
+    setIsDragging(true);
+  };
+
   const handleDrag = (e, data) => {
-    tempXRef.current = data.x;
+    // Update state so that Draggable re-renders immediately
+    setKeyframeX(data.x);
   };
 
   const handleDragStop = (e, data) => {
+    if (!isDraggingAllowed) return;
+
     const newTime = pixelsToTime(data.x);
     updateKeyframe(objectId, keyframe.id, { time: newTime });
     setCurrentTime(newTime);
+    setIsDragging(false);
   };
 
   return (
     <Draggable
-      key={resizeTrigger} // Forces re-render on resize
       axis="x"
       bounds={{ left: 0, right: timelineWidth - 10 }}
-      defaultPosition={{ x: tempXRef.current - 4, y: 0 }}
+      // Use the state variable for controlled position
+      position={{ x: keyframeX - 4, y: 0 }}
+      onStart={handleDragStart}
       onDrag={handleDrag}
       onStop={handleDragStop}
       disabled={!isDraggingAllowed}
@@ -92,7 +101,7 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
           position: "absolute",
           height: "20px",
           width: "10px",
-          cursor: isDraggingAllowed ? "grabbing" : "pointer",
+          cursor: isDraggingAllowed ? "grabbing" : "pointer"
         }}
         onClick={handleLeftClick}
       >
@@ -108,7 +117,7 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
             position: "absolute",
             top: "50%",
             left: "50%",
-            transform: "translate(-50%, -50%)",
+            transform: "translate(-50%, -50%)"
           }}
         />
       </div>
