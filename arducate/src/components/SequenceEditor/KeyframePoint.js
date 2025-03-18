@@ -25,13 +25,37 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
   // Force re-render when resizing happens
   const [resizeTrigger, setResizeTrigger] = useState(0);
 
+  const [isDraggingAllowed, setIsDraggingAllowed] = useState(false);
+
+  // Detect when Cmd (⌘) or Ctrl is held
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.metaKey || e.ctrlKey) {
+        setIsDraggingAllowed(true);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (!e.metaKey && !e.ctrlKey) {
+        setIsDraggingAllowed(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
   useEffect(() => {
     tempXRef.current = timeToPixels(keyframe.time);
     setResizeTrigger((prev) => prev + 1); // Force re-render when resizing
   }, [timelineWidth, scale, keyframe.time, timeToPixels]);
 
-  const handleRightClick = (event) => {
-    event.preventDefault();
+  const handleLeftClick = () => {
     const isSelected =
       selectedKeyframe.keyframeId === keyframe.id &&
       selectedKeyframe.objectId === objectId;
@@ -61,15 +85,16 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
       defaultPosition={{ x: tempXRef.current - 4, y: 0 }}
       onDrag={handleDrag}
       onStop={handleDragStop}
+      disabled={!isDraggingAllowed}
     >
       <div
         style={{
           position: "absolute",
           height: "20px",
           width: "10px",
-          cursor: "grab",
+          cursor: isDraggingAllowed ? "grabbing" : "pointer",
         }}
-        onContextMenu={handleRightClick}
+        onClick={handleLeftClick}
       >
         <Diamond
           size={14}
