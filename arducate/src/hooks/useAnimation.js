@@ -1,18 +1,21 @@
-import * as THREE from "three";
 import { useAtom } from "jotai";
 import { useEffect, useCallback, useRef } from "react";
+import * as THREE from "three";
 import {
-  arObjectsAtom,
   currentTimeAtom,
   isPlayingAtom,
   timelineDurationAtom,
+  arObjectsAtom,
+  selectedObjectAtom
 } from "../atoms";
+
 
 const useAnimation = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
-  const [arObjects, setArObjects] = useAtom(arObjectsAtom);
+  const [arObjects] = useAtom(arObjectsAtom);
   const [duration] = useAtom(timelineDurationAtom);
+  const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
 
   const animationRef = useRef({
     startTime: null,
@@ -23,33 +26,30 @@ const useAnimation = () => {
 
   useEffect(() => {
     const animate = (currentFrameTime) => {
-      const anim = animationRef.current;
-
       if (!isPlaying) return;
 
-      // Initialize animation timing on first frame
+      const anim = animationRef.current;
+
       if (!anim.startTime) {
         anim.startTime = currentFrameTime;
         anim.lastFrameTime = currentFrameTime;
         anim.initialPlayTime = currentTime;
       }
 
-      // Calculate precise elapsed time since animation started
       const elapsedTime = (currentFrameTime - anim.startTime) / 1000;
       const newTime = anim.initialPlayTime + elapsedTime;
 
       setCurrentTime(newTime);
-
       anim.frameId = requestAnimationFrame(animate);
     };
 
     if (isPlaying) {
+      setSelectedObject(null);
       animationRef.current.frameId = requestAnimationFrame(animate);
     } else {
       if (animationRef.current.frameId) {
         cancelAnimationFrame(animationRef.current.frameId);
       }
-      // Reset animation state
       animationRef.current = {
         startTime: null,
         lastFrameTime: null,
@@ -66,7 +66,6 @@ const useAnimation = () => {
   }, [isPlaying, setCurrentTime, currentTime]);
 
   const play = useCallback(() => {
-    // Store the current time as the starting point for playback
     animationRef.current.initialPlayTime = currentTime;
     setIsPlaying(true);
   }, [currentTime, setIsPlaying]);
@@ -82,270 +81,87 @@ const useAnimation = () => {
     });
   }, [setIsPlaying, setCurrentTime]);
 
-  const hexToRGB = (hex) => {
-    // Remove the hash (#) if present
-    hex = hex.replace(/^#/, "");
+  // Use THREE.js built-in interpolation functions
+  const interpolateVector = (start, end, progress) => {
+    if (!start || !end) return start || end || [0, 0, 0];
 
-    // Parse hex values
-    const r = parseInt(hex.substring(0, 2), 16) / 255;
-    const g = parseInt(hex.substring(2, 4), 16) / 255;
-    const b = parseInt(hex.substring(4, 6), 16) / 255;
-
-    return [r, g, b];
-  };
-
-  const addKeyframe = useCallback(
-    (objectId) => {
-      const targetObject = arObjects.find((obj) => obj.id === objectId);
-      if (!targetObject) return;
-
-      if (currentTime > duration) return;
-
-      const existingKeyframes = targetObject.keyframes || [];
-      const lastKeyframe = existingKeyframes[existingKeyframes.length - 1];
-
-      const currentColor = targetObject.color
-        ? hexToRGB(targetObject.color)
-        : [1, 1, 1]; // Default white
-
-      let newKeyframe;
-      if (!lastKeyframe || lastKeyframe.end !== null) {
-        newKeyframe = {
-          id: existingKeyframes.length + 1,
-          start: currentTime,
-          end: null,
-          position: {
-            start: [...(targetObject.position || [0, 0, 0])],
-            end: null,
-          },
-          rotation: {
-            start: [...(targetObject.rotation || [0, 0, 0])],
-            end: null,
-          },
-          scale: {
-            start: [...(targetObject.scale || [1, 1, 1])],
-            end: null,
-          },
-          color: {
-            start: currentColor,
-            end: null,
-          },
-        };
-      } else {
-        const endTime = Math.min(currentTime, duration);
-        newKeyframe = {
-          ...lastKeyframe,
-          end: endTime,
-          position: {
-            ...lastKeyframe.position,
-            end: [...(targetObject.position || [0, 0, 0])],
-          },
-          rotation: {
-            ...lastKeyframe.rotation,
-            end: [...(targetObject.rotation || [0, 0, 0])],
-          },
-          scale: {
-            ...lastKeyframe.scale,
-            end: [...(targetObject.scale || [1, 1, 1])],
-          },
-          color: {
-            ...lastKeyframe.color,
-            end: currentColor,
-          },
-        };
-      }
-
-      const updatedKeyframes = [
-        ...existingKeyframes.filter((k) => k.id !== newKeyframe.id),
-        newKeyframe,
-      ];
-
-      setArObjects({
-        type: "UPDATE_OBJECT",
-        payload: {
-          id: objectId,
-          keyframes: updatedKeyframes,
-        },
-      });
-    },
-    [arObjects, currentTime, duration, setArObjects]
-  );
-
-  const updateKeyframe = useCallback(
-    (objectId, keyframeId, updatedKeyframeData) => {
-      const targetObject = arObjects.find((obj) => obj.id === objectId);
-      if (!targetObject) return;
-
-      const sanitizedData = { ...updatedKeyframeData };
-      if (sanitizedData.start !== undefined) {
-        sanitizedData.start = Math.min(sanitizedData.start, duration);
-      }
-      if (sanitizedData.end !== undefined) {
-        sanitizedData.end = Math.min(sanitizedData.end, duration);
-      }
-
-      const updatedKeyframes = targetObject.keyframes.map((kf) =>
-        kf.id === keyframeId ? { ...kf, ...sanitizedData } : kf
-      );
-
-      setArObjects({
-        type: "UPDATE_OBJECT",
-        payload: {
-          id: objectId,
-          keyframes: updatedKeyframes,
-        },
-      });
-    },
-    [arObjects, setArObjects, duration]
-  );
-
-  const deleteKeyframe = useCallback(
-    (objectId, keyframeId) => {
-      const targetObject = arObjects.find((obj) => obj.id === objectId);
-      if (!targetObject) return;
-
-      const updatedKeyframes = targetObject.keyframes.filter(
-        (kf) => kf.id !== keyframeId
-      );
-
-      setArObjects({
-        type: "UPDATE_OBJECT",
-        payload: {
-          id: objectId,
-          keyframes: updatedKeyframes,
-        },
-      });
-    },
-    [arObjects, setArObjects]
-  );
-
-  const interpolateColor = (start, end, progress) => {
-    if (!start || !end || start.length !== 3 || end.length !== 3) {
-      console.error("Invalid color interpolation input");
-      return start || [1, 1, 1]; // Default to white
-    }
-
-    return start.map((startValue, index) => {
-      const endValue = end[index];
-      return startValue + (endValue - startValue) * progress;
-    });
-  };
-
-  // Rest of the code remains the same
-  const interpolatePosition = (start, end, progress) => {
-    if (!start || !end) {
-      console.error("Start or end positions are undefined");
-      return start || end || [0, 0, 0];
-    }
-
-    return start.map((startValue, index) => {
-      const endValue = end[index];
-      return startValue + (endValue - startValue) * progress;
-    });
+    return new THREE.Vector3().fromArray(start).lerp(new THREE.Vector3().fromArray(end), progress).toArray();
   };
 
   const interpolateRotation = (start, end, progress) => {
-    if (!start || !end || progress < 0 || progress > 1) {
-      console.error("Invalid input parameters");
-      return [0, 0, 0];
-    }
+    if (!start || !end || progress < 0 || progress > 1) return [0, 0, 0];
 
-    // Create Euler objects with the correct order
-    const startEuler = new THREE.Euler(...start, "XYZ");
-    const endEuler = new THREE.Euler(...end, "XYZ");
+    const startQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(...start, "XYZ"));
+    const endQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(...end, "XYZ"));
 
-    // Convert to quaternions
-    const startQuaternion = new THREE.Quaternion();
-    const endQuaternion = new THREE.Quaternion();
-    startQuaternion.setFromEuler(startEuler);
-    endQuaternion.setFromEuler(endEuler);
+    const interpolatedQ = new THREE.Quaternion();
+    interpolatedQ.copy(startQ).slerp(endQ, progress);
 
-    // Perform spherical interpolation (slerp)
-    const interpolatedQuaternion = startQuaternion.clone();
-    interpolatedQuaternion.slerp(endQuaternion, progress);
-
-    // Convert back to Euler angles
-    const interpolatedEuler = new THREE.Euler().setFromQuaternion(
-      interpolatedQuaternion,
-      "XYZ"
-    );
+    const interpolatedEuler = new THREE.Euler().setFromQuaternion(interpolatedQ, "XYZ");
 
     return [interpolatedEuler.x, interpolatedEuler.y, interpolatedEuler.z];
   };
 
-  const interpolateScale = (start, end, progress) => {
-    if (!start || !end) {
-      console.error("Start or end scale are undefined");
-      return start || end || [1, 1, 1];
-    }
-
-    return start.map((startValue, index) => {
-      const endValue = end[index];
-      return startValue + (endValue - startValue) * progress;
-    });
-  };
-
   const interpolateProperties = (objectId) => {
-    const obj = arObjects.find((o) => o.id === objectId);
-    if (!obj) return null;
+  const obj = arObjects.find((o) => o.id === objectId);
+  if (!obj || !obj.keyframes || obj.keyframes.length === 0) return null;
 
-    const activeKeyframe = obj.keyframes?.find(
-      (kf) =>
-        currentTime >= kf.start && kf.end !== null && currentTime <= kf.end
-    );
+  const sortedKeyframes = [...obj.keyframes].sort((a, b) => a.time - b.time);
 
-    if (activeKeyframe && activeKeyframe.position.end) {
-      const progress =
-        (currentTime - activeKeyframe.start) /
-        (activeKeyframe.end - activeKeyframe.start);
+  // 🔹 Handle edge cases where currentTime is before or after keyframes
+  if (currentTime <= sortedKeyframes[0].time) {
+    return {
+      position: sortedKeyframes[0].position ?? [0, 0, 0],
+      rotation: sortedKeyframes[0].rotation ?? [0, 0, 0],
+      scale: sortedKeyframes[0].scale ?? [1, 1, 1],
+    };
+  }
+  if (currentTime >= sortedKeyframes[sortedKeyframes.length - 1].time) {
+    return {
+      position: sortedKeyframes[sortedKeyframes.length - 1].position ?? [0, 0, 0],
+      rotation: sortedKeyframes[sortedKeyframes.length - 1].rotation ?? [0, 0, 0],
+      scale: sortedKeyframes[sortedKeyframes.length - 1].scale ?? [1, 1, 1],
+    };
+  }
 
-      const interpolatedPosition = interpolatePosition(
-        activeKeyframe.position.start,
-        activeKeyframe.position.end,
-        progress
-      );
+  // 🔹 Find the two keyframes to interpolate between
+  let prevKeyframe = sortedKeyframes[0];
+  let nextKeyframe = sortedKeyframes[sortedKeyframes.length - 1];
 
-      const interpolatedRotation = interpolateRotation(
-        activeKeyframe.rotation.start,
-        activeKeyframe.rotation.end,
-        progress
-      );
-
-      const interpolatedScale = interpolateScale(
-        activeKeyframe.scale.start,
-        activeKeyframe.scale.end,
-        progress
-      );
-
-      // const interpolatedColor = interpolateColor(
-      //   activeKeyframe.color.start,
-      //   activeKeyframe.color.end,
-      //   progress
-      // );
-
-      return {
-        position: interpolatedPosition,
-        rotation: interpolatedRotation,
-        scale: interpolatedScale,
-        // color: interpolatedColor,
-      };
+  for (let i = 0; i < sortedKeyframes.length - 1; i++) {
+    if (currentTime >= sortedKeyframes[i].time && currentTime < sortedKeyframes[i + 1].time) {
+      prevKeyframe = sortedKeyframes[i];
+      nextKeyframe = sortedKeyframes[i + 1];
+      break;
     }
+  }
 
-    return null;
+  // 🔹 Interpolation factor (0 → start keyframe, 1 → next keyframe)
+  const progress = (currentTime - prevKeyframe.time) / (nextKeyframe.time - prevKeyframe.time);
+
+  return {
+    position: interpolateVector(prevKeyframe.position, nextKeyframe.position, progress),
+    rotation: interpolateRotation(prevKeyframe.rotation, nextKeyframe.rotation, progress),
+    scale: interpolateVector(prevKeyframe.scale, nextKeyframe.scale, progress),
+  };
+};
+
+
+  const setTimeAndUpdateObjects = (newTime) => {
+    setCurrentTime(newTime);
   };
 
   return {
     play,
     pause,
     stop,
-    addKeyframe,
-    updateKeyframe,
-    deleteKeyframe,
+    setTimeAndUpdateObjects,
     interpolateProperties,
     currentTime,
     setCurrentTime,
     isPlaying,
   };
 };
+
 
 export default useAnimation;

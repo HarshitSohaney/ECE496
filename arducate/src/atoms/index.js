@@ -75,3 +75,6 @@ export const currentTimeAtom = atom(0);
 export const isPlayingAtom = atom(false);
 export const timelineWidthAtom = atom(0);
 export const timelineDurationAtom = atom(20);
+
+export const selectedKeyframeAtom = atom({ keyframeId: null, objectId: null });
+export const interpolationsAtom = atom({});

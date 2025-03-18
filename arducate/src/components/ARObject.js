@@ -1,7 +1,7 @@
 // src/components/ARObject.js
 import React, { useRef, useEffect } from "react";
 import { useAtom } from "jotai";
-import { selectedObjectAtom } from "../atoms";
+import { selectedObjectAtom, currentTimeAtom } from "../atoms";
 import { getAsset } from "./Assets";
 import { Edges } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
@@ -13,6 +13,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   const [, setSelectedObject] = useAtom(selectedObjectAtom);
   const meshRef = useRef();
   const labelRef = useRef();
+  const [currentTime] = useAtom(currentTimeAtom);
 
   const { interpolateProperties } = useAnimation();
 
@@ -63,33 +64,34 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     });
   }
 
-  useFrame(() => {
+  useEffect(() => {
     if (!meshRef.current) return;
 
     const interpolatedProps = interpolateProperties(object.id);
 
     if (interpolatedProps) {
-      // const { position, rotation, scale, color } = interpolatedProps;
       const { position, rotation, scale } = interpolatedProps;
 
-      if (position) {
+      if (Array.isArray(position) && position.length === 3) {
         meshRef.current.position.set(...position);
+      } else {
+        console.warn(`Invalid position for object ${object.id}:`, position);
       }
 
-      if (rotation) {
+      if (Array.isArray(rotation) && rotation.length === 3) {
         meshRef.current.rotation.set(...rotation);
-      }
-      
-      if (scale) {
-        meshRef.current.scale.set(...scale);
+      } else {
+        console.warn(`Invalid rotation for object ${object.id}:`, rotation);
       }
 
-      // if (color) {
-      //   const threeColor = new THREE.Color(color[0], color[1], color[2]);
-      //   meshRef.current.material.color.copy(threeColor);
-      // }
+      if (Array.isArray(scale) && scale.length === 3) {
+        meshRef.current.scale.set(...scale);
+      } else {
+        console.warn(`Invalid scale for object ${object.id}:`, scale);
+      }
     }
-  });
+  }, [currentTime]);
+
 
   // If the object is not visible, return null but only after all hooks have been called
   if (object.visible === false) {

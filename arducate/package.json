@@ -24,6 +24,7 @@
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "gsap": "^3.12.7",
     "jotai": "^2.9.2",
     "lucide-react": "^0.460.0",
     "postcss": "^8.4.41",
@@ -62,5 +63,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "webpack-cli": "^6.0.1"
   }
 }
