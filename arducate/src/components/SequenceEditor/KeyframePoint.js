@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import Draggable from "react-draggable";
 import { Diamond } from "lucide-react";
-import { selectedKeyframeAtom, arObjectsAtom, currentTimeAtom, timelineWidthAtom, timelineScaleAtom } from "atoms";
+import {
+  selectedKeyframeAtom,
+  arObjectsAtom,
+  currentTimeAtom,
+  timelineWidthAtom,
+  timelineScaleAtom,
+} from "atoms";
 import useKeyframe from "hooks/useKeyframe";
 
 const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
@@ -26,8 +32,14 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
 
   const handleRightClick = (event) => {
     event.preventDefault();
-    const isSelected = selectedKeyframe.keyframeId === keyframe.id && selectedKeyframe.objectId === objectId;
-    setSelectedKeyframe(isSelected ? { keyframeId: null, objectId: null } : { keyframeId: keyframe.id, objectId });
+    const isSelected =
+      selectedKeyframe.keyframeId === keyframe.id &&
+      selectedKeyframe.objectId === objectId;
+    setSelectedKeyframe(
+      isSelected
+        ? { keyframeId: null, objectId: null }
+        : { keyframeId: keyframe.id, objectId }
+    );
     setCurrentTime(keyframe.time);
   };
 
@@ -46,7 +58,7 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
       key={resizeTrigger} // Forces re-render on resize
       axis="x"
       bounds={{ left: 0, right: timelineWidth - 10 }}
-      defaultPosition={{ x: tempXRef.current-4, y: 0 }}
+      defaultPosition={{ x: tempXRef.current - 4, y: 0 }}
       onDrag={handleDrag}
       onStop={handleDragStop}
     >
@@ -61,8 +73,18 @@ const KeyframePoint = ({ objectId, keyframe, timeToPixels, pixelsToTime }) => {
       >
         <Diamond
           size={14}
-          fill={selectedKeyframe.keyframeId === keyframe.id && selectedKeyframe.objectId === objectId ? "#2D3748" : "#4A5568"}
-          style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+          fill={
+            selectedKeyframe.keyframeId === keyframe.id &&
+            selectedKeyframe.objectId === objectId
+              ? "#2D3748"
+              : "#ffa500"
+          }
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
         />
       </div>
     </Draggable>
