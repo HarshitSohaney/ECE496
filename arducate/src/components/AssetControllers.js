@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, selectedKeyframeAtom } from "../atoms";
@@ -10,26 +10,40 @@ const AssetControllers = () => {
   const [selectedKeyframe] = useAtom(selectedKeyframeAtom);
   const [activeTab, setActiveTab] = useState("global");
 
-  return (
-    <div className="w-[18vw] h-[63vh] bg-secondary rounded shadow-lg overflow-y-auto">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 w-full sticky top-0 bg-secondary z-10">
-          <TabsTrigger value="global">Object</TabsTrigger>
-          <TabsTrigger value="keyframe">Keyframe</TabsTrigger>
-        </TabsList>
+  // Automatically switch tabs when a keyframe or object is selected
+  useEffect(() => {
+    if (selectedKeyframe?.keyframeId) {
+      setActiveTab("keyframe");
+    } else if (selectedObject) {
+      setActiveTab("global");
+    }
+  }, [selectedKeyframe, selectedObject]);
 
-        <div className="p-2">
-          <TabsContent value="global">
-            {selectedObject ? <ARControls /> : <p className="text-center text-sm">No object selected.</p>}
-          </TabsContent>
-
-          <TabsContent value="keyframe">
-            {selectedKeyframe ? <KeyframeControls /> : <p className="text-center text-sm">No keyframe selected.</p>}
-          </TabsContent>
-        </div>
-      </Tabs>
-    </div>
-  );
-};
+    return (
+      <div className="flex flex-col h-full bg-secondary rounded shadow-lg overflow-y-auto">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
+          {/* Tabs List (Header) */}
+          <TabsList className="grid grid-cols-2 w-full sticky top-0 bg-secondary z-10">
+            <TabsTrigger value="global">Object</TabsTrigger>
+            <TabsTrigger value="keyframe" disabled={!selectedKeyframe?.keyframeId}>
+              Keyframe
+            </TabsTrigger>
+          </TabsList>
+  
+          {/* Content Area */}
+          <div className="flex-1 p-2 overflow-auto">
+            <TabsContent value="global" className="h-full">
+              <ARControls />
+            </TabsContent>
+  
+            <TabsContent value="keyframe" className="h-full">
+              <KeyframeControls />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
+    );
+  };
+  
 
 export default AssetControllers;

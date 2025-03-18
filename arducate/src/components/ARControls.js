@@ -123,7 +123,7 @@ const ARControls = () => {
 
   if (!selectedObject) {
     return (
-      <div className="w-[15vw] h-full flex flex-col items-center justify-center bg-secondary text-gray-700 rounded-lg shadow-lg p-4">
+      <div className="w-[15vw] h-full flex flex-col items-center justify-center bg-secondary text-gray-700 rounded-lg p-4">
         <div className="text-lg font-semibold">No Object Selected</div>
         <p className="text-sm text-gray-500 mt-1 text-center">
           Please select an object to view its details.
@@ -155,7 +155,7 @@ const ARControls = () => {
   );
 
   return (
-    <div className="w-[15vw] p-2 bg-secondary rounded">
+    <div className="w-[15vw] p-2 bg-secondary rounded h-full">
       <div className="mb-3 flex items-center justify-between">
         <label className="text-xs font-medium">Visible:</label>
         <Switch
