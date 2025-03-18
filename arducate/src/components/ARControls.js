@@ -67,10 +67,23 @@ const ARControls = () => {
       <div className="mb-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex-1">
-            <label className="text-xs font-medium">Label:</label>
+            <label className="text-xs font-medium">Name:</label>
             <input
               type="text"
               value={selectedObject.name}
+              onChange={handleNameChange}
+              className="w-full p-1 border rounded text-sm"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1">
+            <label className="text-xs font-medium">Label:</label>
+            <input
+              type="text"
+              value={selectedObject.label}
               onChange={handleLabelChange}
               className="w-full p-1 border rounded text-sm"
             />
@@ -88,12 +101,12 @@ const ARControls = () => {
 
       {selectedObject.type == "text" && (
         <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium">Text Input:</label>
+          <label className="block mb-2 text-xs font-medium">Text Input:</label>
           <input
             type="text"
             value={selectedObject.text}
             onChange={handleTextChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-1 border rounded text-sm"
           />
         </div>
       )}

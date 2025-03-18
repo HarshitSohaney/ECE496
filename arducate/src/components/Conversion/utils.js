@@ -86,9 +86,9 @@ export const generateAnimations = (keyframes) => {
  * @returns {string} A-Frame text entity markup
  */
 export const renderTextLabel = (object) => `
-  <a-text
-    visible="${object.showLabel}"
-    value="${object.name || `Object ${object.id}`}"
+  <a-text 
+    visible="${object.showLabel}" 
+    value="${object.label || `Object ${object.id}`}"
     position="0 ${-object.scale[1]} 0"
     render-order="2"
     scale="0.5 0.5 0.5"
@@ -137,8 +137,14 @@ export const renderObject = (object) => {
 
 
   const position = initialProps.position.join(" ");
-  const scale = initialProps.scale.join(" ");
-  const rotation = initialProps.rotation.join(" ");
+  const scale = object.scale.join(" ");
+  const rotation = object.rotation.map(radiansToDegrees).join(" ");
+
+  function fixLineRotation(rotation) {
+    let [x, y, z] = rotation.split(' ').map(Number);
+    x = -x;
+    return `${x} ${y} ${z}`;
+  }
 
   switch (object.entity) {
     case "a-text":
@@ -150,10 +156,9 @@ export const renderObject = (object) => {
           value="${object.text}"
           align="center"
           anchor="center"
-          color="${initialProps.color}"
+          color="${object.color}"
           ${animations}>
         </a-text>
-        ${renderTextLabel({ ...object, position: initialProps.position })}
       `;
 
     case "a-element":
@@ -161,10 +166,10 @@ export const renderObject = (object) => {
         <a-entity
           position="${position}"
           scale="${scale}"
-          rotation="${rotation}"
+          rotation="${fixLineRotation(rotation)}"
           line="color: ${
             object.color
-          }; lineWidth: 2; start: 0 0 0; end: 0 2 0"
+          }; lineWidth: 2; start: 0 -1 0; end: 0 1 0"
           ${animations}>
         </a-entity>
         ${renderTextLabel({ ...object, position: initialProps.position })}
@@ -178,12 +183,12 @@ export const renderObject = (object) => {
           rotation="${rotation}"
           color="${object.color}"
           ${animations}>
-          <a-text
-            visible="${object.showLabel}"
-            value="${object.name || `Object ${object.id}`}"
+          <a-text 
+            visible="${object.showLabel}" 
+            value="${object.label || `Object ${object.id}`}"
             position="0 ${-object.scale[1]} 0"
             render-order="1"
-            scale="0.5 0.5 0.5"
+            scale="1 1 1"
             align="center"
             color="#000000"
             opacity="0.8"

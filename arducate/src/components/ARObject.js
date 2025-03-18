@@ -28,7 +28,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     if (meshRef.current && object && object.showLabel) {
       const labelDiv = document.createElement("div");
       labelDiv.className = "label";
-      labelDiv.textContent = object.name || `Object ${object.id}`;
+      labelDiv.textContent = object.label || `Object ${object.id}`;
       labelDiv.style.backgroundColor = "rgba(255,255,255,0.8)";
       labelDiv.style.color = "black";
       labelDiv.style.padding = "2px 5px";
@@ -107,8 +107,8 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       onPointerDown={handlePointerDown}
     >
       {/* Render the correct geometry */}
-      {getAsset(object.type, { text: object.text })}
-      <meshStandardMaterial color={object.color || "orange"} />
+      {getAsset(object.type, { text: object.text, color: object.color })}
+      <meshBasicMaterial color={object.color || "orange"} toneMapped={false}/>
       {object.type !== "text" && object.type !== "line" && (
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
       )}
