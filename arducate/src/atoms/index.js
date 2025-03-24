@@ -20,6 +20,18 @@ export const arObjectsAtom = atom(
     switch (action.type) {
       case 'ADD_OBJECT':
         set(arObjectsAtom, [...get(arObjectsAtom), action.payload]); //payload: newObject adds to end of arObjects
+        // add it to the treeData
+        set(treeDataAtom, treeData => {
+          const newObject = {
+            id: action.payload.id,
+            name: action.payload.name,
+          };
+          return {
+            ...treeData,
+            children: [...treeData.children, newObject],
+          };
+        }
+        );
         break;
       case 'REMOVE_OBJECT':
         set(arObjectsAtom, get(arObjectsAtom).filter(obj => obj.id !== action.payload)); //sets arObjects to one without that ID in it
@@ -28,12 +40,12 @@ export const arObjectsAtom = atom(
 
         break;
         case 'UPDATE_OBJECT':
-          console.log('Atom UPDATE_OBJECT - Received payload:', action.payload);
+          // console.log('Atom UPDATE_OBJECT - Received payload:', action.payload);
           const updatedObjects = get(arObjectsAtom).map(obj => {
             if (obj.id === action.payload.id) {
               const updatedObj = { ...obj, ...action.payload };
-              console.log('Atom UPDATE_OBJECT - Before update:', obj);
-              console.log('Atom UPDATE_OBJECT - After update:', updatedObj);
+              // console.log('Atom UPDATE_OBJECT - Before update:', obj);
+              // console.log('Atom UPDATE_OBJECT - After update:', updatedObj);
               return updatedObj;
             }
             return obj;
@@ -44,7 +56,7 @@ export const arObjectsAtom = atom(
           const currentSelected = get(selectedObjectAtom);
           if (currentSelected && currentSelected.id === action.payload.id) {
             const updatedSelected = updatedObjects.find(obj => obj.id === action.payload.id);
-            console.log('Atom UPDATE_OBJECT - Updating selectedObject:', updatedSelected);
+            // console.log('Atom UPDATE_OBJECT - Updating selectedObject:', updatedSelected);
             set(selectedObjectAtom, updatedSelected);
           }
           break;
@@ -53,6 +65,7 @@ export const arObjectsAtom = atom(
     }
   }
 );
+
 // Atom to manage the data in treeboard
 export const treeDataAtom = atom({
   name: "root",
@@ -78,3 +91,5 @@ export const timelineDurationAtom = atom(20);
 
 export const selectedKeyframeAtom = atom({ keyframeId: null, objectId: null });
 export const interpolationsAtom = atom({});
+
+export const copyBufferAtom = atom(null);
