@@ -36,7 +36,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       labelDiv.style.fontSize = "10px";
       labelDiv.style.pointerEvents = "none";
       const label = new CSS2DObject(labelDiv);
-      label.position.set(0, object.position[1]/object.scale[1], 0);
+      label.position.set(-1, object.position[1] - 0.3, 0);
       meshRef.current.add(label);
       labelRef.current = label;
 

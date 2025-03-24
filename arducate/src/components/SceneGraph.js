@@ -188,7 +188,7 @@ const SceneGraph = ({ data, setData }) => {
       <div className="font-sm font-bold mb-2 border-b border-gray-200">
         <div className="p-2">Layers</div>
       </div>
-      <div className="overflow-x-auto overflow-y-auto max-h-[calc(100%-3rem)] p-2">
+      <div className="overflow-x-auto overflow-y-auto max-h-[21rem]">
         {data.children && data.children.length > 0 ? (
           data.children.map((childNode) => (
             <TreeNode
