@@ -4,6 +4,7 @@ import { arObjectsAtom, transformModeAtom } from "../atoms";
 import { convertSceneToAR } from "./Conversion/ARPublish";
 import { convertSceneToVR } from "./Conversion/VRPublish";
 import { Button } from "../@/components/ui/button";
+import { Share2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -145,11 +146,11 @@ const Toolbar = () => {
       </div>
 
       {/* Center Aligned */}
-      <div className="flex-grow text-center">
+      {/* <div className="flex-grow text-center">
         <h2 className="scroll-m-20 text-1xl font-semibold text-white">
           ARducate
         </h2>
-      </div>
+      </div> */}
 
       {/* Right Aligned */}
       <div className="navbar-button-container">
@@ -175,7 +176,10 @@ const Toolbar = () => {
           className="navbar-button"
           onClick={handleShare}
         >
-          Share
+          <Share2 
+            className="w-5 h-auto"
+            title="Share"
+          />
         </Button>
 
         {/* Popup Notification */}
