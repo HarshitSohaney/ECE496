@@ -3,6 +3,19 @@ import { atom } from "jotai";
 
 // This is where we can add all the global atoms that we want to use
 
+
+/*
+store the version history, to be used for undo/redo
+structure of history object:
+{
+  action: 'ADD_OBJECT' | 'REMOVE_OBJECT' | 'UPDATE_OBJECT',
+  from: object,
+  to: object,
+  timestamp: Date.now(),
+}
+*/
+export const historyAtom = atom([]);
+
 // Helper function to recursively remove an object from treeData
 const removeFromTreeData = (node, idToRemove) => {
   if (node.children) {
@@ -30,13 +43,31 @@ export const arObjectsAtom = atom(
             ...treeData,
             children: [...treeData.children, newObject],
           };
+        });
+
+        const historyLog = {
+          action: 'ADD_OBJECT',
+          from: null,
+          to: action.payload,
+          timestamp: Date.now(),
         }
-        );
+
+        set(historyAtom, [...get(historyAtom), historyLog]);
         break;
       case 'REMOVE_OBJECT':
+        const objectToRemove = get(arObjectsAtom).find(obj => obj.id === action.payload);
         set(arObjectsAtom, get(arObjectsAtom).filter(obj => obj.id !== action.payload)); //sets arObjects to one without that ID in it
         set(selectedObjectAtom, null);
         set(treeDataAtom, treeData => removeFromTreeData({...treeData}, action.payload));
+
+        const historyLogRemove = {
+          action: 'REMOVE_OBJECT',
+          from: objectToRemove, // Store the full object
+          to: null,
+          timestamp: Date.now(),
+        };
+        set(historyAtom, [...get(historyAtom), historyLogRemove]);
+        
 
         break;
         case 'UPDATE_OBJECT':
@@ -50,6 +81,7 @@ export const arObjectsAtom = atom(
             }
             return obj;
           });
+          const prevState = updatedObjects.find(obj => obj.id === action.payload.id);
           set(arObjectsAtom, updatedObjects);
 
           // Update selectedObjectAtom if it's the object being updated
@@ -59,6 +91,13 @@ export const arObjectsAtom = atom(
             // console.log('Atom UPDATE_OBJECT - Updating selectedObject:', updatedSelected);
             set(selectedObjectAtom, updatedSelected);
           }
+          const historyLogUpdate = {
+            action: 'UPDATE_OBJECT',
+            from: prevState,
+            to: updatedObjects,
+            timestamp: Date.now(),
+          }
+          set(historyAtom, [...get(historyAtom), historyLogUpdate]);
           break;
       default:
         console.error('Unknown action type:', action.type);
