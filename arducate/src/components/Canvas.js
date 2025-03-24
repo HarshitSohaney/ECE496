@@ -118,7 +118,7 @@ const ARCanvas = () => {
   }, [transformControlsRef, handleObjectTransform]);
 
   return (
-    <div className="w-[68vw] border border-gray-300">
+    <div className="w-[82vw] border border-gray-300">
       <Canvas camera={{ position: [0, 2, 5], fov: 60 }}>
         <CSS2DRendererSetup />
 

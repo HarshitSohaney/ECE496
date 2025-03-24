@@ -32,7 +32,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-[15vw] items-center p-2 bg-secondary flex flex-col space-y-2 overflow-y-auto">
+    <div className="absolute top-0 left-0 z-10 w-[15vw] items-center p-2 bg-transparent flex flex-col space-y-2 overflow-y-auto">
       {/* Add Action */}
       <div className="navbar-button-container flex flex-row space-x-2">
         <Button

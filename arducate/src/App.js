@@ -20,14 +20,15 @@ const App = () => {
         element={
           <div className="flex flex-col items-center h-screen">
           <Toolbar className="flex-shrink-0" />
-          <div className="flex flex-1 w-full">
+          <div className="flex flex-1 w-full relative">
             {/* Sidebar should stay fixed */}
     
             {/* ARCanvas should fill remaining space */}
-            <div className="flex-1 flex h-full">
-              <Sidebar className="flex-none w-[15vw] min-w-[15vw]" />
-              <ARCanvas className="w-full h-full" />
-            </div>
+            <div className="flex flex-1 h-full">
+                  <ARCanvas className="w-full h-full" />
+                  {/* Sidebar overlays on top with absolute positioning */}
+                  <Sidebar className="absolute top-0 left-0" />
+                </div>
     
             {/* AssetControllers remains on the side */}
             <AssetControllers className="min-w-[20vw] flex-none" />
