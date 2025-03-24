@@ -138,7 +138,7 @@ export const renderObject = (object) => {
 
   const position = initialProps.position.join(" ");
   const scale = object.scale.join(" ");
-  const rotation = object.rotation.map(radiansToDegrees).join(" ");
+  const rotation = object.rotation.join(" ");
 
   function fixLineRotation(rotation) {
     let [x, y, z] = rotation.split(' ').map(Number);
