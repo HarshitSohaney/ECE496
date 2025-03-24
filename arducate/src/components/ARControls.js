@@ -23,7 +23,7 @@ const ARControls = () => {
   if (!selectedObject) {
     return (
       <div className="w-[15vw] h-full flex flex-col items-center justify-center bg-secondary text-gray-700 rounded-lg p-4">
-        <div className="text-lg font-semibold">No Object Selected</div>
+        <div className="text-lg font-semibold text-center">No Object Selected</div>
         <p className="text-sm text-gray-500 mt-1 text-center">
           Please select an object to view its details.
         </p>
