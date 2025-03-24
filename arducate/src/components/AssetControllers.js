@@ -29,7 +29,7 @@ const AssetControllers = () => {
   };
 
   return (
-    <div className="w-[18vw] h-[63vh] bg-secondary rounded shadow-lg overflow-y-auto">
+    <div className="w-[25vw] h-[63vh] bg-secondary rounded shadow-lg overflow-y-auto">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid grid-cols-2 w-full sticky top-0 bg-secondary z-10">
           <TabsTrigger

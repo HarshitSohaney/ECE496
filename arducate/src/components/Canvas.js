@@ -7,7 +7,7 @@ import { arObjectsAtom, selectedObjectAtom, transformModeAtom } from "../atoms";
 import ARObject from "./ARObject";
 import { CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { useThree, useFrame } from "@react-three/fiber";
-import * as THREE from 'three';
+import * as THREE from "three";
 
 // This function sets up and manages the CSS2DRenderer for rendering 2D labels in a 3D scene
 function CSS2DRendererSetup() {
@@ -20,11 +20,11 @@ function CSS2DRendererSetup() {
     // Set the renderer size to match the window dimensions
     labelRendererRef.current.setSize(window.innerWidth, window.innerHeight);
     // Configure the renderer's DOM element styles
-    labelRendererRef.current.domElement.style.position = 'absolute';
-    labelRendererRef.current.domElement.style.top = '0px';
-    labelRendererRef.current.domElement.style.left = '0px'; // Ensure it's aligned properly
-    labelRendererRef.current.domElement.style.pointerEvents = 'none';
-    labelRendererRef.current.domElement.style.zIndex = '1'; // Ensure it's on top
+    labelRendererRef.current.domElement.style.position = "absolute";
+    labelRendererRef.current.domElement.style.top = "0px";
+    labelRendererRef.current.domElement.style.left = "0px"; // Ensure it's aligned properly
+    labelRendererRef.current.domElement.style.pointerEvents = "none";
+    labelRendererRef.current.domElement.style.zIndex = "1"; // Ensure it's on top
 
     document.body.appendChild(labelRendererRef.current.domElement);
 
@@ -32,14 +32,14 @@ function CSS2DRendererSetup() {
     const onResize = () => {
       labelRendererRef.current.setSize(window.innerWidth, window.innerHeight);
     };
-    window.addEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
 
     // Cleanup function to remove the renderer and event listener when component unmounts
     return () => {
       if (labelRendererRef.current && labelRendererRef.current.domElement) {
         labelRendererRef.current.domElement.remove();
       }
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -65,38 +65,39 @@ const ARCanvas = () => {
   const [transformControlsRef, setTransformControlsRef] = useState(null); // State to store the selected object's mesh ref
 
   // Handle the transformation change and update state
-const handleObjectTransform = useCallback(() => {
-  if (!selectedObject || !transformControlsRef) return;
+  const handleObjectTransform = useCallback(() => {
+    if (!selectedObject || !transformControlsRef) return;
 
-  // Create a new Euler from the TransformControls' quaternion
-  const euler = new THREE.Euler().setFromQuaternion(transformControlsRef.quaternion);
-  const transformedRotation = [
-    radiansToDegrees(euler.x),
-    radiansToDegrees(euler.y), 
-    radiansToDegrees(euler.z)
-  ]; // Only keep 3 values, no NaN
+    // Create a new Euler from the TransformControls' quaternion
+    const euler = new THREE.Euler().setFromQuaternion(
+      transformControlsRef.quaternion
+    );
+    const transformedRotation = [
+      radiansToDegrees(euler.x),
+      radiansToDegrees(euler.y),
+      radiansToDegrees(euler.z),
+    ]; // Only keep 3 values, no NaN
 
-  setARObjects({
-    type: 'UPDATE_OBJECT',
-    payload: {
-      id: selectedObject.id,
-      position: transformControlsRef.position.toArray(),
-      rotation: transformedRotation,
-      scale: transformControlsRef.scale.toArray(),
-    }
-  });
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        id: selectedObject.id,
+        position: transformControlsRef.position.toArray(),
+        rotation: transformedRotation,
+        scale: transformControlsRef.scale.toArray(),
+      },
+    });
   }, [transformControlsRef, setARObjects]);
 
-  
   // Grid configuration
   const gridConfig = {
     args: [10.5, 10.5],
     cellSize: 0.6,
     cellThickness: 1,
-    cellColor: '#6f6f6f',
+    cellColor: "#6f6f6f",
     sectionSize: 3.3,
     sectionThickness: 1.5,
-    sectionColor: '#9d4b4b',
+    sectionColor: "#9d4b4b",
     fadeDistance: 25,
     fadeStrength: 1,
     followCamera: false,
@@ -106,21 +107,28 @@ const handleObjectTransform = useCallback(() => {
   // Attach event listener for TransformControls changes
   useEffect(() => {
     if (transformControlsRef) {
-      transformControlsRef.addEventListener('change', handleObjectTransform);
+      transformControlsRef.addEventListener("change", handleObjectTransform);
       return () => {
-        transformControlsRef.removeEventListener('change', handleObjectTransform);
+        transformControlsRef.removeEventListener(
+          "change",
+          handleObjectTransform
+        );
       };
     }
   }, [transformControlsRef, handleObjectTransform]);
 
   return (
-    <div className="w-[70vw] border border-gray-300">
-      <Canvas camera={{ position: [0, 2, 5], fov: 60  }}>
+    <div className="w-[68vw] border border-gray-300">
+      <Canvas camera={{ position: [0, 2, 5], fov: 60 }}>
         <CSS2DRendererSetup />
 
         {/* Lights */}
         <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]} />
+        <directionalLight
+          position={[5, 10, 5]} // Position the light]
+          intensity={1}
+          castShadow
+        />
 
         {/* Grid */}
         <Grid {...gridConfig} />
@@ -136,13 +144,15 @@ const handleObjectTransform = useCallback(() => {
         ))}
 
         {/* TransformControls for selected object */}
-        {selectedObject && transformControlsRef && selectedObject.visible !== false && (
-          <TransformControls
-            object={transformControlsRef} // Attach transform controls to the selected object's mesh
-            mode={transformMode}
-            onChange={handleObjectTransform}
-          />
-        )}
+        {selectedObject &&
+          transformControlsRef &&
+          selectedObject.visible !== false && (
+            <TransformControls
+              object={transformControlsRef} // Attach transform controls to the selected object's mesh
+              mode={transformMode}
+              onChange={handleObjectTransform}
+            />
+          )}
 
         <OrbitControls makeDefault />
       </Canvas>

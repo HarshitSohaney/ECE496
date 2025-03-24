@@ -105,10 +105,12 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       scale={object.scale || [1, 1, 1]}
       rotation={object.rotation.slice(0, 3).map(deg => THREE.MathUtils.degToRad(deg))}
       onPointerDown={handlePointerDown}
+      castShadow
+      receiveShadow
     >
       {/* Render the correct geometry */}
       {getAsset(object.type, { text: object.text, color: object.color })}
-      <meshBasicMaterial color={object.color || "orange"} toneMapped={false}/>
+      <meshMatcapMaterial color={object.color || "orange"} toneMapped={false} />
       {object.type !== "text" && object.type !== "line" && (
         <Edges lineWidth={2} color={getDarkerColor(object.color)} />
       )}

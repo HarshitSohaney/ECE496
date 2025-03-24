@@ -22,15 +22,15 @@ const App = () => {
           <Toolbar className="flex-shrink-0" />
           <div className="flex flex-1 w-full">
             {/* Sidebar should stay fixed */}
-            <Sidebar className="flex-none w-[15vw] min-w-[15vw]" />
     
             {/* ARCanvas should fill remaining space */}
             <div className="flex-1 flex h-full">
+              <Sidebar className="flex-none w-[15vw] min-w-[15vw]" />
               <ARCanvas className="w-full h-full" />
             </div>
     
             {/* AssetControllers remains on the side */}
-            <AssetControllers className="flex-none" />
+            <AssetControllers className="min-w-[20vw] flex-none" />
           </div>
           <SequenceEditor />
         </div>
