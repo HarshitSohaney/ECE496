@@ -189,30 +189,28 @@ const SceneGraph = ({ data, setData }) => {
         <div className="p-2">Layers</div>
       </div>
       <div className="overflow-x-auto overflow-y-auto max-h-[calc(100%-3rem)] p-2">
-        <div className="min-w-max">
-          {data.children && data.children.length > 0 ? (
-            data.children.map((childNode) => (
-              <TreeNode
-                key={childNode.id}
-                node={childNode}
-                level={0}
-                onToggle={handleToggle}
-                onAddFolder={handleAddFolder}
-                onRename={handleRename}
-                selectedId={selectedObject?.id}
-                onSelect={handleSelect}
-              />
-            ))
-          ) : (
-            <div className="flex items-center flex-col justify-center h-full text-gray-500">
-              <div className="text-lg font-semibold">No Assets Added</div>
-              <p className="text-sm text-gray-500 mt-1 text-center">
-                Your 3D assets will show here
-              </p>
-            </div>
-          )}
-        </div>
-    </div>
+        {data.children && data.children.length > 0 ? (
+          data.children.map((childNode) => (
+            <TreeNode
+              key={childNode.id}
+              node={childNode}
+              level={0}
+              onToggle={handleToggle}
+              onAddFolder={handleAddFolder}
+              onRename={handleRename}
+              selectedId={selectedObject?.id}
+              onSelect={handleSelect}
+            />
+          ))
+        ) : (
+          <div className="flex items-center flex-col justify-center h-full text-gray-500">
+            <div className="text-lg font-semibold">No Assets Added</div>
+            <p className="text-sm text-gray-500 mt-1 text-center">
+              Your 3D assets will show here
+            </p>
+          </div>
+        )}
+      </div>
     </Card>
   );
 };
