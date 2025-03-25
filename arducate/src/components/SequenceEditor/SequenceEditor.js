@@ -110,9 +110,9 @@ const SequenceEditor = () => {
   };
 
   return (
-    <div className="flex flex-col h-60 w-full bg-gray-900 text-white rounded-lg overflow-hidden">
+    <div className="flex flex-col h-60 w-full bg-secondary text-white overflow-hidden">
       {/* Fixed-height header */}
-      <div className="h-12 bg-gray-800 border-b border-gray-700 flex items-center px-4">
+      <div className="h-12 bg-primary border-b border-gray-700 flex items-center px-4">
         <div className="flex items-center gap-2">
           <button className="p-2 hover:bg-gray-700 rounded" onClick={stop}>
             <SkipBack className="w-4 h-4" />
@@ -145,7 +145,7 @@ const SequenceEditor = () => {
                 <Settings2 className="w-4 h-4" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto border-gray-700 bg-gray-800">
+            <PopoverContent className="w-auto bg-secondary-foreground">
               <DurationInput />
             </PopoverContent>
           </Popover>
@@ -154,8 +154,8 @@ const SequenceEditor = () => {
 
       {/* Main content area */}
       <div className="flex flex-1 overflow-hidden relative">
-        <div className="w-[15vw] bg-gray-800 border-r border-gray-700 flex flex-col">
-          <div className="h-8 border-b border-gray-700 bg-gray-800 flex items-center px-3">
+        <div className="w-[15vw] bg-secondary-foreground border-r border-gray-700 flex flex-col">
+          <div className="h-8 border-b border-gray-700 flex items-center px-3">
             <span className="text-xs text-gray-400">Elements</span>
           </div>
           <div

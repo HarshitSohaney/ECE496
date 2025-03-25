@@ -94,10 +94,10 @@ const ARCanvas = () => {
     args: [10.5, 10.5],
     cellSize: 0.6,
     cellThickness: 1,
-    cellColor: "#6f6f6f",
+    cellColor: "#fff", // Light gray for cell color
     sectionSize: 3.3,
     sectionThickness: 1.5,
-    sectionColor: "#9d4b4b",
+    sectionColor: "#FF5722", // Darker gray for section color
     fadeDistance: 25,
     fadeStrength: 1,
     followCamera: false,
@@ -118,9 +118,10 @@ const ARCanvas = () => {
   }, [transformControlsRef, handleObjectTransform]);
 
   return (
-    <div className="w-[82vw] border border-gray-300">
+    <div className="w-[100vw] border border-gray-500">
       <Canvas camera={{ position: [0, 2, 5], fov: 60 }}>
         <CSS2DRendererSetup />
+        <color attach="background" args={['#343434']} />
 
         {/* Lights */}
         <ambientLight intensity={0.5} />

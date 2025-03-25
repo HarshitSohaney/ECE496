@@ -80,7 +80,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
     <div>
       <Select value={selectedValue} onValueChange={handleAddObject}>
         <SelectTrigger variant="outline">
-          <SelectValue placeholder="Add 3D Asset" />
+          <SelectValue placeholder="Object Library" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

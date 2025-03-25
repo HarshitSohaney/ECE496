@@ -29,9 +29,9 @@ const AssetControllers = () => {
   };
 
   return (
-    <div className="w-[25vw] h-[63vh] bg-secondary rounded overflow-y-auto">
+    <div className="absolute top-2 right-2 z-10 w-[20vw] max-h-[57vh] bg-secondary overflow-y-auto items-center p-2 flex flex-col space-y-2 rounded-lg shadow-lg border border-gray-500">
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid grid-cols-2 w-full sticky top-0 bg-secondary z-10">
+        <TabsList className="grid grid-cols-2 w-full top-0 bg-secondary-foreground z-10 border-b border-gray-500 mb-0">
           <TabsTrigger
             value="global"
             disabled={!!selectedKeyframe?.keyframeId} // Disable Object tab if a keyframe is selected.

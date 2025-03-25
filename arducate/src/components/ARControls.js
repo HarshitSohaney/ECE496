@@ -1,8 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useAtom } from "jotai";
 import { selectedObjectAtom, arObjectsAtom } from "../atoms";
 import { Switch } from "../@/components/ui/switch";
 import { useObjectHandlers } from "hooks/objectHandlers";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const ARControls = () => {
   const [selectedObject, setSelectedObject] = useAtom(selectedObjectAtom);
@@ -22,41 +24,93 @@ const ARControls = () => {
 
   if (!selectedObject) {
     return (
-      <div className="w-[15vw] h-full flex flex-col items-center justify-center bg-secondary text-gray-700 rounded-lg p-4">
-        <div className="text-lg font-semibold text-center">No Object Selected</div>
+      <div className="h-full flex flex-col items-center justify-center bg-secondary text-gray-700 rounded-lg p-4">
+        <div className="text-lg font-semibold text-center text-white">
+          No Object Selected
+        </div>
         <p className="text-sm text-gray-500 mt-1 text-center">
-          Please select an object to view its details.
+          Please select an object to view its details
         </p>
       </div>
     );
   }
 
-  const InputGroup = ({ label, values, onChange, min, max, step }) => (
-    <div className="mb-3">
-      <label className="block text-xs font-medium mb-1">{label}:</label>
-      <div className="flex justify-between">
-        {[0, 1, 2].map((axis) => (
-          <div key={axis} className="flex flex-col items-center w-[28%]">
-            <input
-              type="number"
-              min={min}
-              max={max}
-              step={step}
-              value={values[axis]}
-              onChange={(e) => onChange(axis, e.target.value)}
-              className="w-full text-center text-sm p-1 h-7"
-            />
-            <label className="mt-1 text-xs font-medium">
-              {["X", "Y", "Z"][axis]}
-            </label>
-          </div>
-        ))}
+  const InputGroup = ({ label, values, onChange, min, max, step }) => {
+    const handleWheel = useCallback(
+      (e, axis) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const delta = e.deltaY < 0 ? step : -step;
+        const currentValue = parseFloat(isNaN(values[axis]) ? 0 : values[axis]);
+        const parsedMin = parseFloat(min);
+        const parsedMax = parseFloat(max);
+        // Calculate new value
+        const newValue = Math.min(
+          parsedMax,
+          Math.max(parsedMin, currentValue + delta)
+        );
+
+        console.log(
+          parseFloat(values[axis]),
+          newValue,
+          "delta",
+          delta,
+          currentValue,
+          Math.max(parsedMin, currentValue + delta)
+        );
+        const finalValue = isNaN(newValue) ? 0 : newValue;
+
+        onChange(axis, finalValue.toString());
+      },
+      [onChange, min, max, step, values]
+    );
+
+    return (
+      <div className="mb-3">
+        <Label
+          htmlFor={`input-group-${label}`}
+          className="block text-xs font-medium mb-1"
+        >
+          {label}:
+        </Label>
+        <div className="flex justify-between">
+          {[0, 1, 2].map((axis) => {
+            const inputId = `input-${label}-${axis}`;
+            return (
+              <div
+                key={axis}
+                className="flex flex-row items-center w-[35%] overscroll-contain"
+              >
+                <Label
+                  htmlFor={inputId}
+                  className="text-xs px-1 font-medium border border-r-0 border-gray-200 h-full flex items-center ml-1 bg-black rounded-l-lg"
+                >
+                  {["X", "Y", "Z"][axis]}
+                </Label>
+                <Input
+                  id={inputId}
+                  type="number"
+                  min={min}
+                  max={max}
+                  step={step}
+                  value={values[axis]}
+                  // onWheel={(e) => {
+                  //   handleWheel(e, axis);
+                  // }}
+                  onChange={(e) => onChange(axis, e.target.value)}
+                  className="text-center text-sm h-7 pl-0 border-l-0 rounded-r-lg rounded-s-none custom-input"
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="w-[15vw] p-2 bg-secondary rounded h-full">
+    <div className="p-2 bg-secondary rounded h-full text-white">
       <div className="mb-3 flex items-center justify-between">
         <label className="text-xs font-medium">Visible:</label>
         <Switch
@@ -73,18 +127,18 @@ const ARControls = () => {
               type="text"
               value={selectedObject.name}
               onChange={handleNameChange}
-              className="w-full p-1 border rounded text-sm"
+              className="w-full p-1 border rounded text-sm bg-secondary-foreground"
             />
           </div>
-          </div>
-          <div className="flex items-center justify-between gap-2">
+        </div>
+        <div className="flex items-center justify-between gap-2">
           <div className="flex-1">
             <label className="text-xs font-medium">Label:</label>
             <input
               type="text"
               value={selectedObject.label}
               onChange={handleLabelChange}
-              className="w-full p-1 border rounded text-sm"
+              className="w-full p-1 border rounded text-sm bg-secondary-foreground"
             />
           </div>
           <div className="flex flex-col items-center">
@@ -105,7 +159,7 @@ const ARControls = () => {
             type="text"
             value={selectedObject.text}
             onChange={handleTextChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded bg-secondary-foreground"
           />
         </div>
       )}
@@ -115,7 +169,7 @@ const ARControls = () => {
           type="color"
           value={selectedObject.color || "#ffa500"}
           onChange={handleColorChange}
-          className="w-full h-6 p-0 border-none"
+          className="w-full h-6 p-0 border-none bg-secondary-foreground"
         />
       </div>
 

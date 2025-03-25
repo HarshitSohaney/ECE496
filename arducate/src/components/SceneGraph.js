@@ -44,10 +44,10 @@ const TreeNode = ({
         <ContextMenuTrigger>
           <div
             className={cn(
-              "flex items-center p-1 rounded-md group relative transition-colors duration-200",
-              selectedId === node.id && "bg-blue-50 text-blue-600",
-              !selectedId === node.id && "hover:bg-gray-50",
-              "active:scale-[0.99] hover:scale-[1.01]"
+              "flex items-center p-1 group relative transition-colors duration-150 hover:cursor-pointer hover:bg-gray-500",
+              selectedId === node.id && "bg-zinc-500 text-white-600",
+              !selectedId === node.id && "hover:bg-gray-500",
+              "active:scale-[0.99] hover:scale-[1]"
             )}
             style={{ marginLeft: `${level * 16}px` }}
             onClick={() => onSelect(node)}
@@ -55,7 +55,7 @@ const TreeNode = ({
             {node.children && (
               <div
                 className={cn(
-                  "p-1 hover:bg-gray-100 rounded cursor-pointer transition-transform duration-200",
+                  "p-1 hover:bg-gray-100 rounded transition-transform duration-200",
                   node.toggled && "rotate-90"
                 )}
                 onClick={(e) => {
@@ -184,9 +184,9 @@ const SceneGraph = ({ data, setData }) => {
   );
 
   return (
-    <Card className="bg-white shadow-sm rounded-md w-full mt-2 h-3/4">
-      <div className="font-sm font-bold mb-2 border-b border-gray-200">
-        <div className="p-2">Layers</div>
+    <Card className="bg-secondary shadow-sm rounded-md w-full mt-2 h-3/4 text-gray-300 py-2">
+      <div className="font-sm font-semibold mb-2 border-b border-gray-200">
+        <div className="px-2 pb-2">Layers</div>
       </div>
       <div className="overflow-x-auto overflow-y-auto max-h-[21rem]">
         {data.children && data.children.length > 0 ? (
@@ -203,10 +203,10 @@ const SceneGraph = ({ data, setData }) => {
             />
           ))
         ) : (
-          <div className="flex items-center flex-col justify-center h-full text-gray-500">
-            <div className="text-lg font-semibold">No Assets Added</div>
+          <div className="flex items-center flex-col justify-center h-full text-gray-500 p-2">
+            <div className="text-lg font-semibold text-gray">No Assets Added</div>
             <p className="text-sm text-gray-500 mt-1 text-center">
-              Your 3D assets will show here
+              Your assets will show here
             </p>
           </div>
         )}
