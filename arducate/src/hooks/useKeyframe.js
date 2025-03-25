@@ -8,12 +8,30 @@ const useKeyframe = () => {
   const [duration] = useAtom(timelineDurationAtom);
 
   const hexToRGB = (hex) => {
-    hex = hex.replace(/^#/, "");
-    return [
-      parseInt(hex.substring(0, 2), 16) / 255,
-      parseInt(hex.substring(2, 4), 16) / 255,
-      parseInt(hex.substring(4, 6), 16) / 255,
-    ];
+    // Remove the hash if present
+    hex = hex.replace(/^#/, '');
+  
+    // Handle 3-digit hex codes
+    if (hex.length === 3) {
+      hex = hex.split('').map(char => char + char).join('');
+    }
+  
+    // Validate hex code length
+    if (hex.length !== 6) {
+      console.warn(`Invalid hex color: ${hex}. Defaulting to white.`);
+      return [1, 1, 1];
+    }
+  
+    try {
+      return [
+        parseInt(hex.substring(0, 2), 16) / 255,
+        parseInt(hex.substring(2, 4), 16) / 255,
+        parseInt(hex.substring(4, 6), 16) / 255
+      ];
+    } catch (error) {
+      console.warn(`Error converting hex to RGB: ${hex}. Defaulting to white.`);
+      return [1, 1, 1];
+    }
   };
 
 
@@ -35,6 +53,7 @@ const useKeyframe = () => {
           position: [...(targetObject.position || [0, 0, 0])],
           rotation: [...(targetObject.rotation || [0, 0, 0])],
           scale: [...(targetObject.scale || [1, 1, 1])],
+          color: hexToRGB(targetObject.color || "#ffa500"),
         };
 
 
