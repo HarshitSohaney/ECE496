@@ -51,7 +51,6 @@ const TimeRuler = ({ height = 32 }) => {
   return (
     <canvas
       ref={canvasRef}
-      className="bg-gray-800"
       style={{ width: "100%", height: `${height}px` }}
     />
   );

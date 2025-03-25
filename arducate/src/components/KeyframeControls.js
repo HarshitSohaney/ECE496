@@ -7,6 +7,7 @@ import {
 } from "../atoms";
 import useKeyframe from "../hooks/useKeyframe";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useObjectHandlers } from "hooks/objectHandlers";
 
@@ -113,10 +114,17 @@ const KeyframeControls = () => {
     return (
       <div className="mb-3">
         <label className="block text-xs font-medium mb-1">{label}:</label>
-        <div className="flex justify-between">
+        <div className="flex justify-between text-white">
           {values.map((value, axis) => (
-            <div key={axis} className="flex flex-col items-center w-[28%]">
-              <input
+            <div key={axis} className="flex flex-row items-center">
+              <Label
+                htmlFor={`input-${propType}-${axis}`}
+                className="text-xs px-1 font-medium border border-r-0 border-gray-200 h-full flex items-center ml-1 bg-black rounded-l-lg"
+              >
+                {["X", "Y", "Z"][axis]}
+              </Label>
+              <Input
+                id={`input-${propType}-${axis}`}
                 type="number"
                 min={min}
                 max={max}
@@ -125,11 +133,8 @@ const KeyframeControls = () => {
                 onChange={(e) =>
                   handlePropertyChange(propType, axis, e.target.value)
                 }
-                className="w-full text-center text-sm p-1 h-7"
+                className="text-center text-sm h-7 pl-0 border-l-0 rounded-r-lg rounded-s-none"
               />
-              <label className="mt-1 text-xs font-medium">
-                {["X", "Y", "Z"][axis]}
-              </label>
             </div>
           ))}
         </div>
@@ -138,9 +143,9 @@ const KeyframeControls = () => {
   };
 
   return (
-    <div className="w-[15vw] p-2 bg-secondary rounded">
+    <div className="p-2 bg-secondary rounded text-white">
       <div className="mb-3">
-        <label className="text-xs font-medium">Keyframe Time:</label>
+        <Label className="text-xs font-medium">Keyframe Time:</Label>
         <Input
           type="number"
           value={keyframe.time?.toFixed(2) || 0}

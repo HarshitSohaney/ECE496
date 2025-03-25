@@ -98,10 +98,10 @@ const App = () => {
                   <ARCanvas className="w-full h-full" />
                   {/* Sidebar overlays on top with absolute positioning */}
                   <Sidebar className="absolute top-0 left-0" />
+                  {/* AssetControllers remains on the side */}
+                  <AssetControllers className="min-w-[20vw] flex-none absolute top-5 right-0" />
                 </div>
 
-                {/* AssetControllers remains on the side */}
-                <AssetControllers className="min-w-[20vw] flex-none" />
               </div>
               <SequenceEditor />
             </div>

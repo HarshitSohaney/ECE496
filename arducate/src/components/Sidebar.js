@@ -1,15 +1,6 @@
 // src/components/Sidebar.js
 import React, { useState } from "react";
 import SceneGraph from "./SceneGraph";
-import AssetHandler from "./AssetHandler";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../@/components/ui/select";
 import { Button } from "../@/components/ui/button";
 import { useAtom } from "jotai";
 import { treeDataAtom } from "../atoms";
@@ -18,18 +9,7 @@ import { transformModeAtom } from "../atoms";
 
 const Sidebar = () => {
   const [data, setData] = useAtom(treeDataAtom);
-  const [cursor, setCursor] = useState(null);
   const [, setTransformMode] = useAtom(transformModeAtom);
-
-  const handleActionChange = (value) => {
-    // dummy function
-    console.log(`Selected action: ${value}`);
-  };
-
-  const handleAddFrame = () => {
-    // dummy function
-    console.log("Frame added");
-  };
 
   return (
     <div className="absolute top-0 left-0 z-10 w-[15vw] items-center p-2 bg-transparent flex flex-col space-y-2 overflow-y-auto">
