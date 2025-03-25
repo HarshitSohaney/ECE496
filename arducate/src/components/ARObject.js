@@ -92,43 +92,35 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       }
 
       if (color && Array.isArray(color) && color.length === 3) {
-        // Convert RGB [0,1] values back to hex format
-        const r = Math.floor(color[0] * 255);
-        const g = Math.floor(color[1] * 255);
-        const b = Math.floor(color[2] * 255);
-        const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        // Convert to hex for reference if needed
+        const hexColor = `#${color
+          .map((c) =>
+            Math.floor(c * 255)
+              .toString(16)
+              .padStart(2, "0")
+          )
+          .join("")}`;
         
-        // Update the material color during animation
+        // Use THREE.Color with interpolated color values directly
         meshRef.current.material.color.set(hexColor);
-        
+
         if (edgeRef.current) {
-          const darkerHex = getDarkerColor(hexColor);
-          edgeRef.current.material.color.set(darkerHex);
+          // Convert interpolated color to a slightly darker version for edges
+          const darkerColor = color.map((c) => Math.max(0, c - 0.2));
+          edgeRef.current.material.color.setRGB(
+            darkerColor[0],
+            darkerColor[1],
+            darkerColor[2]
+          );
         }
-        
+
         // Store the last applied color on the ref
         meshRef.current.lastAppliedColor = hexColor;
-      }
-    } else {
-      // No active animation, but we have a previous animation color
-      if (meshRef.current.lastAppliedColor) {
-        // Keep using the last color that was applied during animation
-        meshRef.current.material.color.set(meshRef.current.lastAppliedColor);
-        
-        if (edgeRef.current) {
-          edgeRef.current.material.color.set(getDarkerColor(meshRef.current.lastAppliedColor));
-        }
       } else {
-        // No previous animation, use the base color
-        meshRef.current.material.color.set(object.color);
-        
-        if (edgeRef.current) {
-          edgeRef.current.material.color.set(getDarkerColor(object.color));
-        }
+        console.warn(`Invalid color for object ${object.id}:`, color);
       }
     }
   }, [currentTime]);
-
 
   // If the object is not visible, return null but only after all hooks have been called
   if (object.visible === false) {
@@ -149,9 +141,13 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
     >
       {/* Render the correct geometry */}
       {getAsset(object.type, { text: object.text, color: object.color })}
-      <meshMatcapMaterial color={new THREE.Color(object.color)} toneMapped={false}/>
+      <meshMatcapMaterial color={object.color} toneMapped={false} />
       {object.type !== "text" && object.type !== "line" && (
-        <Edges ref={edgeRef} lineWidth={2} color={getDarkerColor(object.color)} />
+        <Edges
+          ref={edgeRef}
+          lineWidth={2}
+          color={getDarkerColor(object.color)}
+        />
       )}
     </mesh>
   );

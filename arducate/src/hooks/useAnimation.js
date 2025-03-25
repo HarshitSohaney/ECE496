@@ -6,9 +6,8 @@ import {
   isPlayingAtom,
   timelineDurationAtom,
   arObjectsAtom,
-  selectedObjectAtom
+  selectedObjectAtom,
 } from "../atoms";
-
 
 const useAnimation = () => {
   const [currentTime, setCurrentTime] = useAtom(currentTimeAtom);
@@ -85,67 +84,113 @@ const useAnimation = () => {
   const interpolateVector = (start, end, progress) => {
     if (!start || !end) return start || end || [0, 0, 0];
 
-    return new THREE.Vector3().fromArray(start).lerp(new THREE.Vector3().fromArray(end), progress).toArray();
+    return new THREE.Vector3()
+      .fromArray(start)
+      .lerp(new THREE.Vector3().fromArray(end), progress)
+      .toArray();
   };
 
   const interpolateRotation = (start, end, progress) => {
     if (!start || !end || progress < 0 || progress > 1) return [0, 0, 0];
 
-    const startQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(...start, "XYZ"));
-    const endQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(...end, "XYZ"));
+    const startQ = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(...start, "XYZ")
+    );
+    const endQ = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(...end, "XYZ")
+    );
 
     const interpolatedQ = new THREE.Quaternion();
     interpolatedQ.copy(startQ).slerp(endQ, progress);
 
-    const interpolatedEuler = new THREE.Euler().setFromQuaternion(interpolatedQ, "XYZ");
+    const interpolatedEuler = new THREE.Euler().setFromQuaternion(
+      interpolatedQ,
+      "XYZ"
+    );
 
     return [interpolatedEuler.x, interpolatedEuler.y, interpolatedEuler.z];
   };
 
-  const interpolateProperties = (objectId) => {
-  const obj = arObjects.find((o) => o.id === objectId);
-  if (!obj || !obj.keyframes || obj.keyframes.length === 0) return null;
-
-  const sortedKeyframes = [...obj.keyframes].sort((a, b) => a.time - b.time);
-
-  // 🔹 Handle edge cases where currentTime is before or after keyframes
-  if (currentTime <= sortedKeyframes[0].time) {
-    return {
-      position: sortedKeyframes[0].position ?? [0, 0, 0],
-      rotation: sortedKeyframes[0].rotation ?? [0, 0, 0],
-      scale: sortedKeyframes[0].scale ?? [1, 1, 1],
-    };
-  }
-  if (currentTime >= sortedKeyframes[sortedKeyframes.length - 1].time) {
-    return {
-      position: sortedKeyframes[sortedKeyframes.length - 1].position ?? [0, 0, 0],
-      rotation: sortedKeyframes[sortedKeyframes.length - 1].rotation ?? [0, 0, 0],
-      scale: sortedKeyframes[sortedKeyframes.length - 1].scale ?? [1, 1, 1],
-    };
-  }
-
-  // 🔹 Find the two keyframes to interpolate between
-  let prevKeyframe = sortedKeyframes[0];
-  let nextKeyframe = sortedKeyframes[sortedKeyframes.length - 1];
-
-  for (let i = 0; i < sortedKeyframes.length - 1; i++) {
-    if (currentTime >= sortedKeyframes[i].time && currentTime < sortedKeyframes[i + 1].time) {
-      prevKeyframe = sortedKeyframes[i];
-      nextKeyframe = sortedKeyframes[i + 1];
-      break;
+  const interpolateColor = (start, end, progress) => {
+    console.log(start, end, progress);
+    if (!start || !end || start.length !== 3 || end.length !== 3) {
+      console.error("Invalid color interpolation input");
+      return start || [1, 1, 1]; // Default to white
     }
-  }
 
-  // 🔹 Interpolation factor (0 → start keyframe, 1 → next keyframe)
-  const progress = (currentTime - prevKeyframe.time) / (nextKeyframe.time - prevKeyframe.time);
-
-  return {
-    position: interpolateVector(prevKeyframe.position, nextKeyframe.position, progress),
-    rotation: interpolateRotation(prevKeyframe.rotation, nextKeyframe.rotation, progress),
-    scale: interpolateVector(prevKeyframe.scale, nextKeyframe.scale, progress),
+    return start.map((startValue, index) => {
+      const endValue = end[index];
+      return startValue + (endValue - startValue) * progress;
+    });
   };
-};
 
+  const interpolateProperties = (objectId) => {
+    const obj = arObjects.find((o) => o.id === objectId);
+    if (!obj || !obj.keyframes || obj.keyframes.length === 0) return null;
+
+    const sortedKeyframes = [...obj.keyframes].sort((a, b) => a.time - b.time);
+
+    // 🔹 Handle edge cases where currentTime is before or after keyframes
+    if (currentTime <= sortedKeyframes[0].time) {
+      return {
+        position: sortedKeyframes[0].position ?? [0, 0, 0],
+        rotation: sortedKeyframes[0].rotation ?? [0, 0, 0],
+        scale: sortedKeyframes[0].scale ?? [1, 1, 1],
+        color: sortedKeyframes[0].color ?? obj.color,
+      };
+    }
+    if (currentTime >= sortedKeyframes[sortedKeyframes.length - 1].time) {
+      return {
+        position: sortedKeyframes[sortedKeyframes.length - 1].position ?? [
+          0, 0, 0,
+        ],
+        rotation: sortedKeyframes[sortedKeyframes.length - 1].rotation ?? [
+          0, 0, 0,
+        ],
+        scale: sortedKeyframes[sortedKeyframes.length - 1].scale ?? [1, 1, 1],
+        color: sortedKeyframes[sortedKeyframes.length - 1].color ?? obj.color,
+      };
+    }
+
+    // 🔹 Find the two keyframes to interpolate between
+    let prevKeyframe = sortedKeyframes[0];
+    let nextKeyframe = sortedKeyframes[sortedKeyframes.length - 1];
+
+    for (let i = 0; i < sortedKeyframes.length - 1; i++) {
+      if (
+        currentTime >= sortedKeyframes[i].time &&
+        currentTime < sortedKeyframes[i + 1].time
+      ) {
+        prevKeyframe = sortedKeyframes[i];
+        nextKeyframe = sortedKeyframes[i + 1];
+        break;
+      }
+    }
+    console.log(prevKeyframe, nextKeyframe);
+    // 🔹 Interpolation factor (0 → start keyframe, 1 → next keyframe)
+    const progress =
+      (currentTime - prevKeyframe.time) /
+      (nextKeyframe.time - prevKeyframe.time);
+
+    return {
+      position: interpolateVector(
+        prevKeyframe.position,
+        nextKeyframe.position,
+        progress
+      ),
+      rotation: interpolateRotation(
+        prevKeyframe.rotation,
+        nextKeyframe.rotation,
+        progress
+      ),
+      scale: interpolateVector(
+        prevKeyframe.scale,
+        nextKeyframe.scale,
+        progress
+      ),
+      color: interpolateColor(prevKeyframe.color, nextKeyframe.color, progress),
+    };
+  };
 
   const setTimeAndUpdateObjects = (newTime) => {
     setCurrentTime(newTime);
@@ -162,6 +207,5 @@ const useAnimation = () => {
     isPlaying,
   };
 };
-
 
 export default useAnimation;
