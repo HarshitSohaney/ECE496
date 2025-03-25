@@ -85,19 +85,26 @@ export const generateAnimations = (keyframes) => {
  * @param {Object} object - AR object containing position and label information
  * @returns {string} A-Frame text entity markup
  */
-export const renderTextLabel = (object) => `
-  <a-text 
-    visible="${object.showLabel}" 
-    value="${object.label || `Object ${object.id}`}"
-    position="0 ${-object.scale[1]} 0"
-    render-order="2"
-    scale="0.5 0.5 0.5"
-    align="center"
-    color="#000000"
-    opacity="0.8"
-    side="double">
-  </a-text>
-`;
+export const renderTextLabel = (object, yOffset = -1) => {
+  const [_, sy, __] = object.scale;
+  const offset = 0.3;
+  const localY = yOffset * (sy / 2 + offset);
+
+  return `
+    <a-text
+      value="${object.label || `Object ${object.id}`}"
+      visible="${object.showLabel}"
+      position="0 ${localY} 0.05"
+      scale="0.5 0.5 0.5"
+      align="center"
+      color="#000000"
+      look-at="[camera]"
+      font="aileronsemibold">
+    </a-text>
+  `;
+};
+
+
 
 /**
  * Determines the initial position and color of an AR object based on keyframes
@@ -157,6 +164,7 @@ export const renderObject = (object) => {
           align="center"
           anchor="center"
           color="${object.color}"
+          font="aileronsemibold"
           ${animations}>
         </a-text>
       `;
@@ -172,29 +180,24 @@ export const renderObject = (object) => {
           }; lineWidth: 2; start: 0 -1 0; end: 0 1 0"
           ${animations}>
         </a-entity>
-        ${renderTextLabel({ ...object, position: initialProps.position })}
       `;
 
-    default:
-      return `
-        <${object.entity}
-          position="${position}"
-          scale="${scale}"
-          rotation="${rotation}"
-          color="${object.color}"
-          ${animations}>
-          <a-text 
-            visible="${object.showLabel}" 
-            value="${object.label || `Object ${object.id}`}"
-            position="0 ${-object.scale[1]} 0"
-            render-order="1"
-            scale="1 1 1"
-            align="center"
-            color="#000000"
-            opacity="0.8"
-            side="double">
-          </a-text>
-        </${object.entity}>
-      `;
+      default:
+        const label = renderTextLabel({
+          ...object,
+          scale: initialProps.scale,
+          position: initialProps.position,
+        });
+
+        return `
+          <a-entity position="${position}" rotation="${rotation}" ${animations}>
+            <${object.entity}
+              scale="${scale}"
+              color="${object.color}">
+            </${object.entity}>
+            ${label}
+          </a-entity>
+        `;
+
   }
 };
