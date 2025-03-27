@@ -2,8 +2,12 @@ AFRAME.registerComponent("global-animation-coordinator", {
   init: function () {
     const marker = this.el;
     let isPlaying = false;
+    let allAssetsLoaded = false;
+    let markerIsFound = false;
 
     const animatedElements = [];
+    const loadPromises = [];
+
     marker.querySelectorAll("[animation__0]").forEach((el) => {
       const animations = [];
       let i = 0;
@@ -20,6 +24,16 @@ AFRAME.registerComponent("global-animation-coordinator", {
         });
         i++;
       }
+
+      const loadPromise = new Promise((resolve) => {
+        if (el.hasLoaded) {
+          resolve();
+        } else {
+          el.addEventListener("loaded", resolve, { once: true });
+        }
+      });
+      loadPromises.push(loadPromise);
+
       if (animations.length > 0) {
         animatedElements.push({ el: el, animations });
       }
@@ -41,23 +55,35 @@ AFRAME.registerComponent("global-animation-coordinator", {
     };
 
     const startAnimations = () => {
-      if (!isPlaying) {
+      if (!isPlaying && allAssetsLoaded && markerIsFound) {
         isPlaying = true;
+        const delayAfterReady = 2000;
 
-        allAnimations.forEach(({ el, delay }) => {
-          setTimeout(() => {
-            el.emit("startAllAnimations");
-          }, delay);
-        });
+        setTimeout(() => {
+          allAnimations.forEach(({ el, delay }) => {
+            setTimeout(() => {
+              el.emit("startAllAnimations");
+            }, delay);
+          });
+        }, delayAfterReady);
       }
     };
 
+
     marker.addEventListener("markerFound", () => {
+      markerIsFound = true;
       startAnimations();
     });
 
     marker.addEventListener("markerLost", () => {
+      markerIsFound = false;
       resetAnimations();
+    });
+
+    // Wait until all assets are loaded
+    Promise.all(loadPromises).then(() => {
+      allAssetsLoaded = true;
+      startAnimations();
     });
   },
 });

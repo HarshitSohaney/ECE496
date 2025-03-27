@@ -12,8 +12,8 @@ export const convertSceneToAR = (arObjects) => {
       class="clickable"
       gesture-handler
       position="0 0 0"
-      rotation="0 0 0"
-      scale="1 1 1"
+      rotation="-90 0 0"
+      scale="0.5 0.5 0.5"
     >
       ${arObjects
         .filter((object) => object.visible !== false)
