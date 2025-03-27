@@ -7,14 +7,7 @@ export const convertSceneToAR = (arObjects) => {
   }
 
   const wrappedGroup = `
-    <a-entity
-      id="group-wrapper"
-      class="clickable"
-      gesture-handler
-      position="0 0 0"
-      rotation="-90 0 0"
-      scale="0.5 0.5 0.5"
-    >
+    <a-entity id="scene-container">
       ${arObjects
         .filter((object) => object.visible !== false)
         .map(renderObject)
@@ -33,16 +26,10 @@ export const convertSceneToAR = (arObjects) => {
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
     <script src="./globalAnimationCoordinator.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/fcor/arjs-gestures/gesture-detector.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/fcor/arjs-gestures/gesture-handler.js"></script>
-
   </head>
   <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3;" renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector id="scene">
-      <a-marker preset="hiro" global-animation-coordinator raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA">
+    <a-scene embedded arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3;" renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false">
+      <a-marker preset="hiro" global-animation-coordinator>
         ${wrappedGroup}
       </a-marker>
       <a-entity camera></a-entity>
