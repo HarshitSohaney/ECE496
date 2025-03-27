@@ -112,7 +112,7 @@ const useAnimation = () => {
   };
 
   const interpolateColor = (start, end, progress) => {
-    console.log(start, end, progress);
+    // console.log(start, end, progress);
     if (!start || !end || start.length !== 3 || end.length !== 3) {
       console.error("Invalid color interpolation input");
       return start || [1, 1, 1]; // Default to white
@@ -166,7 +166,7 @@ const useAnimation = () => {
         break;
       }
     }
-    console.log(prevKeyframe, nextKeyframe);
+    // console.log(prevKeyframe, nextKeyframe);
     // 🔹 Interpolation factor (0 → start keyframe, 1 → next keyframe)
     const progress =
       (currentTime - prevKeyframe.time) /
