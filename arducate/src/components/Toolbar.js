@@ -57,59 +57,42 @@ const Toolbar = () => {
   };
 
   const handleShare = async () => {
-
-    // Only generate a new URL if one doesn't exist
-    if (!generatedUrl) { 
-      const htmlContent = convertSceneToAR(arObjects);
-      const uniqueId = uuidv4();
-      
-      try {
-        // Insert id: htmlContent into the database
-        const { data, error } = await supabase
-          .from('ar_content')
-          .insert([
-            { url: uniqueId, html_content: htmlContent }
-          ]);
-
-        if (error) {
-          throw new Error('Failed to save content: ' + error.message);
-        }
-
-        // Construct & store the arContent URL
-        const baseUrl = window.location.origin; 
-        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;
-        setGeneratedUrl(arContentUrl);
-        
-        // Persist URL in sessionStorage so that regenerating URLs in the same session refers to the same link
-        // sessionStorage.setItem('ar_content_url', arContentUrl);
-
-        // Copy the full URL to clipboard & show popup
-        navigator.clipboard.writeText(arContentUrl).then(() => {
-          setPopupMessage(
-            <span>
-              <strong>Link copied to clipboard:</strong> {arContentUrl}
-            </span>
-          ); 
-          setShowPopup(true);
-        }).catch((err) => {
-          console.error("Error copying text to clipboard: ", err);
-        });
+    const htmlContent = convertSceneToAR(arObjects);
+    const uniqueId = uuidv4();
+    
+    try {
+      // Insert id: htmlContent into the database
+      const { data, error } = await supabase
+        .from('ar_content')
+        .insert([
+          { url: uniqueId, html_content: htmlContent }
+        ]);
   
-      } catch (err) {
-        console.error(err.message);
+      if (error) {
+        throw new Error('Failed to save content: ' + error.message);
       }
-    } else {
-      // If the URL already exists, just copy it and display in popup
-      navigator.clipboard.writeText(generatedUrl).then(() => {
+  
+      // Construct the arContent URL
+      const baseUrl = window.location.origin; 
+      const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;
+      
+      // Always update generatedUrl to the new URL
+      setGeneratedUrl(arContentUrl);
+      
+      // Copy the full URL to clipboard & show popup
+      navigator.clipboard.writeText(arContentUrl).then(() => {
         setPopupMessage(
           <span>
-            <strong>Link copied to clipboard:</strong> {generatedUrl}
+            <strong>Link copied to clipboard:</strong> {arContentUrl}
           </span>
-        );
+        ); 
         setShowPopup(true);
       }).catch((err) => {
         console.error("Error copying text to clipboard: ", err);
       });
+  
+    } catch (err) {
+      console.error(err.message);
     }
   };
 
