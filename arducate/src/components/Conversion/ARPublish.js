@@ -7,13 +7,14 @@ export const convertSceneToAR = (arObjects) => {
   }
 
   const wrappedGroup = `
-    <a-entity id="scene-container">
-      ${arObjects
-        .filter((object) => object.visible !== false)
-        .map(renderObject)
-        .join("")}
-    </a-entity>
-  `;
+  <a-entity id="scene-container" rotation="-90 0 0">
+    ${arObjects
+      .filter((object) => object.visible !== false)
+      .map(renderObject)
+      .join("")}
+  </a-entity>
+`;
+
 
   return `
   <!DOCTYPE html>
@@ -29,10 +30,10 @@ export const convertSceneToAR = (arObjects) => {
   </head>
   <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3;" renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false">
-      <a-marker preset="hiro" global-animation-coordinator>
-        ${wrappedGroup}
+      <a-marker preset="hiro" global-animation-coordinator emitevents:'true'; smooth:'true'>
+      ${wrappedGroup}
       </a-marker>
-      <a-entity camera></a-entity>
+    <a-entity camera></a-entity>
     </a-scene>
   </body>
   </html>`;

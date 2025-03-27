@@ -1,13 +1,34 @@
 AFRAME.registerComponent("global-animation-coordinator", {
   init: function () {
     const marker = this.el;
-    let allAssetsLoaded = false;
+    let allReady = false;
     let markerFound = false;
     let hasPlayed = false;
 
     const animatedElements = [];
     const loadPromises = [];
 
+    // 1. Wait for the entire <a-scene> and <a-camera>
+    const scene = document.querySelector("a-scene");
+    const camera = scene.querySelector("[camera]");
+
+    if (scene && !scene.hasLoaded) {
+      loadPromises.push(
+        new Promise((resolve) =>
+          scene.addEventListener("loaded", resolve, { once: true })
+        )
+      );
+    }
+
+    if (camera && !camera.hasLoaded) {
+      loadPromises.push(
+        new Promise((resolve) =>
+          camera.addEventListener("loaded", resolve, { once: true })
+        )
+      );
+    }
+
+    // 2. Gather and wait for all animated elements
     marker.querySelectorAll("[animation__0]").forEach((el) => {
       const animations = [];
       let i = 0;
@@ -21,6 +42,7 @@ AFRAME.registerComponent("global-animation-coordinator", {
           attribute: anim.property,
           from: anim.from,
           to: anim.to,
+          startEvents: "startAllAnimations"
         });
         i++;
       }
@@ -29,13 +51,13 @@ AFRAME.registerComponent("global-animation-coordinator", {
         animatedElements.push({ el, animations });
       }
 
-      loadPromises.push(
-        new Promise((resolve) => {
-          el.hasLoaded
-            ? resolve()
-            : el.addEventListener("loaded", resolve, { once: true });
-        })
-      );
+      if (!el.hasLoaded) {
+        loadPromises.push(
+          new Promise((resolve) =>
+            el.addEventListener("loaded", resolve, { once: true })
+          )
+        );
+      }
     });
 
     const allAnimations = animatedElements
@@ -52,19 +74,19 @@ AFRAME.registerComponent("global-animation-coordinator", {
     };
 
     const tryStart = () => {
-      if (allAssetsLoaded && markerFound && !hasPlayed) {
-        hasPlayed = true;
-        const delayAfterReady = 2000;
+      if (!scene.hasLoaded || !allAssetsLoaded || !markerFound || hasPlayed) return;
 
-        setTimeout(() => {
-          allAnimations.forEach(({ el, delay }) => {
-            setTimeout(() => {
-              el.emit("startAllAnimations");
-            }, delay);
-          });
-        }, delayAfterReady);
-      }
+      hasPlayed = true;
+
+      const delayAfterReady = 4000; // Clear delay before animations start
+
+      setTimeout(() => {
+        animatedElements.forEach(({ el }) => {
+          el.emit("startAllAnimations", null, false);
+        });
+      }, delayAfterReady);
     };
+
 
     marker.addEventListener("markerFound", () => {
       markerFound = true;
@@ -77,7 +99,7 @@ AFRAME.registerComponent("global-animation-coordinator", {
     });
 
     Promise.all(loadPromises).then(() => {
-      allAssetsLoaded = true;
+      allReady = true;
       tryStart();
     });
   },
