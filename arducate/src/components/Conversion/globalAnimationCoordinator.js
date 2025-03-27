@@ -2,7 +2,6 @@ AFRAME.registerComponent("global-animation-coordinator", {
   init: function () {
     const marker = this.el;
     let isPlaying = false;
-
     const animatedElements = [];
     marker.querySelectorAll("[animation__0]").forEach((el) => {
       const animations = [];
@@ -34,7 +33,12 @@ AFRAME.registerComponent("global-animation-coordinator", {
     const resetAnimations = () => {
       allAnimations.forEach(({ el, from, attribute }) => {
         if (from && attribute) {
-          el.setAttribute(attribute, from);
+          // Special handling for color
+          if (attribute === "material.color") {
+            el.setAtstribute("material", "color", from);
+          } else {
+            el.setAttribute(attribute, from);
+          }
         }
       });
       isPlaying = false;
@@ -43,7 +47,6 @@ AFRAME.registerComponent("global-animation-coordinator", {
     const startAnimations = () => {
       if (!isPlaying) {
         isPlaying = true;
-
         allAnimations.forEach(({ el, delay }) => {
           setTimeout(() => {
             el.emit("startAllAnimations");

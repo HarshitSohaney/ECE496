@@ -39,7 +39,6 @@ const rgbArrayToString = (rgb) => {
  */
 export const generateAnimations = (keyframes) => {
   if (!keyframes || keyframes.length < 2) return ""; // At least 2 keyframes needed for animation
-
   return keyframes
     .sort((a, b) => a.time - b.time)
     .map((kf, index, array) => {
@@ -67,8 +66,8 @@ export const generateAnimations = (keyframes) => {
         },
         {
           prop: "color",
-          from: rgbArrayToString(kf.color?.start || [1, 1, 1]),
-          to: rgbArrayToString(kf.color?.end || [1, 1, 1]),
+          from: rgbArrayToString(kf.color || [1, 1, 1]),
+          to: rgbArrayToString(nextKf.color || [1, 1, 1]),
         },
       ];
 
@@ -83,7 +82,6 @@ export const generateAnimations = (keyframes) => {
     })
     .join(" ");
 };
-
 
 /**
  * Renders a text label for an AR object
@@ -109,8 +107,6 @@ export const renderTextLabel = (object, yOffset = -1) => {
   `;
 };
 
-
-
 /**
  * Determines the initial position and color of an AR object based on keyframes
  * @param {Object} object - AR object containing keyframes and position data
@@ -118,22 +114,22 @@ export const renderTextLabel = (object, yOffset = -1) => {
  */
 export const getInitialProperties = (object) => {
   const defaultColor = [1, 1, 1]; // Default white in RGB array format
-
   if (object.keyframes && object.keyframes.length > 0) {
     return {
       position: object.keyframes[0].position || [0, 0, 0],
       rotation: object.keyframes[0].rotation || [0, 0, 0],
       scale: object.keyframes[0].scale || [1, 1, 1],
-      color: rgbArrayToString(object.keyframes[0].color?.start || defaultColor),
+      color:
+        rgbArrayToString(object.keyframes[0]?.color) ||
+        object.color,
     };
   }
   return {
     position: object.position || [0, 0, 0],
     rotation: object.rotation || [0, 0, 0],
     scale: object.scale || [1, 1, 1],
-    color: rgbArrayToString(object.color ? object.color : defaultColor),
+    color: object.color || rgbArrayToString(defaultColor),
   };
-
 };
 
 /**
@@ -145,15 +141,12 @@ export const renderObject = (object) => {
   const initialProps = getInitialProperties(object);
   const animations = generateAnimations(object.keyframes);
 
-  console.log("Initial Scale in renderObject:", initialProps.scale);
-
-
   const position = initialProps.position.join(" ");
   const scale = object.scale.join(" ");
   const rotation = object.rotation.join(" ");
 
   function fixLineRotation(rotation) {
-    let [x, y, z] = rotation.split(' ').map(Number);
+    let [x, y, z] = rotation.split(" ").map(Number);
     x = -x;
     return `${x} ${y} ${z}`;
   }
@@ -180,29 +173,27 @@ export const renderObject = (object) => {
           position="${position}"
           scale="${scale}"
           rotation="${fixLineRotation(rotation)}"
-          line="color: ${
-            object.color
-          }; lineWidth: 2; start: 0 -1 0; end: 0 1 0"
+          line="color: ${object.color}; lineWidth: 2; start: 0 -1 0; end: 0 1 0"
           ${animations}>
         </a-entity>
       `;
 
-      default:
-        const label = renderTextLabel({
-          ...object,
-          scale: initialProps.scale,
-          position: initialProps.position,
-        });
+    default:
+      const label = renderTextLabel({
+        ...object,
+        scale: initialProps.scale,
+        position: initialProps.position,
+      });
 
-        return `
+      return `
           <a-entity position="${position}" rotation="${rotation}" ${animations}>
             <${object.entity}
+              material="color: ${initialProps.color}"
               scale="${scale}"
-              color="${object.color}">
+              ${animations}>
             </${object.entity}>
             ${label}
           </a-entity>
         `;
-
   }
 };

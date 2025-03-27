@@ -23,9 +23,10 @@ export const convertSceneToAR = (arObjects) => {
       <a-marker preset="hiro" global-animation-coordinator>
         ${arObjects
           .filter((object) => object.visible !== false)
-          .map(renderObject)
+          .map((object) => renderObject(object))
           .join("")}
       </a-marker>
+
       <a-entity camera></a-entity>
     </a-scene>
   </body>
