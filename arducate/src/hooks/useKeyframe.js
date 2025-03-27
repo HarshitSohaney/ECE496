@@ -46,7 +46,7 @@ const useKeyframe = () => {
       const newId = existingKeyframes.length > 0
         ? Math.max(...existingKeyframes.map(kf => kf.id)) + 1
         : 1;
-
+      console.log("rotation", targetObject.rotation);
       let newKeyframe = {
           id: newId,
           time: currentTime,
@@ -56,7 +56,7 @@ const useKeyframe = () => {
           color: hexToRGB(targetObject.color || "#ffa500"),
         };
 
-
+      console.log("Adding keyframe:", newKeyframe);
       setArObjects({
         type: "UPDATE_OBJECT",
         payload: {

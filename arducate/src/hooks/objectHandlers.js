@@ -47,17 +47,17 @@ export const useObjectHandlers = () => {
   };
 
   const handleRotationChange = (axis, value) => {
-    if (selectedObject) {
-      const newRotation = [...selectedObject.rotation];
-      newRotation[axis] = parseFloat(value);
-      setARObjects({
-        type: "UPDATE_OBJECT",
-        payload: {
-          ...selectedObject,
-          rotation: newRotation,
-        },
-      });
-    }
+    if (!selectedObject) return;
+    console.log("selectedObject", selectedObject.rotation);
+    const newRotation = [...selectedObject.rotation];
+    newRotation[axis] = parseFloat(value);
+    setARObjects({
+      type: "UPDATE_OBJECT",
+      payload: {
+        ...selectedObject,
+        rotation: newRotation,
+      },
+    });
   };
 
   const handleVisibilityChange = (checked) => {
@@ -115,7 +115,6 @@ export const useObjectHandlers = () => {
         name: e.target.value,
       },
     });
-    
   };
   return {
     handleColorChange,

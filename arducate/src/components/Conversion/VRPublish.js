@@ -26,7 +26,7 @@ export const convertSceneToVR = (vrObjects) => {
         </a-entity>
 
         <!-- Camera with movement and look controls -->
-      <a-entity camera look-controls wasd-controls position="0 2 5" look-at="0 0 0"></a-entity>
+      <a-entity camera look-controls wasd-controls position="0 1.6 5" look-at="0 0 0"></a-entity>
       </a-scene>
     </body>
     </html>`;

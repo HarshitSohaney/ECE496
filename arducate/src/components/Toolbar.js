@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAtom } from "jotai";
-import { arObjectsAtom, transformModeAtom } from "../atoms";
+import { arObjectsAtom, transformModeAtom, currentTimeAtom } from "../atoms";
 import { convertSceneToAR } from "./Conversion/ARPublish";
 import { convertSceneToVR } from "./Conversion/VRPublish";
 import { Button } from "../@/components/ui/button";
@@ -17,8 +17,10 @@ const Toolbar = () => {
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
   const [generatedUrl, setGeneratedUrl] = useState(null); // Check sessionStorage for the URL
   const [popupMessage, setPopupMessage] = useState(''); // State to hold the popup message
+  const [,setCurrentTime] = useAtom(currentTimeAtom);
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
+    await setCurrentTime(0);
     const htmlContent = convertSceneToVR(arObjects);
     const blob = new Blob([htmlContent], { type: "text/html" });
     const url = URL.createObjectURL(blob);
