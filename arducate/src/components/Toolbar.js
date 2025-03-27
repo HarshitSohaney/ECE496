@@ -26,39 +26,33 @@ const Toolbar = () => {
   };
 
   const handlePublish = async () => {
-    
-    // Only generate a new URL if one doesn't exist
-    if (!generatedUrl) { 
-      const htmlContent = convertSceneToAR(arObjects);
-      const uniqueId = uuidv4();
-
-      try {
-        // Insert entry into database uniqueId: htmlContent
-        const { data, error } = await supabase
-          .from('ar_content')
-          .insert([
-            { url: uniqueId, html_content: htmlContent }
-          ]);
+    const htmlContent = convertSceneToAR(arObjects);
+    const uniqueId = uuidv4();
   
-        if (error) {
-          throw new Error('Failed to save content: ' + error.message);
-        }
-
-        // Construct & store the arContent URL
-        const baseUrl = window.location.origin; 
-        const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;    
-                setGeneratedUrl(arContentUrl); 
-
-        // Persist URL in sessionStorage so that regenerating URLs in the same session refers to the same link
-        // sessionStorage.setItem('ar_content_url', arContentUrl); 
-        window.open(arContentUrl, '_blank');
-      
-      } catch (err) {
-        console.error(err.message);
+    try {
+      // Insert entry into database uniqueId: htmlContent
+      const { data, error } = await supabase
+        .from('ar_content')
+        .insert([
+          { url: uniqueId, html_content: htmlContent }
+        ]);
+  
+      if (error) {
+        throw new Error('Failed to save content: ' + error.message);
       }
-    } else {
-      // If the URL already exists, just open it
-      window.open(generatedUrl, '_blank');
+  
+      // Construct the arContent URL
+      const baseUrl = window.location.origin; 
+      const arContentUrl = `${baseUrl}/ar-content/${uniqueId}`;    
+      
+      // Always update generatedUrl to the new URL
+      setGeneratedUrl(arContentUrl); 
+  
+      // Open the new URL
+      window.open(arContentUrl, '_blank');
+    
+    } catch (err) {
+      console.error(err.message);
     }
   };
 
