@@ -121,7 +121,7 @@ const ARCanvas = () => {
     <div className="w-[100vw] border border-gray-500">
       <Canvas camera={{ position: [0, 2, 5], fov: 60 }}>
         <CSS2DRendererSetup />
-        <color attach="background" args={['#343434']} />
+        <color attach="background" args={["#343434"]} />
 
         {/* Lights */}
         <ambientLight intensity={0.5} />

@@ -38,17 +38,27 @@ const rgbArrayToString = (rgb) => {
  * @returns {string} Concatenated animation string for A-Frame
  */
 export const generateAnimations = (keyframes) => {
-  if (!keyframes || keyframes.length < 2) return ""; // At least 2 keyframes needed for animation
-  return keyframes
+  if (!keyframes || keyframes.length < 2)
+    return { animations: "", labelAnimations: "" }; // At least 2 keyframes needed
+
+  let animations = [];
+  let labelAnimations = [];
+
+  keyframes
     .sort((a, b) => a.time - b.time)
-    .map((kf, index, array) => {
-      if (index === array.length - 1) return "";
+    .forEach((kf, index, array) => {
+      if (index === array.length - 1) return;
 
       const nextKf = array[index + 1];
       const duration = (nextKf.time - kf.time) * 1000;
       const delay = kf.time * 1000;
 
-      const animations = [
+      const rotation = kf.rotation.map((r) => (Math.abs(r) < 0.0001 ? 0 : r));
+      const nextRotation = nextKf.rotation.map((r) =>
+        Math.abs(r) < 0.01 ? 0 : r
+      );
+
+      const animProps = [
         {
           prop: "position",
           from: kf.position?.join(" ") || "0 0 0",
@@ -56,8 +66,8 @@ export const generateAnimations = (keyframes) => {
         },
         {
           prop: "rotation",
-          from: kf.rotation?.join(" ") || "0 0 0",
-          to: nextKf.rotation?.join(" ") || "0 0 0",
+          from: rotation.join(" ") || "0 0 0",
+          to: nextRotation.join(" ") || "0 0 0",
         },
         {
           prop: "scale",
@@ -71,16 +81,23 @@ export const generateAnimations = (keyframes) => {
         },
       ];
 
-      return animations
-        .filter(({ from, to }) => from !== to) // Remove unnecessary animations
-        .map(({ prop, from, to }) => {
+      animProps.forEach(({ prop, from, to }) => {
+        if (from !== to) {
           const property =
             prop === "color" ? "material.color; type: color" : prop;
-          return `animation__${index}_${prop}="property: ${property}; from: ${from}; to: ${to}; dur: ${duration}; delay: ${delay}"`;
-        })
-        .join(" ");
-    })
-    .join(" ");
+          const animString = `animation__${index}_${prop}="property: ${property}; from: ${from}; to: ${to}; dur: ${duration}; delay: ${delay}"`;
+          if (prop === "position") {
+            labelAnimations.push(animString);
+          } 
+          animations.push(animString);
+        }
+      });
+    });
+
+  return {
+    animations: animations.join(" "),
+    labelAnimations: labelAnimations.join(" "),
+  };
 };
 
 /**
@@ -88,7 +105,7 @@ export const generateAnimations = (keyframes) => {
  * @param {Object} object - AR object containing position and label information
  * @returns {string} A-Frame text entity markup
  */
-export const renderTextLabel = (object, yOffset = -1) => {
+export const renderTextLabel = (object, yOffset = -1, animations) => {
   const [_, sy, __] = object.scale;
   const offset = 0.3;
   const localY = yOffset * (sy / 2 + offset);
@@ -101,7 +118,6 @@ export const renderTextLabel = (object, yOffset = -1) => {
       scale="0.5 0.5 0.5"
       align="center"
       color="#000000"
-      look-at="[camera]"
       font="aileronsemibold">
     </a-text>
   `;
@@ -119,9 +135,7 @@ export const getInitialProperties = (object) => {
       position: object.keyframes[0].position || [0, 0, 0],
       rotation: object.keyframes[0].rotation || [0, 0, 0],
       scale: object.keyframes[0].scale || [1, 1, 1],
-      color:
-        rgbArrayToString(object.keyframes[0]?.color) ||
-        object.color,
+      color: rgbArrayToString(object.keyframes[0]?.color) || object.color,
     };
   }
   return {
@@ -139,9 +153,8 @@ export const getInitialProperties = (object) => {
  */
 export const renderObject = (object) => {
   const initialProps = getInitialProperties(object);
-  const animations = generateAnimations(object.keyframes);
-
-  const position = initialProps.position.join(" ");
+  const { animations, labelAnimations } = generateAnimations(object.keyframes);
+  const position = object.position.join(" ");
   const scale = object.scale.join(" ");
   const rotation = object.rotation.join(" ");
 
@@ -181,18 +194,20 @@ export const renderObject = (object) => {
     default:
       const label = renderTextLabel({
         ...object,
-        scale: initialProps.scale,
-        position: initialProps.position,
       });
 
       return `
-          <a-entity position="${position}" rotation="${rotation}" ${animations}>
+          <a-entity position="${initialProps.position}">
             <${object.entity}
               material="color: ${initialProps.color}"
+              rotation="${initialProps.rotation}" 
               scale="${scale}"
-              ${animations}>
+              ${animations}
+              >
             </${object.entity}>
-            ${label}
+            <a-entity look-at="[camera]" ${labelAnimations}>
+             ${label}
+            </a-entity>
           </a-entity>
         `;
   }

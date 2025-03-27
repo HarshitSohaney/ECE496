@@ -67,7 +67,6 @@ const App = () => {
         switch (action) {
           case "ADD_OBJECT":
             setARObjects({ type: "REMOVE_OBJECT", payload: to.id });
-
             break;
           case "REMOVE_OBJECT":
             setARObjects({ type: "ADD_OBJECT", payload: from });
