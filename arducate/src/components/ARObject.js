@@ -126,7 +126,6 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
   if (object.visible === false) {
     return null;
   }
-
   return (
     <mesh
       ref={meshRef}
@@ -142,7 +141,7 @@ const ARObject = ({ object, isSelected, setTransformControlsRef }) => {
       {/* Render the correct geometry */}
       {getAsset(object.type, { text: object.text, color: object.color })}
       <meshMatcapMaterial color={object.color} toneMapped={false} />
-      {object.type !== "text" && object.type !== "line" && (
+      {object.type !== "text" && object.type !== "line" && object.type !== "arrow" && (
         <Edges
           ref={edgeRef}
           lineWidth={2}

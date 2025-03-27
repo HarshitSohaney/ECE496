@@ -119,9 +119,7 @@ export const getInitialProperties = (object) => {
       position: object.keyframes[0].position || [0, 0, 0],
       rotation: object.keyframes[0].rotation || [0, 0, 0],
       scale: object.keyframes[0].scale || [1, 1, 1],
-      color:
-        rgbArrayToString(object.keyframes[0]?.color) ||
-        object.color,
+      color: rgbArrayToString(object.keyframes[0]?.color) || object.color,
     };
   }
   return {
@@ -177,6 +175,21 @@ export const renderObject = (object) => {
           ${animations}>
         </a-entity>
       `;
+
+    case "gltf-model":
+      return `
+          <a-entity
+            gltf-model="${object.src}"
+            position="${position}"
+            scale="${scale}"
+            color="${object.color}"
+            ${object.showLabel ? renderTextLabel(object) : ""}
+            rotation="${rotation}"
+            animation-mixer
+            material="color: ${initialProps.color}"
+            ${animations}>
+          </a-entity>
+        `;
 
     default:
       const label = renderTextLabel({
