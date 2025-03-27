@@ -9,6 +9,15 @@ import {
   Plus,
   Settings2,
 } from "lucide-react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAtom } from "jotai";
 import {
   selectedObjectAtom,
@@ -28,6 +37,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import useKeyframe from "hooks/useKeyframe";
+import useAnimationTemplate from "../../hooks/useAnimationTemplate";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formatTime = (seconds) => {
   const mins = Math.floor(seconds / 60);
@@ -38,8 +56,19 @@ const formatTime = (seconds) => {
     .padStart(2, "0")}:${ms.toString().padStart(2, "0")}`;
 };
 
-const ObjectRow = ({ object }) => (
-  <div className="group flex items-center h-8 border-b border-gray-700 hover:bg-gray-750">
+const ObjectRow = ({ object, selectedObjects, setSelectedObjects }) => (
+  <div
+    className={`group flex items-center h-8 border-b border-gray-700 hover:bg-gray-750 ${
+      selectedObjects.includes(object.id) ? "bg-blue-900" : ""
+    }`}
+    onClick={() => {
+      if (selectedObjects.includes(object.id)) {
+        setSelectedObjects(selectedObjects.filter((id) => id !== object.id));
+      } else {
+        setSelectedObjects([...selectedObjects, object.id]);
+      }
+    }}
+  >
     <div className="flex items-center px-2 w-full">
       {object.type === "group" ? (
         <ChevronRight className="w-4 h-4 text-gray-400 mr-1" />
@@ -56,7 +85,7 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
   const [scale] = useAtom(timelineScaleAtom);
   const [timelineWidth] = useAtom(timelineWidthAtom);
   const object = arObjects.find((obj) => obj.id === objectId);
-
+  // console.log("TimelineRow", objectId, object.keyframes);
   return (
     <div className="flex items-center h-8 relative border-b border-gray-700">
       <div className="flex-grow relative h-full flex items-center">
@@ -74,9 +103,9 @@ const TimelineRow = ({ objectId, timeRulerStart, timeRulerEnd }) => {
 };
 
 const SequenceEditor = () => {
-  const { play, pause, stop, currentTime, isPlaying } =
-    useAnimation();
-    const { addKeyframe } = useKeyframe();
+  const { play, pause, stop, currentTime, isPlaying } = useAnimation();
+  const { addKeyframe } = useKeyframe();
+  const { applyTemplate } = useAnimationTemplate();
   const [selectedObject] = useAtom(selectedObjectAtom);
   const [duration] = useAtom(timelineDurationAtom);
   const [zoom, setZoom] = useState(1);
@@ -85,6 +114,10 @@ const SequenceEditor = () => {
   const timelineRef = useRef(null);
   const objectListRef = useRef(null);
   const timelineContentRef = useRef(null);
+  const [selectedObjects, setSelectedObjects] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [rotationAxis, setRotationAxis] = useState("y"); // Default axis
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
@@ -108,6 +141,51 @@ const SequenceEditor = () => {
       objectListRef.current.scrollTop = target.scrollTop;
     }
   };
+
+  const handleTemplateClick = async (template) => {
+    if (template === "swap" && selectedObjects.length === 2) {
+      await applyTemplate("swap", selectedObjects);
+      setSelectedObjects([]); // Clear selection after applying template
+      setSelectedTemplate("");
+    } else if (template === "circle" && selectedObjects.length > 1) {
+      console.log("Circle template selected", selectedObjects);
+      setIsDrawerOpen(true); // Open the drawer to select rotation axis
+    } else if(template === "connect") {
+      console.log("Connect template selected", selectedObjects);
+      await applyTemplate("connect", selectedObjects);
+      setSelectedObjects([]); // Clear selection after applying template
+      setSelectedTemplate("");
+    }
+  };
+
+  const applyCircleAnimation = async () => {
+    await applyTemplate("circle", selectedObjects, { axis: rotationAxis });
+    setSelectedObjects([]);
+    setSelectedTemplate("");
+    setIsDrawerOpen(false);
+  };
+
+  const templateButton = (
+    <Select
+      value={selectedTemplate}
+      onValueChange={(value) => {
+        setSelectedTemplate(value);
+        handleTemplateClick(value);
+      }}
+      disabled={selectedObjects.length < 2}
+    >
+      <SelectTrigger className="w-[140px] px-1">
+        <SelectValue placeholder="Templates"/>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="swap">Swap Objects</SelectItem>
+          <SelectItem value="circle">Circle Animation</SelectItem>
+          {/* <SelectItem value="connect">Connect Objects</SelectItem> */}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
 
   return (
     <div className="flex flex-col h-60 w-full bg-secondary text-white overflow-hidden">
@@ -149,8 +227,37 @@ const SequenceEditor = () => {
               <DurationInput />
             </PopoverContent>
           </Popover>
+          {templateButton}
         </div>
       </div>
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Select Rotation Axis</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">
+            <RadioGroup value={rotationAxis} onValueChange={setRotationAxis}>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-2">
+                  <RadioGroupItem value="x" /> X-Axis
+                </label>
+                <label className="flex items-center gap-2">
+                  <RadioGroupItem value="y" /> Y-Axis
+                </label>
+                <label className="flex items-center gap-2">
+                  <RadioGroupItem value="z" /> Z-Axis
+                </label>
+              </div>
+            </RadioGroup>
+          </div>
+          <DrawerFooter>
+            <Button variant="outline" onClick={() => setIsDrawerOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={applyCircleAnimation}>Apply</Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       {/* Main content area */}
       <div className="flex flex-1 overflow-hidden relative">
@@ -164,7 +271,12 @@ const SequenceEditor = () => {
             className="overflow-y-auto flex-1"
           >
             {arObjects.map((object) => (
-              <ObjectRow key={object.id} object={object} />
+              <ObjectRow
+                key={object.id}
+                object={object}
+                selectedObjects={selectedObjects}
+                setSelectedObjects={setSelectedObjects}
+              />
             ))}
           </div>
         </div>
