@@ -92,17 +92,6 @@ const KeyframeControls = () => {
   const handleDeleteKeyframe = () => {
     deleteKeyframe(selectedKeyframe.objectId, selectedKeyframe.keyframeId);
 
-    // Remove keyframe from arObjects
-    setARObjects({
-      type: "UPDATE_OBJECT",
-      payload: {
-        id: selectedKeyframe.objectId,
-        keyframes: parentObject.keyframes.filter(
-          (kf) => kf.id !== selectedKeyframe.keyframeId
-        ),
-      },
-    });
-
     // Deselect the keyframe
     setSelectedKeyframe({ keyframeId: null, objectId: null });
   };

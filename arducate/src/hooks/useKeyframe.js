@@ -62,6 +62,7 @@ const useKeyframe = () => {
           keyframes: [newKeyframe, ...existingKeyframes],
         },
       });
+
     },
     [arObjects, currentTime, duration, setArObjects]
   );
