@@ -1,6 +1,7 @@
 import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { arObjectsAtom, currentTimeAtom, timelineDurationAtom } from "../atoms";
+import { generateUUID } from "three/src/math/MathUtils";
 
 const useKeyframe = () => {
   const [currentTime] = useAtom(currentTimeAtom);
@@ -36,34 +37,32 @@ const useKeyframe = () => {
 
 
   const addKeyframe = useCallback(
-    (objectId) => {
+    (objectId, params = {}) => {
       const targetObject = arObjects.find((obj) => obj.id === objectId);
-      if (!targetObject || currentTime > duration) return;
-
+      if (!targetObject || (params.time !== undefined && params.time > duration)) return;
       const existingKeyframes = targetObject.keyframes || [];
 
       // Ensure a unique ID that does NOT overwrite existing keyframes
-      const newId = existingKeyframes.length > 0
-        ? Math.max(...existingKeyframes.map(kf => kf.id)) + 1
-        : 1;
-      console.log("rotation", targetObject.rotation);
+      const newId = crypto.randomUUID();
       let newKeyframe = {
-          id: newId,
-          time: currentTime,
-          position: [...(targetObject.position || [0, 0, 0])],
-          rotation: [...(targetObject.rotation || [0, 0, 0])],
-          scale: [...(targetObject.scale || [1, 1, 1])],
-          color: hexToRGB(targetObject.color || "#ffa500"),
-        };
+        id: newId,
+        time: params.time !== undefined ? params.time : currentTime,
+        position: params.position || [...(targetObject.position || [0, 0, 0])],
+        rotation: params.rotation || [...(targetObject.rotation || [0, 0, 0])],
+        scale: params.scale || [...(targetObject.scale || [1, 1, 1])],
+        color: hexToRGB(targetObject.color || "#ffa500"),
+      };
 
-      console.log("Adding keyframe:", newKeyframe);
+      // Include all existing object properties in the update
       setArObjects({
         type: "UPDATE_OBJECT",
         payload: {
+          ...targetObject,  // Include all existing properties
           id: objectId,
-          keyframes: [...existingKeyframes, newKeyframe].sort((a, b) => a.time - b.time),
+          keyframes: [newKeyframe, ...existingKeyframes],
         },
       });
+
     },
     [arObjects, currentTime, duration, setArObjects]
   );

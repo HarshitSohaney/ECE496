@@ -197,15 +197,16 @@ export const renderObject = (object) => {
       });
 
       return `
-          <a-entity position="${initialProps.position}">
+          <a-entity>
             <${object.entity}
               material="color: ${initialProps.color}"
-              rotation="${initialProps.rotation}" 
+              rotation="${rotation}" 
               scale="${scale}"
+              position="${position}"
               ${animations}
               >
             </${object.entity}>
-            <a-entity look-at="[camera]" ${labelAnimations}>
+            <a-entity look-at="[camera]" ${labelAnimations}  position="${position}">
              ${label}
             </a-entity>
           </a-entity>

@@ -17,6 +17,7 @@ import {
 } from "./atoms";
 import useKeyframe from "./hooks/useKeyframe";
 import { useAtom } from "jotai";
+import { generateUUID } from "three/src/math/MathUtils";
 
 const App = () => {
   const [arObjects, setARObjects] = useAtom(arObjectsAtom);
@@ -44,9 +45,9 @@ const App = () => {
         if (copyBuffer) {
           const newObject = {
             ...copyBuffer,
-            id: Date.now(),
-            name: `${copyBuffer.name} Copy`,
-            label: `${copyBuffer.label} Copy`,
+            id: generateUUID(),
+            name: `${copyBuffer.name} Copy ${arObjects.length + 1}`,
+            label: `${copyBuffer.label} Copy ${arObjects.length + 1}`,
             position: [
               copyBuffer.position[0] + 0.1,
               copyBuffer.position[1] + 0.1,
