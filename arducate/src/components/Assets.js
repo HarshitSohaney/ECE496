@@ -1,6 +1,7 @@
 // src/components/Assets.js
 import { Text } from '@react-three/drei';
 import { Line } from "@react-three/drei";
+import { Arrow } from '../models/arrow';
 
 // Define your geometry components if not already done
 const BoxGeometry = () => <boxGeometry args={[1, 1, 1]} />;
@@ -37,7 +38,8 @@ const Assets = new Map([
   ['torus', <TorusGeometry />],
   ['ring', <RingGeometry />],
   ['text', (props) => <TextAsset text={props.text} color={props.color} />],
-  ['line', (props) => <LineAsset color={props.color} />]
+  ['line', (props) => <LineAsset color={props.color} />],
+  ['arrow', <Arrow />]
 ]);
 
 export const getAsset = (itemSelected, props) => {
@@ -61,7 +63,8 @@ const AssetsAR = new Map([
     ['torus', 'a-torus'],
     ['ring', 'a-ring'],
     ['text', 'a-text'],
-    ['line', 'a-element']
+    ['line', 'a-element'],
+    ['arrow', 'a-gltf-model src="https://mixiplycontent.blob.core.windows.net/usefulstuff/b886ee02-15e0-451a-c594-08d6d1d77884/arrow.gltf"']
 ]);
 
 export const getArAsset = (item) => {

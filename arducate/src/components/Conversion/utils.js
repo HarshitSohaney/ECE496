@@ -191,6 +191,21 @@ export const renderObject = (object) => {
         </a-entity>
       `;
 
+    case "gltf-model":
+      return `
+          <a-entity
+            gltf-model="${object.src}"
+            position="${position}"
+            scale="${scale}"
+            color="${object.color}"
+            ${object.showLabel ? renderTextLabel(object) : ""}
+            rotation="${rotation}"
+            animation-mixer
+            material="color: ${initialProps.color}"
+            ${animations}>
+          </a-entity>
+        `;
+
     default:
       const label = renderTextLabel({
         ...object,

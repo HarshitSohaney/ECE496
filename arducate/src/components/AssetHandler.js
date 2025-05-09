@@ -34,7 +34,6 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
       showLabel: true,
       text: "Add Text",
     };
-  
     // Dispatch action to add object
     setARObjects({
       type: "ADD_OBJECT",
@@ -94,6 +93,7 @@ const AssetHandler = ({ data, setData, cursor, setCursor }) => {
             <SelectItem value="ring">Ring</SelectItem>
             <SelectItem value="text">Text</SelectItem>
             <SelectItem value="line">Line</SelectItem>
+            <SelectItem value="arrow">Arrow</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
